@@ -460,13 +460,11 @@ select.form-input{cursor:pointer;}
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-const savedApi = localStorage.getItem('gof_api');
-if (!savedApi) {
-  const url = prompt('Backend API URL দিন (যেমন https://globalogranicfoods.onrender.com):', 'https://globalogranicfoods.onrender.com');
-  if (url) localStorage.setItem('gof_api', url.replace(/\/$/, ''));
-  location.reload();
-} else {
-  const API = savedApi + '/api';
+// ✅ API URL hardcoded - no prompt needed
+const BACKEND_URL = 'https://globalogranicfoods.onrender.com';
+localStorage.setItem('gof_api', BACKEND_URL);
+{
+  const API = BACKEND_URL + '/api';
   let TOKEN = localStorage.getItem('gof_token') || '';
   let ordersPage = 1, ordersDebTimer;
   let editingProductId = null;
