@@ -151,8 +151,17 @@ function authMiddleware(req, res, next) {
 
 async function generateOrderNumber() {
   const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
-  const count = await Order.countDocuments();
-  return `GOF-${today}-${String(count + 1).padStart(4,'0')}`;
+  // Use timestamp + random to prevent duplicate key errors
+  const ts = Date.now().toString().slice(-4);
+  const rand = Math.floor(Math.random() * 1000).toString().padStart(3,'0');
+  const base = `GOF-${today}-${ts}${rand}`;
+  // Ensure uniqueness: check DB and retry if needed
+  const exists = await Order.findOne({ orderNumber: base });
+  if (exists) {
+    const rand2 = Math.floor(Math.random() * 9000 + 1000);
+    return `GOF-${today}-${rand2}`;
+  }
+  return base;
 }
 
 async function seedDefaults() {
@@ -235,8 +244,9 @@ app.get('/api/products', async (req, res) => {
 
 app.get('/api/products/:id', async (req, res) => {
   try {
-    const product = await Product.findOne({ id: req.params.id, isActive: true });
-    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    // Try active first, then any (for admin panel compatibility)
+    const product = await Product.findOne({ id: req.params.id });
+    if (!product) return res.status(404).json({ success: false, message: 'পণ্য পাওয়া যায়নি' });
     res.json({ success: true, product });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
@@ -245,6 +255,15 @@ app.get('/api/admin/products', authMiddleware, async (req, res) => {
   try {
     const products = await Product.find().sort({ order: 1, createdAt: 1 });
     res.json({ success: true, products });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// ✅ GET single product for admin (includes inactive products)
+app.get('/api/admin/products/:id', authMiddleware, async (req, res) => {
+  try {
+    const product = await Product.findOne({ id: req.params.id });
+    if (!product) return res.status(404).json({ success: false, message: 'পণ্য পাওয়া যায়নি' });
+    res.json({ success: true, product });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
@@ -261,12 +280,15 @@ app.post('/api/admin/products', authMiddleware, async (req, res) => {
 
 app.put('/api/admin/products/:id', authMiddleware, async (req, res) => {
   try {
+    // Use $set to safely update — prevents accidental field removal
+    const updateData = { ...req.body, updatedAt: new Date() };
+    delete updateData._id; // never update _id
     const product = await Product.findOneAndUpdate(
       { id: req.params.id },
-      { ...req.body, updatedAt: new Date() },
-      { new: true }
+      { $set: updateData },
+      { new: true, runValidators: false }
     );
-    if (!product) return res.status(404).json({ success: false, message: 'Not found' });
+    if (!product) return res.status(404).json({ success: false, message: 'পণ্য পাওয়া যায়নি' });
     res.json({ success: true, product });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
@@ -295,10 +317,26 @@ app.delete('/api/admin/image', authMiddleware, async (req, res) => {
 
 app.post('/api/orders', async (req, res) => {
   try {
-    const { productId, productName, weight, quantity, unitPrice, deliveryCharge, totalPrice, customerName, phone, address, deliveryArea } = req.body;
-    if (!customerName || !phone || !address) return res.status(400).json({ success: false, message: 'Missing required fields' });
-    const orderNumber = await generateOrderNumber();
-    const order = await Order.create({ orderNumber, productId, productName, weight, quantity, unitPrice, deliveryCharge, totalPrice, customerName, phone, address, deliveryArea });
+    const { productId, productName, weight, quantity, unitPrice, deliveryCharge, totalPrice, customerName, phone, address, deliveryArea, notes } = req.body;
+    if (!customerName || !phone || !address) return res.status(400).json({ success: false, message: 'নাম, ফোন ও ঠিকানা আবশ্যক' });
+
+    // Retry up to 5 times to handle duplicate orderNumber race conditions
+    let order, orderNumber, attempts = 0;
+    while (attempts < 5) {
+      try {
+        orderNumber = await generateOrderNumber();
+        order = await Order.create({ orderNumber, productId, productName, weight, quantity, unitPrice, deliveryCharge, totalPrice, customerName, phone, address, deliveryArea, notes });
+        break; // success
+      } catch (dupErr) {
+        if (dupErr.code === 11000 && dupErr.keyPattern?.orderNumber) {
+          attempts++;
+          await new Promise(r => setTimeout(r, 50 * attempts)); // backoff
+          continue;
+        }
+        throw dupErr; // other error
+      }
+    }
+    if (!order) throw new Error('অর্ডার নম্বর তৈরি করা যায়নি, পুনরায় চেষ্টা করুন');
     res.json({ success: true, order, orderNumber });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });

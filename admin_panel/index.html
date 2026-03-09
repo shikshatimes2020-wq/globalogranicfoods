@@ -619,10 +619,12 @@ function toast(msg, type = 'success') {
   const t = document.createElement('div');
   t.className = `toast ${type}`;
   const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
-  t.innerHTML = `<i class="fas fa-${icon}"></i>${msg}`;
+  t.innerHTML = `<i class="fas fa-${icon}"></i><span>${msg}</span>`;
+  t.style.transition = 'opacity 0.4s ease';
   $('toastWrap').appendChild(t);
-  setTimeout(() => t.style.opacity = '0', 3000);
-  setTimeout(() => t.remove(), 3400);
+  const dur = type === 'error' ? 4500 : 3000;
+  setTimeout(() => { t.style.opacity = '0'; }, dur);
+  setTimeout(() => { if (t.parentNode) t.remove(); }, dur + 400);
 }
 
 function closeModal(id) { $(id).classList.remove('open'); }
@@ -934,11 +936,21 @@ async function openProductModal(productId) {
   $('productModalTitle').innerHTML = `<i class="fas fa-${productId ? 'edit' : 'plus'}"></i>${productId ? 'পণ্য সম্পাদনা' : 'নতুন পণ্য যোগ করুন'}`;
 
   if (productId) {
+    // Show modal first with loading state
+    openModal('productModal');
+    $('saveProductBtn').disabled = true;
     $('saveProductBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i><span class="btn-text">লোড হচ্ছে...</span>';
+
+    // ✅ FIX: Use /admin/products/:id (authenticated route that includes inactive)
     const d = await api('/admin/products/' + productId);
+    $('saveProductBtn').disabled = false;
     $('saveProductBtn').innerHTML = '<i class="fas fa-save"></i><span class="btn-text">সেভ করুন</span>';
 
-    if (!d.success) { toast('পণ্য লোড ব্যর্থ', 'error'); return; }
+    if (!d.success) {
+      toast('পণ্য লোড ব্যর্থ: ' + (d.message || 'অজানা সমস্যা'), 'error');
+      closeModal('productModal');
+      return;
+    }
     const p = d.product;
 
     $('pm-id').value = p.id;
@@ -975,8 +987,9 @@ async function openProductModal(productId) {
     $('pm-order').value = 0;
     $('pm-active').value = 'true';
     $('pm-imgs').value = '[]';
+    // Only open modal for new product here (edit opens it early while loading)
+    openModal('productModal');
   }
-  openModal('productModal');
 }
 
 async function handleImgUpload(input) {
@@ -1042,15 +1055,25 @@ function addTag(e, wrapperId) {
 
 function addTagValue(wrapperId, val) {
   const wrap = $(wrapperId);
+  if (!wrap || !val || !val.trim()) return;
+  val = val.trim();
   const tag = document.createElement('div');
   tag.className = 'tag';
-  tag.dataset.val = val;
-  tag.innerHTML = `${val}<span class="tag-remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
+  tag.setAttribute('data-val', val);  // use setAttribute for reliability
+  tag.innerHTML = `<span class="tag-text">${val}</span><span class="tag-remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
   wrap.insertBefore(tag, wrap.querySelector('input'));
 }
 
 function getTagValues(wrapperId) {
-  return [...$(wrapperId).querySelectorAll('.tag')].map(t => t.dataset.val).filter(Boolean);
+  const wrap = $(wrapperId);
+  if (!wrap) return [];
+  // Get all .tag elements and extract their data-val
+  const tags = [...wrap.querySelectorAll('.tag')];
+  const vals = tags.map(t => {
+    // Try getAttribute first (more reliable), then dataset, then text
+    return t.getAttribute('data-val') || t.dataset.val || t.querySelector('.tag-text')?.textContent?.trim() || '';
+  }).filter(v => v && v.length > 0);
+  return vals;
 }
 
 async function saveProduct(btn) {
@@ -1067,26 +1090,32 @@ async function saveProduct(btn) {
   const o5 = parseFloat($('pm-o5').value) || 0;
   const dis = (v, o) => (o > 0 && v < o) ? Math.round((o - v) / o * 100) : 0;
 
-  // ✅ FIX: Complete payload with all fields including benefits/ingredients/usage
+  // Collect tag values
+  const benefitsList = getTagValues('benefitsTags');
+  const ingredientsList = getTagValues('ingredientsTags');
+  const usageList = getTagValues('usageTags');
+
+  console.log('Saving product:', id, '| benefits:', benefitsList, '| ingredients:', ingredientsList, '| usage:', usageList);
+
   const payload = {
     id, name,
     subtitle: $('pm-subtitle').value || '',
     badge: $('pm-badge').value || null,
     badgeClass: $('pm-badgeClass').value || null,
     img: imgs[0] || '',
-    imgs,
+    imgs: imgs,
     basePrice: p1,
     baseOld: o1,
     baseDiscount: dis(p1, o1),
     prices: {
-      '1kg': { price: p1, old: o1, dis: dis(p1, o1) },
-      '2kg': { price: p2, old: o2, dis: dis(p2, o2) },
+      '1kg':   { price: p1, old: o1, dis: dis(p1, o1) },
+      '2kg':   { price: p2, old: o2, dis: dis(p2, o2) },
       '500gm': { price: p5, old: o5, dis: dis(p5, o5) },
     },
     desc: $('pm-desc').value || '',
-    benefits: getTagValues('benefitsTags'),        // ✅ উপকারিতা
-    ingredients: getTagValues('ingredientsTags'),  // ✅ উপাদান
-    usage: getTagValues('usageTags'),              // ✅ ব্যবহার বিধি
+    benefits:    benefitsList,
+    ingredients: ingredientsList,
+    usage:       usageList,
     order: parseInt($('pm-order').value) || 0,
     isActive: $('pm-active').value === 'true',
   };
