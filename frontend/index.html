@@ -478,7 +478,7 @@
                     <p style="font-size:14px;color:var(--slate);margin-bottom:20px;">যেকোনো প্রশ্ন বা অর্ডারের জন্য যোগাযোগ করুন</p>
                     <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-phone-alt"></i></div><div><div class="contact-item-title">ফোন নম্বর</div><a id="contactPhone" href="tel:01711386880" class="contact-item-val">01711-386880</a><div class="contact-item-note">24/7 সাপোর্ট উপলব্ধ</div></div></div>
                     <div class="contact-item"><div class="contact-icon-box"><i class="fab fa-whatsapp"></i></div><div><div class="contact-item-title">হোয়াটসঅ্যাপ</div><a href="javascript:void(0)" onclick="openWhatsApp()" class="contact-item-val" id="contactWA">01711-386880</a><div class="contact-item-note">মেসেজ করুন যেকোনো সময়</div></div></div>
-                    <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-envelope"></i></div><div><div class="contact-item-title">ইমেইল</div><a id="contactEmail" href="mailto:support@globalorganicfoods.com" class="contact-item-val" style="font-size:14px;">support@globalorganicfoods.com</a><div class="contact-item-note">24 ঘণ্টার মধ্যে রিপ্লাই</div></div></div>
+                    <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-envelope"></i></div><div><div class="contact-item-title">ইমেইল</div><a id="contactEmail" href="/cdn-cgi/l/email-protection#6a191f1a1a05181e2a0d0605080b0605180d0b0403090c05050e1944090507" class="contact-item-val" style="font-size:14px;"><span class="__cf_email__" data-cfemail="bfcccacfcfd0cdcbffd8d3d0ddded3d0cdd8ded1d6dcd9d0d0dbcc91dcd0d2">[email&#160;protected]</span></a><div class="contact-item-note">24 ঘণ্টার মধ্যে রিপ্লাই</div></div></div>
                     <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-map-marker-alt"></i></div><div><div class="contact-item-title">ঠিকানা</div><span class="contact-item-val" id="contactAddress" style="font-size:15px;">ঢাকা, বাংলাদেশ</span><div class="contact-item-note">শনি–বৃহস্পতি: সকাল ৯টা – সন্ধ্যা ৬টা</div></div></div>
                 </div>
                 <div>
@@ -526,7 +526,7 @@
                 <div class="footer-contact-items">
                     <div class="footer-contact-item"><i class="fas fa-phone-alt"></i><a id="footerPhone" href="tel:01711386880">01711-386880</a></div>
                     <div class="footer-contact-item"><i class="fab fa-whatsapp"></i><a href="javascript:void(0)" onclick="openWhatsApp()">WhatsApp এ যোগাযোগ</a></div>
-                    <div class="footer-contact-item"><i class="fas fa-envelope"></i><a id="footerEmail" href="mailto:support@globalorganicfoods.com">support@globalorganicfoods.com</a></div>
+                    <div class="footer-contact-item"><i class="fas fa-envelope"></i><a id="footerEmail" href="/cdn-cgi/l/email-protection#1a696f6a6a75686e5a7d7675787b7675687d7b7473797c75757e6934797577"><span class="__cf_email__" data-cfemail="a3d0d6d3d3ccd1d7e3c4cfccc1c2cfccd1c4c2cdcac0c5ccccc7d08dc0ccce">[email&#160;protected]</span></a></div>
                     <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span id="footerAddress">ঢাকা, বাংলাদেশ</span></div>
                 </div>
             </div>
@@ -542,7 +542,7 @@
     </div>
 </footer>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── Config ────────────────────────────────────────────
 const API_BASE = window.GOF_API || 'https://globalogranicfoods.onrender.com/api';
 
@@ -601,6 +601,17 @@ async function loadSettings() {
         document.getElementById('footerAddress').textContent = s.address;
     }
     if (s.returnDays) document.getElementById('returnText').textContent = s.returnDays;
+
+    // ── Build slider from admin-controlled slides ──────
+    if (s.sliderSlides && s.sliderSlides.length) {
+        const activeSlides = s.sliderSlides
+            .filter(sl => sl.active !== false)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+        if (activeSlides.length) {
+            window._sliderBuilt = true;
+            buildSlider(activeSlides);
+        }
+    }
 }
 
 // ── Load Products ─────────────────────────────────────
@@ -609,9 +620,6 @@ async function loadProducts() {
     if (!d.success || !d.products.length) return;
     allProducts = d.products;
 
-    // Slider
-    buildSlider(allProducts.slice(0, 4));
-
     // Product grids
     const html = allProducts.map(p => renderProductCard(p)).join('');
     document.getElementById('homeProductsGrid').innerHTML = html;
@@ -619,27 +627,66 @@ async function loadProducts() {
 
     // About count
     document.getElementById('productCountStat').textContent = allProducts.length + '+';
+
+    // Build slider from settings (loaded in loadSettings)
+    // If sliderSlides not available yet, use product images as fallback
+    if (window._sliderBuilt) return;
+    buildSliderFromProducts(allProducts.slice(0, 4));
 }
 
-function buildSlider(products) {
+// Fallback: build slider from products (used if no custom slides set)
+function buildSliderFromProducts(products) {
+    if (window._sliderBuilt) return;
+    window._sliderBuilt = true;
+    buildSlider(products.map(p => ({
+        img: p.img,
+        tag: p.badge || 'বিশেষ পণ্য',
+        title: p.name,
+        desc: p.subtitle || '',
+        btnText: 'বিস্তারিত দেখুন',
+        btnLink: null,
+        btnProductId: p.id,
+        active: true,
+    })));
+}
+
+// Accepts both product-objects and admin slide-objects
+function buildSlider(slides) {
     const track = document.getElementById('sliderTrack');
-    const heroImgs = [
+    const fallbackImgs = [
         'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1400&q=80',
         'https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=1400&q=80',
         'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1400&q=80',
         'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=1400&q=80',
     ];
-    track.innerHTML = products.map((p, i) => `
-        <div class="slide" style="background-image:url('${p.img || heroImgs[i % heroImgs.length]}')">
+    track.innerHTML = slides.map((s, i) => {
+        const img = s.img || fallbackImgs[i % fallbackImgs.length];
+        const tag  = s.tag  || s.badge    || 'বিশেষ পণ্য';
+        const title = (s.title || s.name  || '').replace(/\n/g, '<br>');
+        const desc  = s.desc || s.subtitle || '';
+        const btnTxt = s.btnText || 'বিস্তারিত দেখুন';
+
+        // Button action: link to section OR specific product
+        let btnAction = '';
+        if (s.btnProductId) {
+            btnAction = `onclick="showProductDetail('${s.btnProductId}')"`;
+        } else if (s.btnLink) {
+            btnAction = `onclick="showSection('${s.btnLink}')"`;
+        } else {
+            btnAction = `onclick="showSection('products')"`;
+        }
+
+        return `<div class="slide" style="background-image:url('${img}')">
             <div class="slide-overlay"></div>
             <div class="slide-content">
-                <div class="slide-tag"><i class="fas fa-star"></i> ${p.badge || 'বিশেষ পণ্য'}</div>
-                <h2 class="slide-title">${p.name}</h2>
-                <p class="slide-desc">${p.subtitle || ''}</p>
-                <button class="slide-btn" onclick="showProductDetail('${p.id}')">বিস্তারিত দেখুন <i class="fas fa-arrow-right"></i></button>
+                <div class="slide-tag"><i class="fas fa-star"></i> ${tag}</div>
+                <h2 class="slide-title">${title}</h2>
+                <p class="slide-desc">${desc}</p>
+                <button class="slide-btn" ${btnAction}>${btnTxt} <i class="fas fa-arrow-right"></i></button>
             </div>
-        </div>`).join('');
-    buildDots(products.length);
+        </div>`;
+    }).join('');
+    buildDots(slides.length);
     resetTimer();
 }
 
@@ -920,13 +967,18 @@ function updateSlider() {
 }
 function slideChange(d) { slide = (slide + d + totalSlides) % totalSlides; updateSlider(); resetTimer(); }
 function goSlide(i) { slide = i; updateSlider(); resetTimer(); }
-function resetTimer() { clearInterval(sliderTimer); sliderTimer = setInterval(() => slideChange(1), 5000); }
+function resetTimer() {
+    clearInterval(sliderTimer);
+    sliderTimer = setInterval(() => slideChange(1), 5000);
+}
 
 // ── Init ──────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-    loadSettings();
-    loadProducts();
-});
+window._sliderBuilt = false;
+(async () => {
+    await loadSettings();
+    await loadProducts();
+    resetTimer();
+})();
 </script>
 </body>
 </html>

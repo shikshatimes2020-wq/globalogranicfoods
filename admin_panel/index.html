@@ -196,6 +196,30 @@ select.form-input{cursor:pointer;}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
 @media(max-width:900px){.grid-3{grid-template-columns:1fr;}}
 
+
+/* SLIDER MANAGEMENT */
+.slider-manager{display:flex;flex-direction:column;gap:12px;}
+.slide-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:var(--tr);}
+.slide-item:hover{border-color:var(--border2);}
+.slide-item.disabled-slide{opacity:0.5;}
+.slide-item-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;}
+.slide-drag-handle{color:var(--text3);font-size:14px;cursor:grab;}
+.slide-preview{width:56px;height:40px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--surface3);}
+.slide-preview-placeholder{width:56px;height:40px;border-radius:6px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text3);flex-shrink:0;}
+.slide-meta{flex:1;min-width:0;}
+.slide-meta-title{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.slide-meta-sub{font-size:11px;color:var(--text2);}
+.slide-item-actions{display:flex;gap:6px;flex-shrink:0;}
+.slide-toggle{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:none;cursor:pointer;color:var(--text2);transition:var(--tr);}
+.slide-toggle.active{background:var(--green-dim);border-color:rgba(0,210,106,0.3);color:var(--green);}
+.slide-body{padding:0 16px 16px;display:none;}
+.slide-body.open{display:block;}
+.slide-img-preview{width:100%;height:140px;object-fit:cover;border-radius:8px;margin-bottom:12px;border:1px solid var(--border);}
+.slide-img-placeholder{width:100%;height:140px;border-radius:8px;margin-bottom:12px;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--text3);border:2px dashed var(--border);}
+.add-slide-btn{border:2px dashed var(--border);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:var(--tr);background:none;width:100%;color:var(--text2);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;}
+.add-slide-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-dim);}
+.slide-order-info{font-size:11px;color:var(--text3);padding:10px 16px;background:var(--surface3);border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;}
+
 /* MISC */
 .empty-state{text-align:center;padding:48px 24px;}
 .empty-state i{font-size:48px;color:var(--text3);margin-bottom:14px;display:block;}
@@ -254,6 +278,7 @@ select.form-input{cursor:pointer;}
       <div class="sb-section">ম্যানেজমেন্ট</div>
       <button class="nav-btn" onclick="showPage('products')"><i class="fas fa-box-open"></i>পণ্যসমূহ</button>
       <div class="sb-section">সাইট কন্ট্রোল</div>
+      <button class="nav-btn" onclick="showPage('slider')"><i class="fas fa-images"></i>হোম স্লাইডার</button>
       <button class="nav-btn" onclick="showPage('settings')"><i class="fas fa-cog"></i>সাধারণ সেটিংস</button>
       <button class="nav-btn" onclick="showPage('about')"><i class="fas fa-info-circle"></i>সম্পর্কে পেজ</button>
       <button class="nav-btn" onclick="showPage('contact')"><i class="fas fa-phone-alt"></i>যোগাযোগ পেজ</button>
@@ -341,6 +366,32 @@ select.form-input{cursor:pointer;}
       </div>
       <div class="card">
         <div class="table-wrap" id="productsTableWrap"><div class="loading"><i class="fas fa-spinner"></i></div></div>
+      </div>
+    </div>
+
+
+    <!-- SLIDER MANAGEMENT -->
+    <div id="page-slider" class="page">
+      <div class="page-header-row">
+        <div class="page-title">হোম স্লাইডার <span>Slider</span></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline btn-sm" onclick="loadSlider()"><i class="fas fa-sync-alt"></i>রিফ্রেশ</button>
+          <button class="btn btn-green btn-sm" onclick="openSlideModal(null)"><i class="fas fa-plus"></i>নতুন স্লাইড</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-body" style="padding:14px 20px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <i class="fas fa-info-circle" style="color:var(--blue)"></i>
+            <span style="font-size:13px;color:var(--text2)">স্লাইড টেনে ক্রম পরিবর্তন করুন। সর্বোচ্চ <strong style="color:var(--text)">৬টি</strong> স্লাইড রাখতে পারবেন। স্লাইড বন্ধ করলে ফ্রন্টেন্ডে দেখাবে না।</span>
+            <button class="btn btn-green btn-sm" id="saveSliderOrderBtn" onclick="saveSliderOrder(this)" style="margin-left:auto"><i class="fas fa-save"></i><span class="btn-text">ক্রম সেভ করুন</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div id="sliderManager" class="slider-manager">
+        <div class="loading"><i class="fas fa-spinner"></i></div>
       </div>
     </div>
 
@@ -588,6 +639,91 @@ select.form-input{cursor:pointer;}
   </div>
 </div>
 
+
+<!-- SLIDE EDIT MODAL -->
+<div class="modal-overlay" id="slideModal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-head">
+      <div class="modal-title" id="slideModalTitle"><i class="fas fa-images"></i>নতুন স্লাইড</div>
+      <button class="modal-close" onclick="closeModal('slideModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="sm-index">
+
+      <div class="form-group">
+        <label class="form-label">স্লাইডের ছবি</label>
+        <div style="position:relative;border-radius:10px;overflow:hidden;margin-bottom:10px">
+          <img id="sm-img-preview" src="" alt="Preview" style="width:100%;height:180px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:none">
+          <div id="sm-img-placeholder" style="width:100%;height:180px;background:var(--surface2);border-radius:8px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text3)">
+            <i class="fas fa-image" style="font-size:36px"></i>
+            <span style="font-size:13px">ছবি নির্বাচন করুন</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <div style="position:relative;flex:1">
+            <input type="file" id="sm-img-file" accept="image/*" onchange="handleSlideImgUpload(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%">
+            <div class="btn btn-outline btn-sm" style="width:100%;justify-content:center;pointer-events:none"><i class="fas fa-upload"></i>ছবি আপলোড</div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">অথবা ছবির URL</label>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="sm-img-url" class="form-input" placeholder="https://... (image URL)">
+            <button class="btn btn-outline btn-sm" onclick="applySlideImgUrl()" style="white-space:nowrap"><i class="fas fa-check"></i>প্রয়োগ</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ট্যাগ / লেবেল <span style="color:var(--text3);font-weight:400">(যেমন: বেস্টসেলার পণ্য)</span></label>
+        <input type="text" id="sm-tag" class="form-input" placeholder="বেস্টসেলার পণ্য">
+      </div>
+      <div class="form-group">
+        <label class="form-label">শিরোনাম (Title) *</label>
+        <textarea id="sm-title" class="form-input" rows="2" placeholder="প্রকৃতির সেরা&#10;ভেষজ পণ্য"></textarea>
+        <p class="form-hint">নতুন লাইনের জন্য Enter চাপুন</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">বিবরণ (Description)</label>
+        <input type="text" id="sm-desc" class="form-input" placeholder="শতভাগ প্রাকৃতিক উপাদানে তৈরি...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">বাটন টেক্সট</label>
+          <input type="text" id="sm-btn-text" class="form-input" placeholder="পণ্য দেখুন">
+        </div>
+        <div class="form-group">
+          <label class="form-label">বাটন লিংক</label>
+          <select id="sm-btn-link" class="form-input">
+            <option value="products">পণ্য পেজ</option>
+            <option value="about">সম্পর্কে পেজ</option>
+            <option value="contact">যোগাযোগ পেজ</option>
+            <option value="home">হোম পেজ</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">ক্রম (Order)</label>
+          <input type="number" id="sm-order" class="form-input" value="0" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">স্ট্যাটাস</label>
+          <select id="sm-active" class="form-input">
+            <option value="true">✅ সক্রিয় (দেখাবে)</option>
+            <option value="false">❌ নিষ্ক্রিয় (দেখাবে না)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('slideModal')">বাতিল</button>
+      <button class="btn btn-red btn-sm" id="deleteSlideBtn" onclick="deleteCurrentSlide()" style="display:none"><i class="fas fa-trash"></i>মুছুন</button>
+      <button class="btn btn-green" id="saveSlideBtn" onclick="saveSlide(this)"><i class="fas fa-save"></i><span class="btn-text">সেভ করুন</span></button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
@@ -720,12 +856,13 @@ function showPage(id) {
     if (b.getAttribute('onclick') === `showPage('${id}')`) b.classList.add('active');
   });
 
-  const titles = { dashboard: 'ড্যাশবোর্ড', orders: 'অর্ডারসমূহ', products: 'পণ্যসমূহ', settings: 'সাধারণ সেটিংস', about: 'সম্পর্কে পেজ', contact: 'যোগাযোগ পেজ', changepass: 'পাসওয়ার্ড পরিবর্তন' };
+  const titles = { dashboard: 'ড্যাশবোর্ড', orders: 'অর্ডারসমূহ', products: 'পণ্যসমূহ', slider: 'হোম স্লাইডার', settings: 'সাধারণ সেটিংস', about: 'সম্পর্কে পেজ', contact: 'যোগাযোগ পেজ', changepass: 'পাসওয়ার্ড পরিবর্তন' };
   $('topbarTitle').textContent = titles[id] || id;
 
   if (id === 'dashboard') loadDashboard();
   if (id === 'orders') { ordersPage = 1; loadOrders(); }
   if (id === 'products') loadProducts();
+  if (id === 'slider') loadSlider();
   if (id === 'settings') loadSettings();
   if (id === 'about') loadAbout();
   if (id === 'contact') loadContact();
@@ -1259,6 +1396,284 @@ async function changePassword(btn) {
     toast(d.message || 'ব্যর্থ হয়েছে', 'error');
   }
 }
+
+
+// ==================== SLIDER MANAGEMENT ====================
+let sliderData = []; // local state for drag-reorder
+
+async function loadSlider() {
+  $('sliderManager').innerHTML = `<div class="loading"><i class="fas fa-spinner"></i></div>`;
+  const d = await api('/settings');
+  if (!d.success) { $('sliderManager').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>লোড ব্যর্থ হয়েছে</p></div>`; return; }
+
+  sliderData = d.settings.sliderSlides || getDefaultSlides();
+  renderSliderManager();
+}
+
+function getDefaultSlides() {
+  return [
+    { id: 's1', img: 'images/image.png', tag: 'বেস্টসেলার পণ্য', title: 'প্রকৃতির সেরা\nভেষজ পণ্য', desc: 'শতভাগ প্রাকৃতিক উপাদানে তৈরি — আপনার সুস্বাস্থ্যের জন্য', btnText: 'পণ্য দেখুন', btnLink: 'products', order: 0, active: true },
+  ];
+}
+
+function renderSliderManager() {
+  if (!sliderData.length) {
+    $('sliderManager').innerHTML = `
+      <div class="empty-state"><i class="fas fa-images"></i><p>কোনো স্লাইড নেই</p></div>
+      <button class="add-slide-btn" onclick="openSlideModal(null)"><i class="fas fa-plus"></i>প্রথম স্লাইড যোগ করুন</button>`;
+    return;
+  }
+
+  const sorted = [...sliderData].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  $('sliderManager').innerHTML = sorted.map((slide, i) => `
+    <div class="slide-item ${slide.active === false ? 'disabled-slide' : ''}" data-id="${slide.id}" data-index="${i}">
+      <div class="slide-item-head" onclick="toggleSlideBody('${slide.id}')">
+        <span class="slide-drag-handle" title="টেনে ক্রম পরিবর্তন করুন"><i class="fas fa-grip-vertical"></i></span>
+        ${slide.img
+          ? `<img class="slide-preview" src="${slide.img}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="">`
+          : ''}
+        <div class="slide-preview-placeholder" ${slide.img ? 'style="display:none"' : ''}><i class="fas fa-image"></i></div>
+        <div class="slide-meta">
+          <div class="slide-meta-title">${(slide.title || '').replace(/\n/g, ' ') || '(শিরোনাম নেই)'}</div>
+          <div class="slide-meta-sub">${slide.tag || ''} ${slide.desc ? '— ' + slide.desc.substring(0, 40) + '…' : ''}</div>
+        </div>
+        <div class="slide-item-actions" onclick="event.stopPropagation()">
+          <button class="slide-toggle ${slide.active !== false ? 'active' : ''}" onclick="toggleSlideActive('${slide.id}')">
+            <i class="fas fa-${slide.active !== false ? 'eye' : 'eye-slash'}"></i>
+            ${slide.active !== false ? 'সক্রিয়' : 'বন্ধ'}
+          </button>
+          <button class="btn btn-outline btn-sm btn-icon" onclick="openSlideModal('${slide.id}')" title="সম্পাদনা"><i class="fas fa-edit"></i></button>
+        </div>
+      </div>
+      <div class="slide-body" id="sb-${slide.id}">
+        ${slide.img
+          ? `<img class="slide-img-preview" src="${slide.img}" onerror="this.src=''" alt="Slide Preview">`
+          : `<div class="slide-img-placeholder"><i class="fas fa-image"></i></div>`}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px">
+          <div><span style="color:var(--text3)">ট্যাগ:</span> <strong>${slide.tag || '—'}</strong></div>
+          <div><span style="color:var(--text3)">বাটন:</span> <strong>${slide.btnText || 'পণ্য দেখুন'}</strong></div>
+          <div style="grid-column:1/-1"><span style="color:var(--text3)">বিবরণ:</span> ${slide.desc || '—'}</div>
+        </div>
+      </div>
+    </div>`).join('') + `
+    <button class="add-slide-btn" onclick="openSlideModal(null)" ${sliderData.length >= 6 ? 'disabled title="সর্বোচ্চ ৬টি স্লাইড"' : ''}>
+      <i class="fas fa-plus"></i>${sliderData.length >= 6 ? 'সর্বোচ্চ ৬টি স্লাইড হয়েছে' : 'নতুন স্লাইড যোগ করুন'}
+    </button>
+    <div class="slide-order-info"><i class="fas fa-info-circle"></i>মোট ${sliderData.length}টি স্লাইড | ${sliderData.filter(s=>s.active!==false).length}টি সক্রিয়</div>`;
+
+  initSlideDrag();
+}
+
+function toggleSlideBody(id) {
+  const body = $('sb-' + id);
+  if (body) body.classList.toggle('open');
+}
+
+function toggleSlideActive(id) {
+  const slide = sliderData.find(s => s.id === id);
+  if (!slide) return;
+  slide.active = slide.active === false ? true : false;
+  renderSliderManager();
+  // Auto-save toggle state
+  saveSliderToServer(null, () => {
+    toast(slide.active ? '✅ স্লাইড সক্রিয় হয়েছে' : '⛔ স্লাইড বন্ধ হয়েছে', slide.active ? 'success' : 'info');
+  });
+}
+
+function openSlideModal(slideId) {
+  const isNew = !slideId;
+  $('slideModalTitle').innerHTML = `<i class="fas fa-images"></i>${isNew ? 'নতুন স্লাইড যোগ করুন' : 'স্লাইড সম্পাদনা'}`;
+  $('deleteSlideBtn').style.display = isNew ? 'none' : 'flex';
+
+  if (isNew) {
+    $('sm-index').value = '';
+    $('sm-tag').value = '';
+    $('sm-title').value = '';
+    $('sm-desc').value = '';
+    $('sm-btn-text').value = 'পণ্য দেখুন';
+    $('sm-btn-link').value = 'products';
+    $('sm-order').value = sliderData.length;
+    $('sm-active').value = 'true';
+    $('sm-img-url').value = '';
+    $('sm-img-preview').style.display = 'none';
+    $('sm-img-placeholder').style.display = 'flex';
+  } else {
+    const slide = sliderData.find(s => s.id === slideId);
+    if (!slide) return;
+    $('sm-index').value = slideId;
+    $('sm-tag').value = slide.tag || '';
+    $('sm-title').value = slide.title || '';
+    $('sm-desc').value = slide.desc || '';
+    $('sm-btn-text').value = slide.btnText || 'পণ্য দেখুন';
+    $('sm-btn-link').value = slide.btnLink || 'products';
+    $('sm-order').value = slide.order || 0;
+    $('sm-active').value = slide.active === false ? 'false' : 'true';
+    $('sm-img-url').value = slide.img || '';
+    if (slide.img) {
+      $('sm-img-preview').src = slide.img;
+      $('sm-img-preview').style.display = 'block';
+      $('sm-img-placeholder').style.display = 'none';
+    } else {
+      $('sm-img-preview').style.display = 'none';
+      $('sm-img-placeholder').style.display = 'flex';
+    }
+  }
+  openModal('slideModal');
+}
+
+async function handleSlideImgUpload(input) {
+  if (!input.files.length) return;
+  const fd = new FormData();
+  fd.append('images', input.files[0]);
+  const origText = $('saveSlideBtn').querySelector('.btn-text').textContent;
+  btnLoad($('saveSlideBtn'), true);
+  try {
+    const r = await fetch(API + '/admin/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' + TOKEN }, body: fd });
+    const d = await r.json();
+    if (d.success && d.urls.length) {
+      const url = d.urls[0];
+      $('sm-img-url').value = url;
+      $('sm-img-preview').src = url;
+      $('sm-img-preview').style.display = 'block';
+      $('sm-img-placeholder').style.display = 'none';
+      toast('ছবি আপলোড হয়েছে ✅');
+    } else toast(d.message || 'আপলোড ব্যর্থ', 'error');
+  } catch (e) { toast('আপলোড ব্যর্থ', 'error'); }
+  btnLoad($('saveSlideBtn'), false);
+  input.value = '';
+}
+
+function applySlideImgUrl() {
+  const url = $('sm-img-url').value.trim();
+  if (!url) { toast('URL দিন', 'error'); return; }
+  $('sm-img-preview').src = url;
+  $('sm-img-preview').style.display = 'block';
+  $('sm-img-placeholder').style.display = 'none';
+  toast('ছবি প্রয়োগ হয়েছে');
+}
+
+function saveSlide(btn) {
+  const slideId = $('sm-index').value;
+  const isNew = !slideId;
+  const rawSrc = $('sm-img-preview').src || '';
+  const imgUrl = $('sm-img-url').value.trim() || (rawSrc.startsWith('http') ? rawSrc : '') || '';
+  const title = $('sm-title').value.trim();
+  if (!title) { toast('শিরোনাম আবশ্যক', 'error'); return; }
+
+  const slideObj = {
+    id: slideId || 'slide_' + Date.now(),
+    img: imgUrl,
+    tag: $('sm-tag').value.trim(),
+    title: title,
+    desc: $('sm-desc').value.trim(),
+    btnText: $('sm-btn-text').value.trim() || 'পণ্য দেখুন',
+    btnLink: $('sm-btn-link').value || 'products',
+    order: parseInt($('sm-order').value) || 0,
+    active: $('sm-active').value === 'true',
+  };
+
+  if (isNew) {
+    sliderData.push(slideObj);
+  } else {
+    const idx = sliderData.findIndex(s => s.id === slideId);
+    if (idx >= 0) sliderData[idx] = slideObj;
+    else sliderData.push(slideObj);
+  }
+
+  saveSliderToServer(btn, () => {
+    closeModal('slideModal');
+    renderSliderManager();
+    toast(isNew ? '✅ নতুন স্লাইড যোগ হয়েছে' : '✅ স্লাইড আপডেট হয়েছে');
+  });
+}
+
+function deleteCurrentSlide() {
+  const slideId = $('sm-index').value;
+  if (!slideId) return;
+  if (!confirm('এই স্লাইডটি মুছে ফেলতে চান?')) return;
+  sliderData = sliderData.filter(s => s.id !== slideId);
+  saveSliderToServer(null, () => {
+    closeModal('slideModal');
+    renderSliderManager();
+    toast('স্লাইড মুছে ফেলা হয়েছে');
+  });
+}
+
+async function saveSliderOrder(btn) {
+  btnLoad(btn, true);
+  await saveSliderToServer(null, () => {
+    toast('✅ স্লাইডার ক্রম সেভ হয়েছে');
+  });
+  btnLoad(btn, false);
+}
+
+async function saveSliderToServer(btn, callback) {
+  if (btn) btnLoad(btn, true);
+  const d = await api('/admin/settings', {
+    method: 'PUT',
+    body: JSON.stringify({ sliderSlides: sliderData })
+  });
+  if (btn) btnLoad(btn, false);
+  if (d.success) {
+    if (callback) callback();
+  } else {
+    toast(d.message || 'সেভ ব্যর্থ হয়েছে', 'error');
+  }
+}
+
+// Drag & Drop reorder
+function initSlideDrag() {
+  const manager = $('sliderManager');
+  const items = manager.querySelectorAll('.slide-item');
+  let dragSrc = null;
+
+  items.forEach(item => {
+    const handle = item.querySelector('.slide-drag-handle');
+    if (!handle) return;
+
+    item.setAttribute('draggable', 'true');
+    item.addEventListener('dragstart', e => {
+      dragSrc = item;
+      item.style.opacity = '0.5';
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    item.addEventListener('dragend', () => {
+      item.style.opacity = '1';
+      manager.querySelectorAll('.slide-item').forEach(i => i.style.background = '');
+    });
+    item.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      item.style.background = 'var(--green-dim)';
+    });
+    item.addEventListener('dragleave', () => {
+      item.style.background = '';
+    });
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      item.style.background = '';
+      if (dragSrc === item) return;
+
+      // Reorder sliderData
+      const srcId = dragSrc.dataset.id;
+      const dstId = item.dataset.id;
+      const srcIdx = sliderData.findIndex(s => s.id === srcId);
+      const dstIdx = sliderData.findIndex(s => s.id === dstId);
+
+      if (srcIdx < 0 || dstIdx < 0) return;
+
+      const [moved] = sliderData.splice(srcIdx, 1);
+      sliderData.splice(dstIdx, 0, moved);
+
+      // Update order numbers
+      sliderData.forEach((s, i) => s.order = i);
+      renderSliderManager();
+      toast('ক্রম পরিবর্তন হয়েছে — সেভ করুন', 'info');
+    });
+  });
+}
+
 
 // ==================== INIT ====================
 document.addEventListener('keydown', e => {
