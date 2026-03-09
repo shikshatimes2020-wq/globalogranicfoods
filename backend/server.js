@@ -10,7 +10,6 @@ require('dotenv').config();
 
 const app = express();
 
-// ── Keep-Alive: prevent Render free tier from sleeping ──────────────────────
 const https = require('https');
 const http = require('http');
 const SELF_URL = process.env.RENDER_EXTERNAL_URL || '';
@@ -20,10 +19,9 @@ if (SELF_URL) {
     lib.get(SELF_URL + '/api/health', (res) => {
       console.log(`[Keep-Alive] ping → ${res.statusCode}`);
     }).on('error', (e) => console.error('[Keep-Alive] error:', e.message));
-  }, 14 * 60 * 1000); // every 14 minutes
+  }, 14 * 60 * 1000);
 }
 
-// ── Mongoose reconnect helper ────────────────────────────────────────────────
 const MONGO_URI = process.env.MONGO_URI;
 const mongoOptions = {
   serverSelectionTimeoutMS: 10000,
@@ -45,7 +43,6 @@ mongoose.connection.on('disconnected', () => {
 mongoose.connection.on('connected', () => console.log('✅ MongoDB connected'));
 connectDB();
 
-// ── Cloudinary ───────────────────────────────────────────────────────────────
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key:    process.env.CLOUDINARY_API_KEY,
@@ -57,17 +54,24 @@ const storage = new CloudinaryStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-// ── Middleware ───────────────────────────────────────────────────────────────
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:5500', '*'];
+
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',')
-    : ['http://localhost:3000','http://localhost:5500','http://127.0.0.1:5500'],
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// ── Schemas ──────────────────────────────────────────────────────────────────
 const AdminSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -129,7 +133,6 @@ const SiteSettingsSchema = new mongoose.Schema({
 });
 const SiteSettings = mongoose.model('SiteSettings', SiteSettingsSchema);
 
-// ── JWT Auth Middleware ───────────────────────────────────────────────────────
 const JWT_SECRET = process.env.JWT_SECRET || 'globalorganic_secret_2026';
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -143,14 +146,12 @@ function authMiddleware(req, res, next) {
   }
 }
 
-// Order number generator
 async function generateOrderNumber() {
   const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
   const count = await Order.countDocuments();
   return `GOF-${today}-${String(count + 1).padStart(4,'0')}`;
 }
 
-// Seed default admin & products
 async function seedDefaults() {
   const adminExists = await Admin.findOne({ username: 'admin' });
   if (!adminExists) {
@@ -190,14 +191,10 @@ async function seedDefaults() {
   }
 }
 
-// ── ROUTES ────────────────────────────────────────────────────────────────────
-
-// Health check
 app.get('/api/health', (req, res) => {
   res.json({ success: true, status: 'ok', time: new Date().toISOString(), db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
 });
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -226,7 +223,6 @@ app.get('/api/auth/verify', authMiddleware, (req, res) => {
   res.json({ success: true, admin: req.admin });
 });
 
-// ── Products (Public) ─────────────────────────────────────────────────────────
 app.get('/api/products', async (req, res) => {
   try {
     const products = await Product.find({ isActive: true }).sort({ order: 1, createdAt: 1 });
@@ -242,7 +238,6 @@ app.get('/api/products/:id', async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ── Products (Admin) ──────────────────────────────────────────────────────────
 app.get('/api/admin/products', authMiddleware, async (req, res) => {
   try {
     const products = await Product.find().sort({ order: 1, createdAt: 1 });
@@ -280,7 +275,6 @@ app.delete('/api/admin/products/:id', authMiddleware, async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ── Image Upload ──────────────────────────────────────────────────────────────
 app.post('/api/admin/upload', authMiddleware, upload.array('images', 10), async (req, res) => {
   try {
     const urls = req.files.map(f => f.path);
@@ -296,7 +290,6 @@ app.delete('/api/admin/image', authMiddleware, async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ── Orders (Public) ───────────────────────────────────────────────────────────
 app.post('/api/orders', async (req, res) => {
   try {
     const { productId, productName, weight, quantity, unitPrice, deliveryCharge, totalPrice, customerName, phone, address, deliveryArea } = req.body;
@@ -307,7 +300,6 @@ app.post('/api/orders', async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ── Orders (Admin) ────────────────────────────────────────────────────────────
 app.get('/api/admin/orders', authMiddleware, async (req, res) => {
   try {
     const { page = 1, limit = 20, status, search } = req.query;
@@ -341,7 +333,6 @@ app.delete('/api/admin/orders/:id', authMiddleware, async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ── Dashboard Stats ───────────────────────────────────────────────────────────
 app.get('/api/admin/stats', authMiddleware, async (req, res) => {
   try {
     const [totalOrders, pendingOrders, deliveredOrders, cancelledOrders, productCount] = await Promise.all([
@@ -376,7 +367,6 @@ app.get('/api/admin/stats', authMiddleware, async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ── Site Settings ─────────────────────────────────────────────────────────────
 app.get('/api/settings', async (req, res) => {
   try {
     const settings = await SiteSettings.find();
@@ -396,7 +386,6 @@ app.put('/api/admin/settings', authMiddleware, async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ── Start ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
