@@ -196,7 +196,6 @@ select.form-input{cursor:pointer;}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
 @media(max-width:900px){.grid-3{grid-template-columns:1fr;}}
 
-
 /* SLIDER MANAGEMENT */
 .slider-manager{display:flex;flex-direction:column;gap:12px;}
 .slide-item{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:var(--tr);}
@@ -240,6 +239,8 @@ select.form-input{cursor:pointer;}
 .card-actions{display:flex;gap:8px;flex-wrap:wrap;}
 .section-divider{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:20px 0 12px;display:flex;align-items:center;gap:8px;}
 .section-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+/* product-link badge in slider manager */
+.slide-product-badge{display:inline-flex;align-items:center;gap:4px;background:var(--blue-dim);border:1px solid rgba(79,142,247,0.25);color:var(--blue);padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700;}
 @media(max-width:768px){.sidebar{transform:translateX(-100%)!important;}.sidebar.mobile-open{transform:translateX(0)!important;}.main-wrap{margin-left:0!important;}}
 </style>
 </head>
@@ -268,7 +269,7 @@ select.form-input{cursor:pointer;}
     <div class="sb-header">
       <div class="sb-logo">
         <div class="sb-logo-icon"><i class="fas fa-seedling"></i></div>
-        <div><div class="sb-logo-text">GOF Admin</div><div class="sb-logo-sub">v2.0.0</div></div>
+        <div><div class="sb-logo-text">GOF Admin</div><div class="sb-logo-sub">v2.1.0</div></div>
       </div>
     </div>
     <nav class="sb-nav">
@@ -369,7 +370,6 @@ select.form-input{cursor:pointer;}
       </div>
     </div>
 
-
     <!-- SLIDER MANAGEMENT -->
     <div id="page-slider" class="page">
       <div class="page-header-row">
@@ -379,7 +379,6 @@ select.form-input{cursor:pointer;}
           <button class="btn btn-green btn-sm" onclick="openSlideModal(null)"><i class="fas fa-plus"></i>নতুন স্লাইড</button>
         </div>
       </div>
-
       <div class="card" style="margin-bottom:16px">
         <div class="card-body" style="padding:14px 20px">
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
@@ -389,7 +388,6 @@ select.form-input{cursor:pointer;}
           </div>
         </div>
       </div>
-
       <div id="sliderManager" class="slider-manager">
         <div class="loading"><i class="fas fa-spinner"></i></div>
       </div>
@@ -417,7 +415,6 @@ select.form-input{cursor:pointer;}
           <div class="card-body">
             <div class="form-group"><label class="form-label">ঢাকার ভিতরে ডেলিভারি চার্জ (৳)</label><input type="number" id="set-deliveryInside" class="form-input" placeholder="80"></div>
             <div class="form-group"><label class="form-label">ঢাকার বাহিরে ডেলিভারি চার্জ (৳)</label><input type="number" id="set-deliveryOutside" class="form-input" placeholder="130"></div>
-            <div class="form-group"><label class="form-label">রিটার্ন পলিসি (দিন)</label><input type="number" id="set-returnDays" class="form-input" placeholder="7"></div>
           </div>
         </div>
       </div>
@@ -434,32 +431,32 @@ select.form-input{cursor:pointer;}
         <div class="card">
           <div class="card-head"><div class="card-title"><i class="fas fa-leaf"></i>কোম্পানি পরিচিতি</div></div>
           <div class="card-body">
-            <div class="form-group"><label class="form-label">কোম্পানির নাম (About পেজে)</label><input type="text" id="about-companyName" class="form-input" placeholder="গ্লোবাল অর্গানিক ফুডস্"></div>
-            <div class="form-group"><label class="form-label">ট্যাগলাইন / স্লোগান</label><input type="text" id="about-tagline" class="form-input" placeholder="প্রকৃতির শক্তিতে সুস্থ জীবন"></div>
+            <div class="form-group"><label class="form-label">কোম্পানির নাম</label><input type="text" id="about-companyName" class="form-input"></div>
+            <div class="form-group"><label class="form-label">ট্যাগলাইন / স্লোগান</label><input type="text" id="about-tagline" class="form-input"></div>
             <div class="form-group"><label class="form-label">প্রতিষ্ঠার বছর</label><input type="text" id="about-founded" class="form-input" placeholder="২০১৮"></div>
-            <div class="form-group"><label class="form-label">About পেজের মূল বিবরণ</label><textarea id="about-description" class="form-input" rows="5" placeholder="আমাদের কোম্পানি সম্পর্কে বিস্তারিত..."></textarea></div>
-            <div class="form-group"><label class="form-label">মিশন (Mission)</label><textarea id="about-mission" class="form-input" rows="3" placeholder="আমাদের লক্ষ্য..."></textarea></div>
-            <div class="form-group"><label class="form-label">ভিশন (Vision)</label><textarea id="about-vision" class="form-input" rows="3" placeholder="আমাদের দৃষ্টিভঙ্গি..."></textarea></div>
+            <div class="form-group"><label class="form-label">মূল বিবরণ</label><textarea id="about-description" class="form-input" rows="5"></textarea></div>
+            <div class="form-group"><label class="form-label">মিশন</label><textarea id="about-mission" class="form-input" rows="3"></textarea></div>
+            <div class="form-group"><label class="form-label">ভিশন</label><textarea id="about-vision" class="form-input" rows="3"></textarea></div>
           </div>
         </div>
         <div class="card">
           <div class="card-head"><div class="card-title"><i class="fas fa-award"></i>কেন আমাদের বেছে নেবেন</div></div>
           <div class="card-body">
-            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ১ — শিরোনাম</label><input type="text" id="about-feat1-title" class="form-input" placeholder="১০০% প্রাকৃতিক"></div>
-            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ১ — বিবরণ</label><input type="text" id="about-feat1-desc" class="form-input" placeholder="সম্পূর্ণ প্রাকৃতিক উপাদান..."></div>
-            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ২ — শিরোনাম</label><input type="text" id="about-feat2-title" class="form-input" placeholder="বিশেষজ্ঞ দলের তৈরি"></div>
+            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ১ — শিরোনাম</label><input type="text" id="about-feat1-title" class="form-input"></div>
+            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ১ — বিবরণ</label><input type="text" id="about-feat1-desc" class="form-input"></div>
+            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ২ — শিরোনাম</label><input type="text" id="about-feat2-title" class="form-input"></div>
             <div class="form-group"><label class="form-label">বৈশিষ্ট্য ২ — বিবরণ</label><input type="text" id="about-feat2-desc" class="form-input"></div>
-            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ৩ — শিরোনাম</label><input type="text" id="about-feat3-title" class="form-input" placeholder="মানসম্পন্ন মান নিয়ন্ত্রণ"></div>
+            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ৩ — শিরোনাম</label><input type="text" id="about-feat3-title" class="form-input"></div>
             <div class="form-group"><label class="form-label">বৈশিষ্ট্য ৩ — বিবরণ</label><input type="text" id="about-feat3-desc" class="form-input"></div>
-            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ৪ — শিরোনাম</label><input type="text" id="about-feat4-title" class="form-input" placeholder="দ্রুত ডেলিভারি"></div>
+            <div class="form-group"><label class="form-label">বৈশিষ্ট্য ৪ — শিরোনাম</label><input type="text" id="about-feat4-title" class="form-input"></div>
             <div class="form-group"><label class="form-label">বৈশিষ্ট্য ৪ — বিবরণ</label><input type="text" id="about-feat4-desc" class="form-input"></div>
           </div>
         </div>
       </div>
       <div class="card" style="margin-top:16px">
-        <div class="card-head"><div class="card-title"><i class="fas fa-chart-line"></i>পরিসংখ্যান (Stats)</div></div>
+        <div class="card-head"><div class="card-title"><i class="fas fa-chart-line"></i>পরিসংখ্যান</div></div>
         <div class="card-body">
-          <div class="grid-3" style="grid-template-columns:repeat(4,1fr)">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
             <div class="form-group"><label class="form-label">সন্তুষ্ট গ্রাহক</label><input type="text" id="about-stat-customers" class="form-input" placeholder="৫০০০+"></div>
             <div class="form-group"><label class="form-label">পণ্যের সংখ্যা</label><input type="text" id="about-stat-products" class="form-input" placeholder="২০+"></div>
             <div class="form-group"><label class="form-label">বছরের অভিজ্ঞতা</label><input type="text" id="about-stat-years" class="form-input" placeholder="৬+"></div>
@@ -481,21 +478,21 @@ select.form-input{cursor:pointer;}
           <div class="card-head"><div class="card-title"><i class="fas fa-address-card"></i>যোগাযোগের তথ্য</div></div>
           <div class="card-body">
             <div class="form-group"><label class="form-label">ফোন নম্বর ১</label><input type="text" id="contact-phone1" class="form-input" placeholder="০১৭১১-৩৮৬৮৮০"></div>
-            <div class="form-group"><label class="form-label">ফোন নম্বর ২ (ঐচ্ছিক)</label><input type="text" id="contact-phone2" class="form-input" placeholder="০১৮XX-XXXXXX"></div>
+            <div class="form-group"><label class="form-label">ফোন নম্বর ২ (ঐচ্ছিক)</label><input type="text" id="contact-phone2" class="form-input"></div>
             <div class="form-group"><label class="form-label">WhatsApp নম্বর (country code সহ)</label><input type="text" id="contact-whatsapp" class="form-input" placeholder="8801711386880"></div>
-            <div class="form-group"><label class="form-label">ইমেইল ঠিকানা</label><input type="email" id="contact-email" class="form-input" placeholder="support@globalorganicfoods.com"></div>
-            <div class="form-group"><label class="form-label">ফেসবুক পেজ URL</label><input type="url" id="contact-facebook" class="form-input" placeholder="https://facebook.com/..."></div>
-            <div class="form-group"><label class="form-label">ইউটিউব চ্যানেল URL</label><input type="url" id="contact-youtube" class="form-input" placeholder="https://youtube.com/..."></div>
+            <div class="form-group"><label class="form-label">ইমেইল ঠিকানা</label><input type="email" id="contact-email" class="form-input"></div>
+            <div class="form-group"><label class="form-label">ফেসবুক পেজ URL</label><input type="url" id="contact-facebook" class="form-input"></div>
+            <div class="form-group"><label class="form-label">ইউটিউব চ্যানেল URL</label><input type="url" id="contact-youtube" class="form-input"></div>
           </div>
         </div>
         <div class="card">
           <div class="card-head"><div class="card-title"><i class="fas fa-map-marker-alt"></i>ঠিকানা ও অফিস সময়</div></div>
           <div class="card-body">
-            <div class="form-group"><label class="form-label">সম্পূর্ণ ঠিকানা</label><textarea id="contact-address" class="form-input" rows="3" placeholder="বাড়ি নং, রাস্তা, এলাকা, ঢাকা-১২০০"></textarea></div>
-            <div class="form-group"><label class="form-label">গুগল ম্যাপ Embed URL (ঐচ্ছিক)</label><input type="text" id="contact-mapEmbed" class="form-input" placeholder="https://maps.google.com/maps?..."></div>
-            <div class="form-group"><label class="form-label">অফিস সময় (সকাল)</label><input type="text" id="contact-hoursWeekday" class="form-input" placeholder="শনি-বৃহঃ: সকাল ৯টা - রাত ৯টা"></div>
+            <div class="form-group"><label class="form-label">সম্পূর্ণ ঠিকানা</label><textarea id="contact-address" class="form-input" rows="3"></textarea></div>
+            <div class="form-group"><label class="form-label">গুগল ম্যাপ Embed URL</label><input type="text" id="contact-mapEmbed" class="form-input"></div>
+            <div class="form-group"><label class="form-label">অফিস সময় (সাধারণ দিন)</label><input type="text" id="contact-hoursWeekday" class="form-input" placeholder="শনি-বৃহঃ: সকাল ৯টা - রাত ৯টা"></div>
             <div class="form-group"><label class="form-label">অফিস সময় (শুক্রবার)</label><input type="text" id="contact-hoursFriday" class="form-input" placeholder="শুক্রবার: দুপুর ২টা - রাত ৯টা"></div>
-            <div class="form-group"><label class="form-label">কাস্টমার সাপোর্ট নোট</label><textarea id="contact-supportNote" class="form-input" rows="2" placeholder="২৪ ঘণ্টা WhatsApp সাপোর্ট পাওয়া যায়..."></textarea></div>
+            <div class="form-group"><label class="form-label">কাস্টমার সাপোর্ট নোট</label><textarea id="contact-supportNote" class="form-input" rows="2"></textarea></div>
           </div>
         </div>
       </div>
@@ -531,13 +528,12 @@ select.form-input{cursor:pointer;}
       <button class="modal-close" onclick="closeModal('productModal')"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <!-- Basic Info -->
       <div class="section-divider"><i class="fas fa-info-circle"></i>মূল তথ্য</div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">পণ্য ID (slug) *</label><input type="text" id="pm-id" class="form-input" placeholder="gastro, beetroot..."><p class="form-hint">শুধু ইংরেজি ছোট হরফ ও হাইফেন (-)</p></div>
-        <div class="form-group"><label class="form-label">পণ্যের নাম *</label><input type="text" id="pm-name" class="form-input" placeholder="গ্যাস্ট্রো কেয়ার"></div>
+        <div class="form-group"><label class="form-label">পণ্যের নাম *</label><input type="text" id="pm-name" class="form-input"></div>
       </div>
-      <div class="form-group"><label class="form-label">সাবটাইটেল</label><input type="text" id="pm-subtitle" class="form-input" placeholder="পেটের যত্নে প্রাকৃতিক ভেষজ পাউডার"></div>
+      <div class="form-group"><label class="form-label">সাবটাইটেল</label><input type="text" id="pm-subtitle" class="form-input"></div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">ব্যাজ (HOT, NEW, BEST, SALE)</label><input type="text" id="pm-badge" class="form-input" placeholder="HOT"></div>
         <div class="form-group"><label class="form-label">ব্যাজ রং</label>
@@ -551,7 +547,6 @@ select.form-input{cursor:pointer;}
         </div>
       </div>
 
-      <!-- Images -->
       <div class="section-divider"><i class="fas fa-images"></i>পণ্যের ছবি</div>
       <div class="form-group">
         <div class="img-upload-area" id="imgUploadArea">
@@ -568,25 +563,22 @@ select.form-input{cursor:pointer;}
         <input type="hidden" id="pm-imgs">
       </div>
 
-      <!-- Pricing -->
       <div class="section-divider"><i class="fas fa-tags"></i>মূল্য নির্ধারণ</div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">১ কেজি বিক্রয় মূল্য (৳) *</label><input type="number" id="pm-p1" class="form-input" placeholder="550"></div>
         <div class="form-group"><label class="form-label">১ কেজি আসল মূল্য (৳)</label><input type="number" id="pm-o1" class="form-input" placeholder="650"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">২ কেজি বিক্রয় মূল্য (৳)</label><input type="number" id="pm-p2" class="form-input" placeholder="1050"></div>
-        <div class="form-group"><label class="form-label">২ কেজি আসল মূল্য (৳)</label><input type="number" id="pm-o2" class="form-input" placeholder="1300"></div>
+        <div class="form-group"><label class="form-label">২ কেজি বিক্রয় মূল্য (৳)</label><input type="number" id="pm-p2" class="form-input"></div>
+        <div class="form-group"><label class="form-label">২ কেজি আসল মূল্য (৳)</label><input type="number" id="pm-o2" class="form-input"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">৫০০ গ্রাম বিক্রয় মূল্য (৳)</label><input type="number" id="pm-p5" class="form-input" placeholder="300"></div>
-        <div class="form-group"><label class="form-label">৫০০ গ্রাম আসল মূল্য (৳)</label><input type="number" id="pm-o5" class="form-input" placeholder="340"></div>
+        <div class="form-group"><label class="form-label">৫০০ গ্রাম বিক্রয় মূল্য (৳)</label><input type="number" id="pm-p5" class="form-input"></div>
+        <div class="form-group"><label class="form-label">৫০০ গ্রাম আসল মূল্য (৳)</label><input type="number" id="pm-o5" class="form-input"></div>
       </div>
 
-      <!-- Description & Details -->
       <div class="section-divider"><i class="fas fa-align-left"></i>বিবরণ ও বিস্তারিত</div>
-      <div class="form-group"><label class="form-label">পণ্যের বিবরণ</label><textarea id="pm-desc" class="form-input" rows="4" placeholder="পণ্যটি সম্পর্কে বিস্তারিত লিখুন..."></textarea></div>
-
+      <div class="form-group"><label class="form-label">পণ্যের বিবরণ</label><textarea id="pm-desc" class="form-input" rows="4"></textarea></div>
       <div class="form-group">
         <label class="form-label">উপকারিতা (Enter চাপলে যোগ হবে)</label>
         <div class="tag-input-wrap" id="benefitsTags" onclick="this.querySelector('input').focus()">
@@ -606,10 +598,9 @@ select.form-input{cursor:pointer;}
         </div>
       </div>
 
-      <!-- Status -->
       <div class="section-divider"><i class="fas fa-sliders-h"></i>প্রদর্শন সেটিংস</div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">ক্রম (Order — ছোট সংখ্যা আগে)</label><input type="number" id="pm-order" class="form-input" value="0"></div>
+        <div class="form-group"><label class="form-label">ক্রম (ছোট সংখ্যা আগে)</label><input type="number" id="pm-order" class="form-input" value="0"></div>
         <div class="form-group"><label class="form-label">স্ট্যাটাস</label>
           <select id="pm-active" class="form-input">
             <option value="true">✅ সক্রিয় (দেখাবে)</option>
@@ -638,7 +629,6 @@ select.form-input{cursor:pointer;}
     </div>
   </div>
 </div>
-
 
 <!-- SLIDE EDIT MODAL -->
 <div class="modal-overlay" id="slideModal">
@@ -675,7 +665,7 @@ select.form-input{cursor:pointer;}
       </div>
 
       <div class="form-group">
-        <label class="form-label">ট্যাগ / লেবেল <span style="color:var(--text3);font-weight:400">(যেমন: বেস্টসেলার পণ্য)</span></label>
+        <label class="form-label">ট্যাগ / লেবেল</label>
         <input type="text" id="sm-tag" class="form-input" placeholder="বেস্টসেলার পণ্য">
       </div>
       <div class="form-group">
@@ -687,6 +677,7 @@ select.form-input{cursor:pointer;}
         <label class="form-label">বিবরণ (Description)</label>
         <input type="text" id="sm-desc" class="form-input" placeholder="শতভাগ প্রাকৃতিক উপাদানে তৈরি...">
       </div>
+
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">বাটন টেক্সট</label>
@@ -694,15 +685,26 @@ select.form-input{cursor:pointer;}
         </div>
         <div class="form-group">
           <label class="form-label">বাটন লিংক</label>
-          <select id="sm-btn-link" class="form-input">
-            <option value="products">পণ্য পেজ</option>
+          <select id="sm-btn-link" class="form-input" onchange="toggleProductSelector(this.value)">
+            <option value="products">পণ্য পেজ (সব পণ্য)</option>
+            <option value="specific_product">🎯 নির্দিষ্ট পণ্যে যাবে</option>
             <option value="about">সম্পর্কে পেজ</option>
             <option value="contact">যোগাযোগ পেজ</option>
             <option value="home">হোম পেজ</option>
           </select>
         </div>
       </div>
-      <div class="form-row">
+
+      <!-- Product selector — shown only when "specific_product" selected -->
+      <div class="form-group" id="productSelectorGroup" style="display:none;background:var(--surface2);border:1.5px solid rgba(79,142,247,0.3);border-radius:var(--radius-sm);padding:14px;margin-top:-8px">
+        <label class="form-label" style="color:var(--blue)"><i class="fas fa-box-open"></i> &nbsp;পণ্য নির্বাচন করুন</label>
+        <select id="sm-btn-productId" class="form-input">
+          <option value="">— পণ্য লোড হচ্ছে... —</option>
+        </select>
+        <p class="form-hint">স্লাইডের বাটনে ক্লিক করলে সরাসরি এই পণ্যের পেজে যাবে।</p>
+      </div>
+
+      <div class="form-row" style="margin-top:8px">
         <div class="form-group">
           <label class="form-label">ক্রম (Order)</label>
           <input type="number" id="sm-order" class="form-input" value="0" min="0">
@@ -766,16 +768,10 @@ function toast(msg, type = 'success') {
 function closeModal(id) { $(id).classList.remove('open'); }
 function openModal(id) { $(id).classList.add('open'); }
 
-// Button loading state
 function btnLoad(btn, loading) {
   if (!btn) return;
-  if (loading) {
-    btn.disabled = true;
-    btn.classList.add('btn-loading');
-  } else {
-    btn.disabled = false;
-    btn.classList.remove('btn-loading');
-  }
+  if (loading) { btn.disabled = true; btn.classList.add('btn-loading'); }
+  else { btn.disabled = false; btn.classList.remove('btn-loading'); }
 }
 
 function statusHtml(s) {
@@ -789,19 +785,13 @@ async function doLogin() {
   const btn = $('loginBtn');
   const username = $('loginUser').value.trim();
   const password = $('loginPass').value.trim();
-  if (!username || !password) {
-    $('loginError').textContent = 'ইউজারনেম ও পাসওয়ার্ড দিন।';
-    $('loginError').style.display = 'block';
-    return;
-  }
+  if (!username || !password) { $('loginError').textContent = 'ইউজারনেম ও পাসওয়ার্ড দিন।'; $('loginError').style.display = 'block'; return; }
   btnLoad(btn, true);
   try {
     const d = await fetch(API + '/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
     }).then(r => r.json());
-
     if (d.success) {
       TOKEN = d.token;
       localStorage.setItem('gof_token', TOKEN);
@@ -809,16 +799,9 @@ async function doLogin() {
       $('loginScreen').style.display = 'none';
       $('app').style.display = 'block';
       $('sbUsername').textContent = d.username || username;
-      loadDashboard();
-      loadSettings();
-    } else {
-      $('loginError').textContent = d.message || 'লগইন ব্যর্থ হয়েছে';
-      $('loginError').style.display = 'block';
-    }
-  } catch (e) {
-    $('loginError').textContent = 'সার্ভারের সাথে সংযোগ হচ্ছে না।';
-    $('loginError').style.display = 'block';
-  }
+      loadDashboard(); loadSettings();
+    } else { $('loginError').textContent = d.message || 'লগইন ব্যর্থ হয়েছে'; $('loginError').style.display = 'block'; }
+  } catch (e) { $('loginError').textContent = 'সার্ভারের সাথে সংযোগ হচ্ছে না।'; $('loginError').style.display = 'block'; }
   btnLoad(btn, false);
 }
 
@@ -829,19 +812,13 @@ async function checkToken() {
     $('loginScreen').style.display = 'none';
     $('app').style.display = 'block';
     $('sbUsername').textContent = d.admin?.username || 'admin';
-    loadDashboard();
-    loadSettings();
-  } else {
-    TOKEN = '';
-    localStorage.removeItem('gof_token');
-  }
+    loadDashboard(); loadSettings();
+  } else { TOKEN = ''; localStorage.removeItem('gof_token'); }
 }
 
 function doLogout() {
-  TOKEN = '';
-  localStorage.removeItem('gof_token');
-  $('app').style.display = 'none';
-  $('loginScreen').style.display = 'flex';
+  TOKEN = ''; localStorage.removeItem('gof_token');
+  $('app').style.display = 'none'; $('loginScreen').style.display = 'flex';
 }
 
 // ==================== NAVIGATION ====================
@@ -850,15 +827,11 @@ function showPage(id) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   const pg = $('page-' + id);
   if (pg) pg.classList.add('active');
-
-  // Activate nav button
   document.querySelectorAll('.nav-btn').forEach(b => {
     if (b.getAttribute('onclick') === `showPage('${id}')`) b.classList.add('active');
   });
-
-  const titles = { dashboard: 'ড্যাশবোর্ড', orders: 'অর্ডারসমূহ', products: 'পণ্যসমূহ', slider: 'হোম স্লাইডার', settings: 'সাধারণ সেটিংস', about: 'সম্পর্কে পেজ', contact: 'যোগাযোগ পেজ', changepass: 'পাসওয়ার্ড পরিবর্তন' };
+  const titles = { dashboard:'ড্যাশবোর্ড', orders:'অর্ডারসমূহ', products:'পণ্যসমূহ', slider:'হোম স্লাইডার', settings:'সাধারণ সেটিংস', about:'সম্পর্কে পেজ', contact:'যোগাযোগ পেজ', changepass:'পাসওয়ার্ড পরিবর্তন' };
   $('topbarTitle').textContent = titles[id] || id;
-
   if (id === 'dashboard') loadDashboard();
   if (id === 'orders') { ordersPage = 1; loadOrders(); }
   if (id === 'products') loadProducts();
@@ -870,12 +843,8 @@ function showPage(id) {
 }
 
 function toggleSidebar() {
-  if (window.innerWidth <= 768) {
-    $('sidebar').classList.toggle('mobile-open');
-  } else {
-    $('sidebar').classList.toggle('collapsed');
-    $('mainWrap').classList.toggle('expanded');
-  }
+  if (window.innerWidth <= 768) { $('sidebar').classList.toggle('mobile-open'); }
+  else { $('sidebar').classList.toggle('collapsed'); $('mainWrap').classList.toggle('expanded'); }
 }
 
 // ==================== DASHBOARD ====================
@@ -883,51 +852,23 @@ async function loadDashboard() {
   const d = await api('/admin/stats');
   if (!d.success) { toast('ড্যাশবোর্ড লোড ব্যর্থ', 'error'); return; }
   const s = d.stats;
-
   $('pendingBadge').textContent = s.pendingOrders;
-
   $('statsGrid').innerHTML = `
     <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:var(--green-dim);color:var(--green)"><i class="fas fa-shopping-bag"></i></div><span class="stat-trend trend-up">মোট</span></div><div class="stat-val">${s.totalOrders}</div><div class="stat-label">মোট অর্ডার</div></div>
     <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:var(--amber-dim);color:var(--amber)"><i class="fas fa-clock"></i></div><span class="stat-trend trend-up">${s.pendingOrders}</span></div><div class="stat-val">${s.pendingOrders}</div><div class="stat-label">পেন্ডিং অর্ডার</div></div>
     <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:var(--blue-dim);color:var(--blue)"><i class="fas fa-coins"></i></div><span class="stat-trend trend-up">৳</span></div><div class="stat-val">৳${s.totalRevenue.toLocaleString()}</div><div class="stat-label">মোট রাজস্ব</div></div>
     <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:var(--purple-dim);color:var(--purple)"><i class="fas fa-box-open"></i></div><span class="stat-trend trend-up">${s.productCount}</span></div><div class="stat-val">${s.productCount}</div><div class="stat-label">সক্রিয় পণ্য</div></div>`;
-
   if (s.dailySales?.length) {
     const max = Math.max(...s.dailySales.map(d => d.revenue), 1);
-    $('salesChart').innerHTML = `<div class="chart-bar">${s.dailySales.map(d => `
-      <div class="chart-bar-row">
-        <div class="chart-bar-label">${d._id}</div>
-        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(d.revenue / max * 100).toFixed(0)}%"></div></div>
-        <div class="chart-bar-val">৳${d.revenue}</div>
-      </div>`).join('')}</div>`;
-  } else {
-    $('salesChart').innerHTML = `<div class="empty-state"><i class="fas fa-chart-bar"></i><p>কোনো বিক্রয় নেই</p></div>`;
-  }
-
+    $('salesChart').innerHTML = `<div class="chart-bar">${s.dailySales.map(d => `<div class="chart-bar-row"><div class="chart-bar-label">${d._id}</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(d.revenue/max*100).toFixed(0)}%"></div></div><div class="chart-bar-val">৳${d.revenue}</div></div>`).join('')}</div>`;
+  } else { $('salesChart').innerHTML = `<div class="empty-state"><i class="fas fa-chart-bar"></i><p>কোনো বিক্রয় নেই</p></div>`; }
   if (s.topProducts?.length) {
     const mx = Math.max(...s.topProducts.map(p => p.count), 1);
-    $('topProductsChart').innerHTML = `<div class="chart-bar">${s.topProducts.map(p => `
-      <div class="chart-bar-row">
-        <div class="chart-bar-label" style="width:110px;font-size:11px">${p._id || 'N/A'}</div>
-        <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(p.count / mx * 100).toFixed(0)}%;background:linear-gradient(90deg,#4f8ef7,#bc8cff)"></div></div>
-        <div class="chart-bar-val">${p.count} টি</div>
-      </div>`).join('')}</div>`;
-  } else {
-    $('topProductsChart').innerHTML = `<div class="empty-state"><i class="fas fa-trophy"></i><p>ডেটা নেই</p></div>`;
-  }
-
+    $('topProductsChart').innerHTML = `<div class="chart-bar">${s.topProducts.map(p => `<div class="chart-bar-row"><div class="chart-bar-label" style="width:110px;font-size:11px">${p._id||'N/A'}</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(p.count/mx*100).toFixed(0)}%;background:linear-gradient(90deg,#4f8ef7,#bc8cff)"></div></div><div class="chart-bar-val">${p.count} টি</div></div>`).join('')}</div>`;
+  } else { $('topProductsChart').innerHTML = `<div class="empty-state"><i class="fas fa-trophy"></i><p>ডেটা নেই</p></div>`; }
   if (s.recentOrders?.length) {
-    $('recentOrdersTable').innerHTML = `<table><thead><tr><th>অর্ডার নম্বর</th><th>গ্রাহক</th><th>পণ্য</th><th>মূল্য</th><th>স্ট্যাটাস</th></tr></thead><tbody>
-      ${s.recentOrders.map(o => `<tr>
-        <td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green)">${o.orderNumber || '—'}</span></td>
-        <td><div style="font-weight:600">${o.customerName}</div><div style="font-size:12px;color:var(--text2)">${o.phone}</div></td>
-        <td><div>${o.productName || '—'}</div><div style="font-size:11px;color:var(--text2)">${o.weight} × ${o.quantity}</div></td>
-        <td style="font-weight:700;color:var(--green)">৳${o.totalPrice}</td>
-        <td>${statusHtml(o.status)}</td>
-      </tr>`).join('')}</tbody></table>`;
-  } else {
-    $('recentOrdersTable').innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>কোনো অর্ডার নেই</p></div>`;
-  }
+    $('recentOrdersTable').innerHTML = `<table><thead><tr><th>অর্ডার নম্বর</th><th>গ্রাহক</th><th>পণ্য</th><th>মূল্য</th><th>স্ট্যাটাস</th></tr></thead><tbody>${s.recentOrders.map(o=>`<tr><td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green)">${o.orderNumber||'—'}</span></td><td><div style="font-weight:600">${o.customerName}</div><div style="font-size:12px;color:var(--text2)">${o.phone}</div></td><td><div>${o.productName||'—'}</div><div style="font-size:11px;color:var(--text2)">${o.weight}×${o.quantity}</div></td><td style="font-weight:700;color:var(--green)">৳${o.totalPrice}</td><td>${statusHtml(o.status)}</td></tr>`).join('')}</tbody></table>`;
+  } else { $('recentOrdersTable').innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>কোনো অর্ডার নেই</p></div>`; }
 }
 
 // ==================== ORDERS ====================
@@ -942,85 +883,48 @@ async function loadOrders() {
   const status = $('orderStatusFilter').value;
   const d = await api(`/admin/orders?page=${ordersPage}&limit=20&status=${status}&search=${encodeURIComponent(search)}`);
   if (!d.success) { $('ordersTableWrap').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>লোড ব্যর্থ হয়েছে</p></div>`; return; }
-
-  if (!d.orders.length) {
-    $('ordersTableWrap').innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>কোনো অর্ডার পাওয়া যায়নি</p></div>`;
-    $('ordersPagination').innerHTML = '';
-    return;
-  }
-
-  $('ordersTableWrap').innerHTML = `<table><thead><tr><th>অর্ডার নম্বর</th><th>গ্রাহক</th><th>পণ্য</th><th>মূল্য</th><th>এলাকা</th><th>স্ট্যাটাস</th><th>তারিখ</th><th>অ্যাকশন</th></tr></thead><tbody>
-    ${d.orders.map(o => `<tr>
-      <td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green)">${o.orderNumber || '—'}</span></td>
-      <td><div style="font-weight:600">${o.customerName}</div><div style="font-size:12px;color:var(--text2)">${o.phone}</div></td>
-      <td><div>${o.productName || '—'}</div><div style="font-size:11px;color:var(--text2)">${o.weight || ''} × ${o.quantity || 1}</div></td>
-      <td style="font-weight:700;color:var(--green)">৳${o.totalPrice}</td>
-      <td style="font-size:12px">${o.deliveryArea || '—'}</td>
-      <td>
-        <select onchange="updateOrderStatus('${o._id}',this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;">
-          ${['pending','confirmed','processing','shipped','delivered','cancelled'].map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
-        </select>
-      </td>
-      <td style="font-size:12px;color:var(--text2)">${new Date(o.createdAt).toLocaleDateString('bn-BD')}</td>
-      <td>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-outline btn-sm btn-icon" onclick='viewOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})' title="বিস্তারিত"><i class="fas fa-eye"></i></button>
-          <button class="btn btn-red btn-sm btn-icon" onclick="deleteOrder('${o._id}')" title="মুছুন"><i class="fas fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>`).join('')}</tbody></table>`;
-
+  if (!d.orders.length) { $('ordersTableWrap').innerHTML = `<div class="empty-state"><i class="fas fa-inbox"></i><p>কোনো অর্ডার পাওয়া যায়নি</p></div>`; $('ordersPagination').innerHTML = ''; return; }
+  $('ordersTableWrap').innerHTML = `<table><thead><tr><th>অর্ডার নম্বর</th><th>গ্রাহক</th><th>পণ্য</th><th>মূল্য</th><th>এলাকা</th><th>স্ট্যাটাস</th><th>তারিখ</th><th>অ্যাকশন</th></tr></thead><tbody>${d.orders.map(o=>`<tr>
+    <td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green)">${o.orderNumber||'—'}</span></td>
+    <td><div style="font-weight:600">${o.customerName}</div><div style="font-size:12px;color:var(--text2)">${o.phone}</div></td>
+    <td><div>${o.productName||'—'}</div><div style="font-size:11px;color:var(--text2)">${o.weight||''}×${o.quantity||1}</div></td>
+    <td style="font-weight:700;color:var(--green)">৳${o.totalPrice}</td>
+    <td style="font-size:12px">${o.deliveryArea||'—'}</td>
+    <td><select onchange="updateOrderStatus('${o._id}',this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;">${['pending','confirmed','processing','shipped','delivered','cancelled'].map(s=>`<option value="${s}" ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
+    <td style="font-size:12px;color:var(--text2)">${new Date(o.createdAt).toLocaleDateString('bn-BD')}</td>
+    <td><div style="display:flex;gap:6px">
+      <button class="btn btn-outline btn-sm btn-icon" onclick='viewOrder(${JSON.stringify(o).replace(/'/g,"&#39;")})' title="বিস্তারিত"><i class="fas fa-eye"></i></button>
+      <button class="btn btn-red btn-sm btn-icon" onclick="deleteOrder('${o._id}')" title="মুছুন"><i class="fas fa-trash"></i></button>
+    </div></td>
+  </tr>`).join('')}</tbody></table>`;
   if (d.pages > 1) {
-    $('ordersPagination').innerHTML = Array.from({ length: d.pages }, (_, i) =>
-      `<button class="btn ${i + 1 === ordersPage ? 'btn-green' : 'btn-outline'} btn-sm" onclick="ordersPage=${i + 1};loadOrders()">${i + 1}</button>`
-    ).join('');
-  } else {
-    $('ordersPagination').innerHTML = '';
-  }
+    $('ordersPagination').innerHTML = Array.from({length:d.pages},(_,i)=>`<button class="btn ${i+1===ordersPage?'btn-green':'btn-outline'} btn-sm" onclick="ordersPage=${i+1};loadOrders()">${i+1}</button>`).join('');
+  } else { $('ordersPagination').innerHTML = ''; }
 }
 
 async function updateOrderStatus(id, status) {
-  const d = await api('/admin/orders/' + id, { method: 'PUT', body: JSON.stringify({ status }) });
+  const d = await api('/admin/orders/'+id, {method:'PUT', body:JSON.stringify({status})});
   if (d.success) { toast('স্ট্যাটাস আপডেট হয়েছে'); loadDashboard(); }
   else toast(d.message, 'error');
 }
 
 async function deleteOrder(id) {
   if (!confirm('এই অর্ডারটি মুছে ফেলতে চান?')) return;
-  const d = await api('/admin/orders/' + id, { method: 'DELETE' });
+  const d = await api('/admin/orders/'+id, {method:'DELETE'});
   if (d.success) { toast('অর্ডার মুছে ফেলা হয়েছে'); loadOrders(); }
   else toast(d.message, 'error');
 }
 
 function viewOrder(o) {
-  $('orderModalBody').innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div style="background:var(--surface2);border-radius:10px;padding:16px">
-        <div style="font-size:12px;color:var(--text3);margin-bottom:4px">অর্ডার নম্বর</div>
-        <div style="font-family:'JetBrains Mono',monospace;color:var(--green);font-size:16px;font-weight:700">${o.orderNumber || '—'}</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div style="background:var(--surface2);border-radius:10px;padding:14px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">গ্রাহকের তথ্য</div>
-          <div style="font-weight:700">${o.customerName}</div>
-          <div style="color:var(--green);margin-top:4px">${o.phone}</div>
-          <div style="font-size:13px;color:var(--text2);margin-top:4px">${o.address}</div>
-          <div style="font-size:12px;color:var(--text3);margin-top:2px">${o.deliveryArea || ''}</div>
-        </div>
-        <div style="background:var(--surface2);border-radius:10px;padding:14px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:6px">পণ্যের তথ্য</div>
-          <div style="font-weight:700">${o.productName || '—'}</div>
-          <div style="color:var(--text2);margin-top:4px">${o.weight} × ${o.quantity} পিস</div>
-          <div style="color:var(--green);font-size:18px;font-weight:700;margin-top:8px">৳${o.totalPrice}</div>
-          <div style="font-size:12px;color:var(--text3)">ডেলিভারি: ৳${o.deliveryCharge}</div>
-        </div>
-      </div>
-      ${o.notes ? `<div style="background:var(--amber-dim);border:1px solid rgba(245,166,35,0.25);border-radius:10px;padding:14px"><div style="font-size:11px;color:var(--amber);margin-bottom:4px">নোট</div><div>${o.notes}</div></div>` : ''}
-      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:10px;padding:14px">
-        <div style="font-size:13px;color:var(--text2)">স্ট্যাটাস: ${statusHtml(o.status)}</div>
-        <div style="font-size:12px;color:var(--text3)">${new Date(o.createdAt).toLocaleString('bn-BD')}</div>
-      </div>
-    </div>`;
+  $('orderModalBody').innerHTML = `<div style="display:flex;flex-direction:column;gap:14px">
+    <div style="background:var(--surface2);border-radius:10px;padding:16px"><div style="font-size:12px;color:var(--text3);margin-bottom:4px">অর্ডার নম্বর</div><div style="font-family:'JetBrains Mono',monospace;color:var(--green);font-size:16px;font-weight:700">${o.orderNumber||'—'}</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:6px">গ্রাহকের তথ্য</div><div style="font-weight:700">${o.customerName}</div><div style="color:var(--green);margin-top:4px">${o.phone}</div><div style="font-size:13px;color:var(--text2);margin-top:4px">${o.address}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">${o.deliveryArea||''}</div></div>
+      <div style="background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:6px">পণ্যের তথ্য</div><div style="font-weight:700">${o.productName||'—'}</div><div style="color:var(--text2);margin-top:4px">${o.weight}×${o.quantity} পিস</div><div style="color:var(--green);font-size:18px;font-weight:700;margin-top:8px">৳${o.totalPrice}</div><div style="font-size:12px;color:var(--text3)">ডেলিভারি: ৳${o.deliveryCharge}</div></div>
+    </div>
+    ${o.notes?`<div style="background:var(--amber-dim);border:1px solid rgba(245,166,35,0.25);border-radius:10px;padding:14px"><div style="font-size:11px;color:var(--amber);margin-bottom:4px">নোট</div><div>${o.notes}</div></div>`:''}
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:13px;color:var(--text2)">স্ট্যাটাস: ${statusHtml(o.status)}</div><div style="font-size:12px;color:var(--text3)">${new Date(o.createdAt).toLocaleString('bn-BD')}</div></div>
+  </div>`;
   openModal('orderModal');
 }
 
@@ -1029,34 +933,19 @@ async function loadProducts() {
   $('productsTableWrap').innerHTML = `<div class="loading"><i class="fas fa-spinner"></i></div>`;
   const d = await api('/admin/products');
   if (!d.success) { $('productsTableWrap').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>লোড ব্যর্থ</p></div>`; return; }
-
-  if (!d.products.length) {
-    $('productsTableWrap').innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p>কোনো পণ্য নেই</p></div>`;
-    return;
-  }
-
-  $('productsTableWrap').innerHTML = `<table><thead><tr><th>ছবি</th><th>পণ্য</th><th>মূল্য (১কেজি)</th><th>ব্যাজ</th><th>স্ট্যাটাস</th><th>ক্রম</th><th>অ্যাকশন</th></tr></thead><tbody>
-    ${d.products.map(p => `<tr>
-      <td><img class="product-thumb" src="${p.img || p.imgs?.[0] || ''}" onerror="this.src='https://via.placeholder.com/40'" alt="${p.name}"></td>
-      <td>
-        <div style="font-weight:700">${p.name}</div>
-        <div style="font-size:12px;color:var(--text2)">${p.id}</div>
-        ${p.subtitle ? `<div style="font-size:11px;color:var(--text3)">${p.subtitle}</div>` : ''}
-      </td>
-      <td>
-        <div style="font-weight:700;color:var(--green)">৳${p.prices?.['1kg']?.price || p.basePrice || 0}</div>
-        ${p.prices?.['1kg']?.old ? `<div style="font-size:11px;color:var(--text3);text-decoration:line-through">৳${p.prices['1kg'].old}</div>` : ''}
-      </td>
-      <td>${p.badge ? `<span class="status" style="background:var(--amber-dim);color:var(--amber)">${p.badge}</span>` : '—'}</td>
-      <td>${p.isActive ? '<span class="status s-delivered">✅ সক্রিয়</span>' : '<span class="status s-cancelled">❌ নিষ্ক্রিয়</span>'}</td>
-      <td>${p.order || 0}</td>
-      <td>
-        <div style="display:flex;gap:6px">
-          <button class="btn btn-outline btn-sm btn-icon" onclick="openProductModal('${p.id}')" title="সম্পাদনা"><i class="fas fa-edit"></i></button>
-          <button class="btn btn-red btn-sm btn-icon" onclick="deleteProduct('${p.id}','${p.name}')" title="মুছুন"><i class="fas fa-trash"></i></button>
-        </div>
-      </td>
-    </tr>`).join('')}</tbody></table>`;
+  if (!d.products.length) { $('productsTableWrap').innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p>কোনো পণ্য নেই</p></div>`; return; }
+  $('productsTableWrap').innerHTML = `<table><thead><tr><th>ছবি</th><th>পণ্য</th><th>মূল্য (১কেজি)</th><th>ব্যাজ</th><th>স্ট্যাটাস</th><th>ক্রম</th><th>অ্যাকশন</th></tr></thead><tbody>${d.products.map(p=>`<tr>
+    <td><img class="product-thumb" src="${p.img||p.imgs?.[0]||''}" onerror="this.src=''" alt="${p.name}"></td>
+    <td><div style="font-weight:700">${p.name}</div><div style="font-size:12px;color:var(--text2)">${p.id}</div>${p.subtitle?`<div style="font-size:11px;color:var(--text3)">${p.subtitle}</div>`:''}</td>
+    <td><div style="font-weight:700;color:var(--green)">৳${p.prices?.['1kg']?.price||p.basePrice||0}</div>${p.prices?.['1kg']?.old?`<div style="font-size:11px;color:var(--text3);text-decoration:line-through">৳${p.prices['1kg'].old}</div>`:''}</td>
+    <td>${p.badge?`<span class="status" style="background:var(--amber-dim);color:var(--amber)">${p.badge}</span>`:'—'}</td>
+    <td>${p.isActive?'<span class="status s-delivered">✅ সক্রিয়</span>':'<span class="status s-cancelled">❌ নিষ্ক্রিয়</span>'}</td>
+    <td>${p.order||0}</td>
+    <td><div style="display:flex;gap:6px">
+      <button class="btn btn-outline btn-sm btn-icon" onclick="openProductModal('${p.id}')" title="সম্পাদনা"><i class="fas fa-edit"></i></button>
+      <button class="btn btn-red btn-sm btn-icon" onclick="deleteProduct('${p.id}','${p.name}')" title="মুছুন"><i class="fas fa-trash"></i></button>
+    </div></td>
+  </tr>`).join('')}</tbody></table>`;
 }
 
 async function openProductModal(productId) {
@@ -1064,67 +953,38 @@ async function openProductModal(productId) {
   productImgUrls = [];
   $('imgPreviewGrid').innerHTML = '';
   $('imgUrlInput').value = '';
-
-  // Clear tags
-  ['benefitsTags', 'ingredientsTags', 'usageTags'].forEach(id => {
-    $(id).querySelectorAll('.tag').forEach(t => t.remove());
-  });
-
-  $('productModalTitle').innerHTML = `<i class="fas fa-${productId ? 'edit' : 'plus'}"></i>${productId ? 'পণ্য সম্পাদনা' : 'নতুন পণ্য যোগ করুন'}`;
-
+  ['benefitsTags','ingredientsTags','usageTags'].forEach(id => { $(id).querySelectorAll('.tag').forEach(t=>t.remove()); });
+  $('productModalTitle').innerHTML = `<i class="fas fa-${productId?'edit':'plus'}"></i>${productId?'পণ্য সম্পাদনা':'নতুন পণ্য যোগ করুন'}`;
   if (productId) {
-    // Show modal first with loading state
     openModal('productModal');
     $('saveProductBtn').disabled = true;
     $('saveProductBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i><span class="btn-text">লোড হচ্ছে...</span>';
-
-    // ✅ FIX: Use /admin/products/:id (authenticated route that includes inactive)
-    const d = await api('/admin/products/' + productId);
+    const d = await api('/admin/products/'+productId);
     $('saveProductBtn').disabled = false;
     $('saveProductBtn').innerHTML = '<i class="fas fa-save"></i><span class="btn-text">সেভ করুন</span>';
-
-    if (!d.success) {
-      toast('পণ্য লোড ব্যর্থ: ' + (d.message || 'অজানা সমস্যা'), 'error');
-      closeModal('productModal');
-      return;
-    }
+    if (!d.success) { toast('পণ্য লোড ব্যর্থ: '+(d.message||''), 'error'); closeModal('productModal'); return; }
     const p = d.product;
-
-    $('pm-id').value = p.id;
-    $('pm-id').readOnly = true;
-    $('pm-name').value = p.name || '';
-    $('pm-subtitle').value = p.subtitle || '';
-    $('pm-badge').value = p.badge || '';
-    $('pm-badgeClass').value = p.badgeClass || '';
-    $('pm-desc').value = p.desc || '';
-    $('pm-order').value = p.order || 0;
-    $('pm-active').value = p.isActive ? 'true' : 'false';
-
-    // ✅ FIX: Correct price loading with all old prices
-    $('pm-p1').value = p.prices?.['1kg']?.price || p.basePrice || '';
-    $('pm-o1').value = p.prices?.['1kg']?.old || p.baseOld || '';
-    $('pm-p2').value = p.prices?.['2kg']?.price || '';
-    $('pm-o2').value = p.prices?.['2kg']?.old || '';
-    $('pm-p5').value = p.prices?.['500gm']?.price || '';
-    $('pm-o5').value = p.prices?.['500gm']?.old || '';
-
-    // ✅ FIX: Load images properly
-    productImgUrls = Array.isArray(p.imgs) && p.imgs.length ? [...p.imgs] : (p.img ? [p.img] : []);
+    $('pm-id').value = p.id; $('pm-id').readOnly = true;
+    $('pm-name').value = p.name||''; $('pm-subtitle').value = p.subtitle||'';
+    $('pm-badge').value = p.badge||''; $('pm-badgeClass').value = p.badgeClass||'';
+    $('pm-desc').value = p.desc||''; $('pm-order').value = p.order||0;
+    $('pm-active').value = p.isActive?'true':'false';
+    $('pm-p1').value = p.prices?.['1kg']?.price||p.basePrice||'';
+    $('pm-o1').value = p.prices?.['1kg']?.old||p.baseOld||'';
+    $('pm-p2').value = p.prices?.['2kg']?.price||'';
+    $('pm-o2').value = p.prices?.['2kg']?.old||'';
+    $('pm-p5').value = p.prices?.['500gm']?.price||'';
+    $('pm-o5').value = p.prices?.['500gm']?.old||'';
+    productImgUrls = Array.isArray(p.imgs)&&p.imgs.length?[...p.imgs]:(p.img?[p.img]:[]);
     $('pm-imgs').value = JSON.stringify(productImgUrls);
     renderImgPreviews();
-
-    // ✅ FIX: Load tags properly
-    if (Array.isArray(p.benefits)) p.benefits.forEach(v => addTagValue('benefitsTags', v));
-    if (Array.isArray(p.ingredients)) p.ingredients.forEach(v => addTagValue('ingredientsTags', v));
-    if (Array.isArray(p.usage)) p.usage.forEach(v => addTagValue('usageTags', v));
+    if (Array.isArray(p.benefits)) p.benefits.forEach(v=>addTagValue('benefitsTags',v));
+    if (Array.isArray(p.ingredients)) p.ingredients.forEach(v=>addTagValue('ingredientsTags',v));
+    if (Array.isArray(p.usage)) p.usage.forEach(v=>addTagValue('usageTags',v));
   } else {
     $('pm-id').readOnly = false;
-    ['pm-id', 'pm-name', 'pm-subtitle', 'pm-badge', 'pm-desc', 'pm-p1', 'pm-o1', 'pm-p2', 'pm-o2', 'pm-p5', 'pm-o5'].forEach(id => $(id).value = '');
-    $('pm-badgeClass').value = '';
-    $('pm-order').value = 0;
-    $('pm-active').value = 'true';
-    $('pm-imgs').value = '[]';
-    // Only open modal for new product here (edit opens it early while loading)
+    ['pm-id','pm-name','pm-subtitle','pm-badge','pm-desc','pm-p1','pm-o1','pm-p2','pm-o2','pm-p5','pm-o5'].forEach(id=>$(id).value='');
+    $('pm-badgeClass').value=''; $('pm-order').value=0; $('pm-active').value='true'; $('pm-imgs').value='[]';
     openModal('productModal');
   }
 }
@@ -1136,50 +996,27 @@ async function handleImgUpload(input) {
   const fd = new FormData();
   for (const f of input.files) fd.append('images', f);
   try {
-    const r = await fetch(API + '/admin/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' + TOKEN }, body: fd });
+    const r = await fetch(API+'/admin/upload', {method:'POST', headers:{'Authorization':'Bearer '+TOKEN}, body:fd});
     const d = await r.json();
-    if (d.success) {
-      productImgUrls = [...productImgUrls, ...d.urls];
-      $('pm-imgs').value = JSON.stringify(productImgUrls);
-      renderImgPreviews();
-      toast(`${d.urls.length}টি ছবি আপলোড হয়েছে`);
-    } else toast(d.message, 'error');
-  } catch (e) { toast('আপলোড ব্যর্থ হয়েছে', 'error'); }
+    if (d.success) { productImgUrls=[...productImgUrls,...d.urls]; $('pm-imgs').value=JSON.stringify(productImgUrls); renderImgPreviews(); toast(`${d.urls.length}টি ছবি আপলোড হয়েছে`); }
+    else toast(d.message,'error');
+  } catch(e) { toast('আপলোড ব্যর্থ হয়েছে','error'); }
   area.querySelector('p').textContent = 'ছবি ড্র্যাগ করুন বা ক্লিক করুন';
-  input.value = '';
+  input.value='';
 }
 
 function addImgUrl() {
   const url = $('imgUrlInput').value.trim();
-  if (!url || !url.startsWith('http')) { toast('সঠিক URL দিন (http দিয়ে শুরু)', 'error'); return; }
-  productImgUrls.push(url);
-  $('pm-imgs').value = JSON.stringify(productImgUrls);
-  renderImgPreviews();
-  $('imgUrlInput').value = '';
-  toast('ছবি যোগ হয়েছে');
+  if (!url||!url.startsWith('http')) { toast('সঠিক URL দিন','error'); return; }
+  productImgUrls.push(url); $('pm-imgs').value=JSON.stringify(productImgUrls); renderImgPreviews(); $('imgUrlInput').value=''; toast('ছবি যোগ হয়েছে');
 }
 
 function renderImgPreviews() {
-  $('imgPreviewGrid').innerHTML = productImgUrls.map((url, i) => `
-    <div class="img-preview-item ${i === 0 ? 'main-img' : ''}">
-      <img src="${url}" loading="lazy" onerror="this.parentElement.style.border='2px solid var(--red)'">
-      <button class="img-del" onclick="removeImg(${i})" title="সরান"><i class="fas fa-times"></i></button>
-      ${i > 0 ? `<button style="position:absolute;bottom:4px;left:4px;background:rgba(0,210,106,0.9);color:#fff;border:none;width:22px;height:22px;border-radius:6px;font-size:9px;cursor:pointer" onclick="setMainImg(${i})" title="মেইন ছবি করুন"><i class="fas fa-star"></i></button>` : '<div style="position:absolute;bottom:4px;left:4px;font-size:9px;background:var(--green);color:#fff;padding:2px 5px;border-radius:4px">MAIN</div>'}
-    </div>`).join('');
+  $('imgPreviewGrid').innerHTML = productImgUrls.map((url,i)=>`<div class="img-preview-item ${i===0?'main-img':''}"><img src="${url}" loading="lazy"><button class="img-del" onclick="removeImg(${i})"><i class="fas fa-times"></i></button>${i>0?`<button style="position:absolute;bottom:4px;left:4px;background:rgba(0,210,106,0.9);color:#fff;border:none;width:22px;height:22px;border-radius:6px;font-size:9px;cursor:pointer" onclick="setMainImg(${i})" title="মেইন ছবি করুন"><i class="fas fa-star"></i></button>`:'<div style="position:absolute;bottom:4px;left:4px;font-size:9px;background:var(--green);color:#fff;padding:2px 5px;border-radius:4px">MAIN</div>'}</div>`).join('');
 }
 
-function removeImg(i) {
-  productImgUrls.splice(i, 1);
-  $('pm-imgs').value = JSON.stringify(productImgUrls);
-  renderImgPreviews();
-}
-
-function setMainImg(i) {
-  const img = productImgUrls.splice(i, 1)[0];
-  productImgUrls.unshift(img);
-  $('pm-imgs').value = JSON.stringify(productImgUrls);
-  renderImgPreviews();
-}
+function removeImg(i) { productImgUrls.splice(i,1); $('pm-imgs').value=JSON.stringify(productImgUrls); renderImgPreviews(); }
+function setMainImg(i) { const img=productImgUrls.splice(i,1)[0]; productImgUrls.unshift(img); $('pm-imgs').value=JSON.stringify(productImgUrls); renderImgPreviews(); }
 
 function addTag(e, wrapperId) {
   if (e.key !== 'Enter') return;
@@ -1192,11 +1029,11 @@ function addTag(e, wrapperId) {
 
 function addTagValue(wrapperId, val) {
   const wrap = $(wrapperId);
-  if (!wrap || !val || !val.trim()) return;
+  if (!wrap||!val||!val.trim()) return;
   val = val.trim();
   const tag = document.createElement('div');
   tag.className = 'tag';
-  tag.setAttribute('data-val', val);  // use setAttribute for reliability
+  tag.setAttribute('data-val', val);
   tag.innerHTML = `<span class="tag-text">${val}</span><span class="tag-remove" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
   wrap.insertBefore(tag, wrap.querySelector('input'));
 }
@@ -1204,79 +1041,41 @@ function addTagValue(wrapperId, val) {
 function getTagValues(wrapperId) {
   const wrap = $(wrapperId);
   if (!wrap) return [];
-  // Get all .tag elements and extract their data-val
-  const tags = [...wrap.querySelectorAll('.tag')];
-  const vals = tags.map(t => {
-    // Try getAttribute first (more reliable), then dataset, then text
-    return t.getAttribute('data-val') || t.dataset.val || t.querySelector('.tag-text')?.textContent?.trim() || '';
-  }).filter(v => v && v.length > 0);
-  return vals;
+  return [...wrap.querySelectorAll('.tag')].map(t => t.getAttribute('data-val')||t.querySelector('.tag-text')?.textContent?.trim()||'').filter(v=>v);
 }
 
 async function saveProduct(btn) {
   const id = $('pm-id').value.trim();
   const name = $('pm-name').value.trim();
-  if (!id || !name) { toast('পণ্য ID এবং নাম আবশ্যক', 'error'); return; }
-
-  const imgs = JSON.parse($('pm-imgs').value || '[]');
-  const p1 = parseFloat($('pm-p1').value) || 0;
-  const o1 = parseFloat($('pm-o1').value) || 0;
-  const p2 = parseFloat($('pm-p2').value) || 0;
-  const o2 = parseFloat($('pm-o2').value) || 0;
-  const p5 = parseFloat($('pm-p5').value) || 0;
-  const o5 = parseFloat($('pm-o5').value) || 0;
-  const dis = (v, o) => (o > 0 && v < o) ? Math.round((o - v) / o * 100) : 0;
-
-  // Collect tag values
-  const benefitsList = getTagValues('benefitsTags');
-  const ingredientsList = getTagValues('ingredientsTags');
-  const usageList = getTagValues('usageTags');
-
-  console.log('Saving product:', id, '| benefits:', benefitsList, '| ingredients:', ingredientsList, '| usage:', usageList);
-
+  if (!id||!name) { toast('পণ্য ID এবং নাম আবশ্যক','error'); return; }
+  const imgs = JSON.parse($('pm-imgs').value||'[]');
+  const p1=parseFloat($('pm-p1').value)||0, o1=parseFloat($('pm-o1').value)||0;
+  const p2=parseFloat($('pm-p2').value)||0, o2=parseFloat($('pm-o2').value)||0;
+  const p5=parseFloat($('pm-p5').value)||0, o5=parseFloat($('pm-o5').value)||0;
+  const dis=(v,o)=>(o>0&&v<o)?Math.round((o-v)/o*100):0;
   const payload = {
-    id, name,
-    subtitle: $('pm-subtitle').value || '',
-    badge: $('pm-badge').value || null,
-    badgeClass: $('pm-badgeClass').value || null,
-    img: imgs[0] || '',
-    imgs: imgs,
-    basePrice: p1,
-    baseOld: o1,
-    baseDiscount: dis(p1, o1),
-    prices: {
-      '1kg':   { price: p1, old: o1, dis: dis(p1, o1) },
-      '2kg':   { price: p2, old: o2, dis: dis(p2, o2) },
-      '500gm': { price: p5, old: o5, dis: dis(p5, o5) },
-    },
-    desc: $('pm-desc').value || '',
-    benefits:    benefitsList,
-    ingredients: ingredientsList,
-    usage:       usageList,
-    order: parseInt($('pm-order').value) || 0,
-    isActive: $('pm-active').value === 'true',
+    id, name, subtitle:$('pm-subtitle').value||'', badge:$('pm-badge').value||null,
+    badgeClass:$('pm-badgeClass').value||null, img:imgs[0]||'', imgs,
+    basePrice:p1, baseOld:o1, baseDiscount:dis(p1,o1),
+    prices:{'1kg':{price:p1,old:o1,dis:dis(p1,o1)},'2kg':{price:p2,old:o2,dis:dis(p2,o2)},'500gm':{price:p5,old:o5,dis:dis(p5,o5)}},
+    desc:$('pm-desc').value||'',
+    benefits:getTagValues('benefitsTags'), ingredients:getTagValues('ingredientsTags'), usage:getTagValues('usageTags'),
+    order:parseInt($('pm-order').value)||0, isActive:$('pm-active').value==='true',
   };
-
   btnLoad(btn, true);
-  const method = editingProductId ? 'PUT' : 'POST';
-  const path = editingProductId ? '/admin/products/' + editingProductId : '/admin/products';
-  const d = await api(path, { method, body: JSON.stringify(payload) });
+  const method = editingProductId?'PUT':'POST';
+  const path = editingProductId?'/admin/products/'+editingProductId:'/admin/products';
+  const d = await api(path, {method, body:JSON.stringify(payload)});
   btnLoad(btn, false);
-
-  if (d.success) {
-    toast(editingProductId ? '✅ পণ্য আপডেট হয়েছে' : '✅ নতুন পণ্য যোগ হয়েছে');
-    closeModal('productModal');
-    loadProducts();
-  } else {
-    toast(d.message || 'সেভ ব্যর্থ হয়েছে', 'error');
-  }
+  if (d.success) { toast(editingProductId?'✅ পণ্য আপডেট হয়েছে':'✅ নতুন পণ্য যোগ হয়েছে'); closeModal('productModal'); loadProducts(); }
+  else toast(d.message||'সেভ ব্যর্থ হয়েছে','error');
 }
 
 async function deleteProduct(id, name) {
-  if (!confirm(`"${name || id}" পণ্যটি স্থায়ীভাবে মুছে ফেলতে চান?`)) return;
-  const d = await api('/admin/products/' + id, { method: 'DELETE' });
+  if (!confirm(`"${name||id}" পণ্যটি স্থায়ীভাবে মুছে ফেলতে চান?`)) return;
+  const d = await api('/admin/products/'+id, {method:'DELETE'});
   if (d.success) { toast('পণ্য মুছে ফেলা হয়েছে'); loadProducts(); }
-  else toast(d.message, 'error');
+  else toast(d.message,'error');
 }
 
 // ==================== SETTINGS ====================
@@ -1284,239 +1083,202 @@ async function loadSettings() {
   const d = await api('/settings');
   if (!d.success) return;
   const s = d.settings;
-  const map = {
-    siteName: 'set-siteName', announcement: 'set-announcement',
-    deliveryInside: 'set-deliveryInside', deliveryOutside: 'set-deliveryOutside',
-    returnDays: 'set-returnDays', freeDelivery: 'set-freeDelivery'
-  };
-  Object.entries(map).forEach(([key, elId]) => {
-    const el = $(elId);
-    if (el && s[key] !== undefined) el.value = s[key];
-  });
+  const map = { siteName:'set-siteName', announcement:'set-announcement', deliveryInside:'set-deliveryInside', deliveryOutside:'set-deliveryOutside', freeDelivery:'set-freeDelivery' };
+  Object.entries(map).forEach(([key,elId]) => { const el=$(elId); if(el&&s[key]!==undefined) el.value=s[key]; });
 }
 
 async function saveSettings(btn) {
   btnLoad(btn, true);
-  const updates = {
-    siteName: $('set-siteName').value,
-    announcement: $('set-announcement').value,
-    deliveryInside: parseInt($('set-deliveryInside').value) || 0,
-    deliveryOutside: parseInt($('set-deliveryOutside').value) || 0,
-    returnDays: parseInt($('set-returnDays').value) || 7,
-    freeDelivery: $('set-freeDelivery').value === 'true',
-  };
-  const d = await api('/admin/settings', { method: 'PUT', body: JSON.stringify(updates) });
+  const updates = { siteName:$('set-siteName').value, announcement:$('set-announcement').value, deliveryInside:parseInt($('set-deliveryInside').value)||0, deliveryOutside:parseInt($('set-deliveryOutside').value)||0, freeDelivery:$('set-freeDelivery').value==='true' };
+  const d = await api('/admin/settings', {method:'PUT', body:JSON.stringify(updates)});
   btnLoad(btn, false);
-  if (d.success) toast('✅ সেটিংস সেভ হয়েছে');
-  else toast(d.message, 'error');
+  if (d.success) toast('✅ সেটিংস সেভ হয়েছে'); else toast(d.message,'error');
 }
 
-// ==================== ABOUT PAGE ====================
+// ==================== ABOUT ====================
 async function loadAbout() {
   const d = await api('/settings');
   if (!d.success) return;
-  const s = d.settings;
-  const aboutData = s.aboutPage || {};
-  const fields = ['companyName','tagline','founded','description','mission','vision',
-    'feat1-title','feat1-desc','feat2-title','feat2-desc','feat3-title','feat3-desc','feat4-title','feat4-desc',
-    'stat-customers','stat-products','stat-years','stat-districts'];
-  fields.forEach(f => {
-    const el = $('about-' + f);
-    if (el) el.value = aboutData[f.replace(/-/g, '_')] || aboutData[f] || '';
-  });
+  const aboutData = d.settings.aboutPage||{};
+  const fields = ['companyName','tagline','founded','description','mission','vision','feat1-title','feat1-desc','feat2-title','feat2-desc','feat3-title','feat3-desc','feat4-title','feat4-desc','stat-customers','stat-products','stat-years','stat-districts'];
+  fields.forEach(f => { const el=$('about-'+f); if(el) el.value=aboutData[f.replace(/-/g,'_')]||aboutData[f]||''; });
 }
 
 async function saveAbout(btn) {
   btnLoad(btn, true);
-  const fields = ['companyName','tagline','founded','description','mission','vision',
-    'feat1-title','feat1-desc','feat2-title','feat2-desc','feat3-title','feat3-desc','feat4-title','feat4-desc',
-    'stat-customers','stat-products','stat-years','stat-districts'];
+  const fields = ['companyName','tagline','founded','description','mission','vision','feat1-title','feat1-desc','feat2-title','feat2-desc','feat3-title','feat3-desc','feat4-title','feat4-desc','stat-customers','stat-products','stat-years','stat-districts'];
   const aboutPage = {};
-  fields.forEach(f => {
-    const el = $('about-' + f);
-    if (el) aboutPage[f] = el.value;
-  });
-  const d = await api('/admin/settings', { method: 'PUT', body: JSON.stringify({ aboutPage }) });
+  fields.forEach(f => { const el=$('about-'+f); if(el) aboutPage[f]=el.value; });
+  const d = await api('/admin/settings', {method:'PUT', body:JSON.stringify({aboutPage})});
   btnLoad(btn, false);
-  if (d.success) toast('✅ About পেজ সেভ হয়েছে');
-  else toast(d.message, 'error');
+  if (d.success) toast('✅ About পেজ সেভ হয়েছে'); else toast(d.message,'error');
 }
 
-// ==================== CONTACT PAGE ====================
+// ==================== CONTACT ====================
 async function loadContact() {
   const d = await api('/settings');
   if (!d.success) return;
   const s = d.settings;
-  const contactData = s.contactPage || {};
-  // Also load from top-level settings for backwards compatibility
+  const contactData = s.contactPage||{};
   const fields = ['phone1','phone2','whatsapp','email','facebook','youtube','address','mapEmbed','hoursWeekday','hoursFriday','supportNote'];
-  fields.forEach(f => {
-    const el = $('contact-' + f);
-    if (el) el.value = contactData[f] || (f === 'phone1' ? s.phone : '') || (f === 'whatsapp' ? s.whatsapp : '') || (f === 'email' ? s.email : '') || (f === 'address' ? s.address : '') || '';
-  });
+  fields.forEach(f => { const el=$('contact-'+f); if(el) el.value=contactData[f]||(f==='phone1'?s.phone:'')|| (f==='whatsapp'?s.whatsapp:'')|| (f==='email'?s.email:'')|| (f==='address'?s.address:'')||''; });
 }
 
 async function saveContact(btn) {
   btnLoad(btn, true);
   const fields = ['phone1','phone2','whatsapp','email','facebook','youtube','address','mapEmbed','hoursWeekday','hoursFriday','supportNote'];
   const contactPage = {};
-  fields.forEach(f => {
-    const el = $('contact-' + f);
-    if (el) contactPage[f] = el.value;
-  });
-  // Also update top-level fields for frontend compatibility
-  const updates = {
-    contactPage,
-    phone: contactPage.phone1,
-    whatsapp: contactPage.whatsapp,
-    email: contactPage.email,
-    address: contactPage.address,
-  };
-  const d = await api('/admin/settings', { method: 'PUT', body: JSON.stringify(updates) });
+  fields.forEach(f => { const el=$('contact-'+f); if(el) contactPage[f]=el.value; });
+  const updates = { contactPage, phone:contactPage.phone1, whatsapp:contactPage.whatsapp, email:contactPage.email, address:contactPage.address };
+  const d = await api('/admin/settings', {method:'PUT', body:JSON.stringify(updates)});
   btnLoad(btn, false);
-  if (d.success) toast('✅ যোগাযোগ পেজ সেভ হয়েছে');
-  else toast(d.message, 'error');
+  if (d.success) toast('✅ যোগাযোগ পেজ সেভ হয়েছে'); else toast(d.message,'error');
 }
 
 // ==================== CHANGE PASSWORD ====================
 async function changePassword(btn) {
-  const cur = $('cp-current').value;
-  const nw = $('cp-new').value;
-  const cnf = $('cp-confirm').value;
-  if (!cur || !nw || !cnf) { toast('সব ঘর পূরণ করুন', 'error'); return; }
-  if (nw !== cnf) { toast('নতুন পাসওয়ার্ড মিলছে না', 'error'); return; }
-  if (nw.length < 6) { toast('পাসওয়ার্ড কমপক্ষে ৬ অক্ষর হতে হবে', 'error'); return; }
+  const cur=$('cp-current').value, nw=$('cp-new').value, cnf=$('cp-confirm').value;
+  if (!cur||!nw||!cnf) { toast('সব ঘর পূরণ করুন','error'); return; }
+  if (nw!==cnf) { toast('নতুন পাসওয়ার্ড মিলছে না','error'); return; }
+  if (nw.length<6) { toast('পাসওয়ার্ড কমপক্ষে ৬ অক্ষর','error'); return; }
   btnLoad(btn, true);
-  const d = await api('/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword: cur, newPassword: nw }) });
+  const d = await api('/auth/change-password', {method:'POST', body:JSON.stringify({currentPassword:cur, newPassword:nw})});
   btnLoad(btn, false);
-  if (d.success) {
-    toast('✅ পাসওয়ার্ড পরিবর্তন হয়েছে');
-    ['cp-current', 'cp-new', 'cp-confirm'].forEach(id => $(id).value = '');
-  } else {
-    toast(d.message || 'ব্যর্থ হয়েছে', 'error');
-  }
+  if (d.success) { toast('✅ পাসওয়ার্ড পরিবর্তন হয়েছে'); ['cp-current','cp-new','cp-confirm'].forEach(id=>$(id).value=''); }
+  else toast(d.message||'ব্যর্থ হয়েছে','error');
 }
 
-
 // ==================== SLIDER MANAGEMENT ====================
-let sliderData = []; // local state for drag-reorder
+let sliderData = [];
 
 async function loadSlider() {
   $('sliderManager').innerHTML = `<div class="loading"><i class="fas fa-spinner"></i></div>`;
   const d = await api('/settings');
   if (!d.success) { $('sliderManager').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>লোড ব্যর্থ হয়েছে</p></div>`; return; }
-
   sliderData = d.settings.sliderSlides || getDefaultSlides();
+  // Reset product selector cache
+  const sel = $('sm-btn-productId');
+  if (sel) sel.dataset.loaded = '';
   renderSliderManager();
 }
 
 function getDefaultSlides() {
-  return [
-    { id: 's1', img: 'images/image.png', tag: 'বেস্টসেলার পণ্য', title: 'প্রকৃতির সেরা\nভেষজ পণ্য', desc: 'শতভাগ প্রাকৃতিক উপাদানে তৈরি — আপনার সুস্বাস্থ্যের জন্য', btnText: 'পণ্য দেখুন', btnLink: 'products', order: 0, active: true },
-  ];
+  return [{ id:'s1', img:'images/image.png', tag:'বেস্টসেলার পণ্য', title:'প্রকৃতির সেরা\nভেষজ পণ্য', desc:'শতভাগ প্রাকৃতিক উপাদানে তৈরি', btnText:'পণ্য দেখুন', btnLink:'products', btnProductId:null, order:0, active:true }];
 }
 
 function renderSliderManager() {
   if (!sliderData.length) {
-    $('sliderManager').innerHTML = `
-      <div class="empty-state"><i class="fas fa-images"></i><p>কোনো স্লাইড নেই</p></div>
-      <button class="add-slide-btn" onclick="openSlideModal(null)"><i class="fas fa-plus"></i>প্রথম স্লাইড যোগ করুন</button>`;
+    $('sliderManager').innerHTML = `<div class="empty-state"><i class="fas fa-images"></i><p>কোনো স্লাইড নেই</p></div><button class="add-slide-btn" onclick="openSlideModal(null)"><i class="fas fa-plus"></i>প্রথম স্লাইড যোগ করুন</button>`;
     return;
   }
-
-  const sorted = [...sliderData].sort((a, b) => (a.order || 0) - (b.order || 0));
-
-  $('sliderManager').innerHTML = sorted.map((slide, i) => `
-    <div class="slide-item ${slide.active === false ? 'disabled-slide' : ''}" data-id="${slide.id}" data-index="${i}">
+  const sorted = [...sliderData].sort((a,b)=>(a.order||0)-(b.order||0));
+  $('sliderManager').innerHTML = sorted.map((slide,i) => {
+    const productBadge = slide.btnProductId ? `<span class="slide-product-badge"><i class="fas fa-box-open"></i> পণ্য লিংক</span>` : '';
+    return `<div class="slide-item ${slide.active===false?'disabled-slide':''}" data-id="${slide.id}" data-index="${i}">
       <div class="slide-item-head" onclick="toggleSlideBody('${slide.id}')">
         <span class="slide-drag-handle" title="টেনে ক্রম পরিবর্তন করুন"><i class="fas fa-grip-vertical"></i></span>
-        ${slide.img
-          ? `<img class="slide-preview" src="${slide.img}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="">`
-          : ''}
-        <div class="slide-preview-placeholder" ${slide.img ? 'style="display:none"' : ''}><i class="fas fa-image"></i></div>
+        ${slide.img?`<img class="slide-preview" src="${slide.img}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt="">`:''}
+        <div class="slide-preview-placeholder" ${slide.img?'style="display:none"':''}><i class="fas fa-image"></i></div>
         <div class="slide-meta">
-          <div class="slide-meta-title">${(slide.title || '').replace(/\n/g, ' ') || '(শিরোনাম নেই)'}</div>
-          <div class="slide-meta-sub">${slide.tag || ''} ${slide.desc ? '— ' + slide.desc.substring(0, 40) + '…' : ''}</div>
+          <div class="slide-meta-title">${(slide.title||'').replace(/\n/g,' ')||'(শিরোনাম নেই)'}</div>
+          <div class="slide-meta-sub" style="display:flex;align-items:center;gap:6px">${slide.tag||''}${productBadge}</div>
         </div>
         <div class="slide-item-actions" onclick="event.stopPropagation()">
-          <button class="slide-toggle ${slide.active !== false ? 'active' : ''}" onclick="toggleSlideActive('${slide.id}')">
-            <i class="fas fa-${slide.active !== false ? 'eye' : 'eye-slash'}"></i>
-            ${slide.active !== false ? 'সক্রিয়' : 'বন্ধ'}
+          <button class="slide-toggle ${slide.active!==false?'active':''}" onclick="toggleSlideActive('${slide.id}')">
+            <i class="fas fa-${slide.active!==false?'eye':'eye-slash'}"></i>${slide.active!==false?'সক্রিয়':'বন্ধ'}
           </button>
           <button class="btn btn-outline btn-sm btn-icon" onclick="openSlideModal('${slide.id}')" title="সম্পাদনা"><i class="fas fa-edit"></i></button>
         </div>
       </div>
       <div class="slide-body" id="sb-${slide.id}">
-        ${slide.img
-          ? `<img class="slide-img-preview" src="${slide.img}" onerror="this.src=''" alt="Slide Preview">`
-          : `<div class="slide-img-placeholder"><i class="fas fa-image"></i></div>`}
+        ${slide.img?`<img class="slide-img-preview" src="${slide.img}" alt="">`:`<div class="slide-img-placeholder"><i class="fas fa-image"></i></div>`}
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px">
-          <div><span style="color:var(--text3)">ট্যাগ:</span> <strong>${slide.tag || '—'}</strong></div>
-          <div><span style="color:var(--text3)">বাটন:</span> <strong>${slide.btnText || 'পণ্য দেখুন'}</strong></div>
-          <div style="grid-column:1/-1"><span style="color:var(--text3)">বিবরণ:</span> ${slide.desc || '—'}</div>
+          <div><span style="color:var(--text3)">ট্যাগ:</span> <strong>${slide.tag||'—'}</strong></div>
+          <div><span style="color:var(--text3)">বাটন:</span> <strong>${slide.btnText||'পণ্য দেখুন'}</strong></div>
+          <div><span style="color:var(--text3)">লিংক:</span> <strong>${slide.btnProductId?'নির্দিষ্ট পণ্য ('+slide.btnProductId+')':slide.btnLink||'products'}</strong></div>
+          <div style="grid-column:1/-1"><span style="color:var(--text3)">বিবরণ:</span> ${slide.desc||'—'}</div>
         </div>
       </div>
-    </div>`).join('') + `
-    <button class="add-slide-btn" onclick="openSlideModal(null)" ${sliderData.length >= 6 ? 'disabled title="সর্বোচ্চ ৬টি স্লাইড"' : ''}>
-      <i class="fas fa-plus"></i>${sliderData.length >= 6 ? 'সর্বোচ্চ ৬টি স্লাইড হয়েছে' : 'নতুন স্লাইড যোগ করুন'}
+    </div>`;
+  }).join('') + `
+    <button class="add-slide-btn" onclick="openSlideModal(null)" ${sliderData.length>=6?'disabled title="সর্বোচ্চ ৬টি স্লাইড"':''}>
+      <i class="fas fa-plus"></i>${sliderData.length>=6?'সর্বোচ্চ ৬টি স্লাইড হয়েছে':'নতুন স্লাইড যোগ করুন'}
     </button>
     <div class="slide-order-info"><i class="fas fa-info-circle"></i>মোট ${sliderData.length}টি স্লাইড | ${sliderData.filter(s=>s.active!==false).length}টি সক্রিয়</div>`;
-
   initSlideDrag();
 }
 
 function toggleSlideBody(id) {
-  const body = $('sb-' + id);
+  const body = $('sb-'+id);
   if (body) body.classList.toggle('open');
 }
 
 function toggleSlideActive(id) {
-  const slide = sliderData.find(s => s.id === id);
+  const slide = sliderData.find(s=>s.id===id);
   if (!slide) return;
-  slide.active = slide.active === false ? true : false;
+  slide.active = slide.active===false ? true : false;
   renderSliderManager();
-  // Auto-save toggle state
-  saveSliderToServer(null, () => {
-    toast(slide.active ? '✅ স্লাইড সক্রিয় হয়েছে' : '⛔ স্লাইড বন্ধ হয়েছে', slide.active ? 'success' : 'info');
-  });
+  saveSliderToServer(null, () => { toast(slide.active?'✅ স্লাইড সক্রিয় হয়েছে':'⛔ স্লাইড বন্ধ হয়েছে', slide.active?'success':'info'); });
+}
+
+// ── Slide modal with product selector ──
+function toggleProductSelector(val) {
+  const grp = $('productSelectorGroup');
+  if (!grp) return;
+  if (val === 'specific_product') {
+    grp.style.display = 'block';
+    loadProductsForSlider();
+  } else {
+    grp.style.display = 'none';
+  }
+}
+
+async function loadProductsForSlider() {
+  const sel = $('sm-btn-productId');
+  if (!sel) return;
+  if (sel.dataset.loaded === 'true') return;
+  sel.innerHTML = '<option value="">লোড হচ্ছে...</option>';
+  const d = await api('/admin/products');
+  if (!d.success) { sel.innerHTML = '<option value="">পণ্য লোড ব্যর্থ হয়েছে</option>'; return; }
+  sel.innerHTML = '<option value="">— পণ্য নির্বাচন করুন —</option>' +
+    d.products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  sel.dataset.loaded = 'true';
 }
 
 function openSlideModal(slideId) {
   const isNew = !slideId;
-  $('slideModalTitle').innerHTML = `<i class="fas fa-images"></i>${isNew ? 'নতুন স্লাইড যোগ করুন' : 'স্লাইড সম্পাদনা'}`;
-  $('deleteSlideBtn').style.display = isNew ? 'none' : 'flex';
+  $('slideModalTitle').innerHTML = `<i class="fas fa-images"></i>${isNew?'নতুন স্লাইড যোগ করুন':'স্লাইড সম্পাদনা'}`;
+  $('deleteSlideBtn').style.display = isNew?'none':'flex';
+  const grp = $('productSelectorGroup');
+  if (grp) grp.style.display = 'none';
 
   if (isNew) {
-    $('sm-index').value = '';
-    $('sm-tag').value = '';
-    $('sm-title').value = '';
-    $('sm-desc').value = '';
-    $('sm-btn-text').value = 'পণ্য দেখুন';
-    $('sm-btn-link').value = 'products';
-    $('sm-order').value = sliderData.length;
-    $('sm-active').value = 'true';
-    $('sm-img-url').value = '';
-    $('sm-img-preview').style.display = 'none';
-    $('sm-img-placeholder').style.display = 'flex';
+    $('sm-index').value=''; $('sm-tag').value=''; $('sm-title').value=''; $('sm-desc').value='';
+    $('sm-btn-text').value='পণ্য দেখুন'; $('sm-btn-link').value='products';
+    $('sm-order').value=sliderData.length; $('sm-active').value='true';
+    $('sm-img-url').value='';
+    $('sm-img-preview').style.display='none'; $('sm-img-placeholder').style.display='flex';
+    if ($('sm-btn-productId')) $('sm-btn-productId').value='';
   } else {
-    const slide = sliderData.find(s => s.id === slideId);
+    const slide = sliderData.find(s=>s.id===slideId);
     if (!slide) return;
-    $('sm-index').value = slideId;
-    $('sm-tag').value = slide.tag || '';
-    $('sm-title').value = slide.title || '';
-    $('sm-desc').value = slide.desc || '';
-    $('sm-btn-text').value = slide.btnText || 'পণ্য দেখুন';
-    $('sm-btn-link').value = slide.btnLink || 'products';
-    $('sm-order').value = slide.order || 0;
-    $('sm-active').value = slide.active === false ? 'false' : 'true';
-    $('sm-img-url').value = slide.img || '';
-    if (slide.img) {
-      $('sm-img-preview').src = slide.img;
-      $('sm-img-preview').style.display = 'block';
-      $('sm-img-placeholder').style.display = 'none';
+    $('sm-index').value=slideId; $('sm-tag').value=slide.tag||''; $('sm-title').value=slide.title||'';
+    $('sm-desc').value=slide.desc||''; $('sm-btn-text').value=slide.btnText||'পণ্য দেখুন';
+    $('sm-order').value=slide.order||0; $('sm-active').value=slide.active===false?'false':'true';
+    $('sm-img-url').value=slide.img||'';
+    if (slide.img) { $('sm-img-preview').src=slide.img; $('sm-img-preview').style.display='block'; $('sm-img-placeholder').style.display='none'; }
+    else { $('sm-img-preview').style.display='none'; $('sm-img-placeholder').style.display='flex'; }
+
+    // Restore btnLink / product
+    if (slide.btnProductId) {
+      $('sm-btn-link').value='specific_product';
+      if (grp) grp.style.display='block';
+      loadProductsForSlider().then(() => {
+        const sel = $('sm-btn-productId');
+        if (sel) sel.value=slide.btnProductId;
+      });
     } else {
-      $('sm-img-preview').style.display = 'none';
-      $('sm-img-placeholder').style.display = 'flex';
+      $('sm-btn-link').value=slide.btnLink||'products';
     }
   }
   openModal('slideModal');
@@ -1526,65 +1288,58 @@ async function handleSlideImgUpload(input) {
   if (!input.files.length) return;
   const fd = new FormData();
   fd.append('images', input.files[0]);
-  const origText = $('saveSlideBtn').querySelector('.btn-text').textContent;
   btnLoad($('saveSlideBtn'), true);
   try {
-    const r = await fetch(API + '/admin/upload', { method: 'POST', headers: { 'Authorization': 'Bearer ' + TOKEN }, body: fd });
+    const r = await fetch(API+'/admin/upload', {method:'POST', headers:{'Authorization':'Bearer '+TOKEN}, body:fd});
     const d = await r.json();
-    if (d.success && d.urls.length) {
-      const url = d.urls[0];
-      $('sm-img-url').value = url;
-      $('sm-img-preview').src = url;
-      $('sm-img-preview').style.display = 'block';
-      $('sm-img-placeholder').style.display = 'none';
+    if (d.success&&d.urls.length) {
+      const url=d.urls[0];
+      $('sm-img-url').value=url; $('sm-img-preview').src=url;
+      $('sm-img-preview').style.display='block'; $('sm-img-placeholder').style.display='none';
       toast('ছবি আপলোড হয়েছে ✅');
-    } else toast(d.message || 'আপলোড ব্যর্থ', 'error');
-  } catch (e) { toast('আপলোড ব্যর্থ', 'error'); }
+    } else toast(d.message||'আপলোড ব্যর্থ','error');
+  } catch(e) { toast('আপলোড ব্যর্থ','error'); }
   btnLoad($('saveSlideBtn'), false);
-  input.value = '';
+  input.value='';
 }
 
 function applySlideImgUrl() {
   const url = $('sm-img-url').value.trim();
-  if (!url) { toast('URL দিন', 'error'); return; }
-  $('sm-img-preview').src = url;
-  $('sm-img-preview').style.display = 'block';
-  $('sm-img-placeholder').style.display = 'none';
+  if (!url) { toast('URL দিন','error'); return; }
+  $('sm-img-preview').src=url; $('sm-img-preview').style.display='block'; $('sm-img-placeholder').style.display='none';
   toast('ছবি প্রয়োগ হয়েছে');
 }
 
 function saveSlide(btn) {
   const slideId = $('sm-index').value;
   const isNew = !slideId;
-  const rawSrc = $('sm-img-preview').src || '';
-  const imgUrl = $('sm-img-url').value.trim() || (rawSrc.startsWith('http') ? rawSrc : '') || '';
+  const rawSrc = $('sm-img-preview').src||'';
+  const imgUrl = $('sm-img-url').value.trim()||(rawSrc.startsWith('http')?rawSrc:'')||'';
   const title = $('sm-title').value.trim();
-  if (!title) { toast('শিরোনাম আবশ্যক', 'error'); return; }
+  if (!title) { toast('শিরোনাম আবশ্যক','error'); return; }
 
-  const slideObj = {
-    id: slideId || 'slide_' + Date.now(),
-    img: imgUrl,
-    tag: $('sm-tag').value.trim(),
-    title: title,
-    desc: $('sm-desc').value.trim(),
-    btnText: $('sm-btn-text').value.trim() || 'পণ্য দেখুন',
-    btnLink: $('sm-btn-link').value || 'products',
-    order: parseInt($('sm-order').value) || 0,
-    active: $('sm-active').value === 'true',
-  };
+  const btnLinkVal = $('sm-btn-link').value;
+  let btnLink = btnLinkVal;
+  let btnProductId = null;
 
-  if (isNew) {
-    sliderData.push(slideObj);
-  } else {
-    const idx = sliderData.findIndex(s => s.id === slideId);
-    if (idx >= 0) sliderData[idx] = slideObj;
-    else sliderData.push(slideObj);
+  if (btnLinkVal === 'specific_product') {
+    btnProductId = $('sm-btn-productId')?.value||null;
+    if (!btnProductId) { toast('একটি পণ্য নির্বাচন করুন','error'); return; }
+    btnLink = 'products';
   }
 
+  const slideObj = {
+    id: slideId||'slide_'+Date.now(), img:imgUrl, tag:$('sm-tag').value.trim(),
+    title, desc:$('sm-desc').value.trim(), btnText:$('sm-btn-text').value.trim()||'পণ্য দেখুন',
+    btnLink, btnProductId, order:parseInt($('sm-order').value)||0, active:$('sm-active').value==='true',
+  };
+
+  if (isNew) { sliderData.push(slideObj); }
+  else { const idx=sliderData.findIndex(s=>s.id===slideId); if(idx>=0) sliderData[idx]=slideObj; else sliderData.push(slideObj); }
+
   saveSliderToServer(btn, () => {
-    closeModal('slideModal');
-    renderSliderManager();
-    toast(isNew ? '✅ নতুন স্লাইড যোগ হয়েছে' : '✅ স্লাইড আপডেট হয়েছে');
+    closeModal('slideModal'); renderSliderManager();
+    toast(isNew?'✅ নতুন স্লাইড যোগ হয়েছে':'✅ স্লাইড আপডেট হয়েছে');
   });
 }
 
@@ -1592,34 +1347,22 @@ function deleteCurrentSlide() {
   const slideId = $('sm-index').value;
   if (!slideId) return;
   if (!confirm('এই স্লাইডটি মুছে ফেলতে চান?')) return;
-  sliderData = sliderData.filter(s => s.id !== slideId);
-  saveSliderToServer(null, () => {
-    closeModal('slideModal');
-    renderSliderManager();
-    toast('স্লাইড মুছে ফেলা হয়েছে');
-  });
+  sliderData = sliderData.filter(s=>s.id!==slideId);
+  saveSliderToServer(null, () => { closeModal('slideModal'); renderSliderManager(); toast('স্লাইড মুছে ফেলা হয়েছে'); });
 }
 
 async function saveSliderOrder(btn) {
   btnLoad(btn, true);
-  await saveSliderToServer(null, () => {
-    toast('✅ স্লাইডার ক্রম সেভ হয়েছে');
-  });
+  await saveSliderToServer(null, () => { toast('✅ স্লাইডার ক্রম সেভ হয়েছে'); });
   btnLoad(btn, false);
 }
 
 async function saveSliderToServer(btn, callback) {
   if (btn) btnLoad(btn, true);
-  const d = await api('/admin/settings', {
-    method: 'PUT',
-    body: JSON.stringify({ sliderSlides: sliderData })
-  });
+  const d = await api('/admin/settings', {method:'PUT', body:JSON.stringify({sliderSlides:sliderData})});
   if (btn) btnLoad(btn, false);
-  if (d.success) {
-    if (callback) callback();
-  } else {
-    toast(d.message || 'সেভ ব্যর্থ হয়েছে', 'error');
-  }
+  if (d.success) { if (callback) callback(); }
+  else toast(d.message||'সেভ ব্যর্থ হয়েছে','error');
 }
 
 // Drag & Drop reorder
@@ -1627,58 +1370,31 @@ function initSlideDrag() {
   const manager = $('sliderManager');
   const items = manager.querySelectorAll('.slide-item');
   let dragSrc = null;
-
   items.forEach(item => {
-    const handle = item.querySelector('.slide-drag-handle');
-    if (!handle) return;
-
-    item.setAttribute('draggable', 'true');
-    item.addEventListener('dragstart', e => {
-      dragSrc = item;
-      item.style.opacity = '0.5';
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    item.addEventListener('dragend', () => {
-      item.style.opacity = '1';
-      manager.querySelectorAll('.slide-item').forEach(i => i.style.background = '');
-    });
-    item.addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      item.style.background = 'var(--green-dim)';
-    });
-    item.addEventListener('dragleave', () => {
-      item.style.background = '';
-    });
+    item.setAttribute('draggable','true');
+    item.addEventListener('dragstart', e => { dragSrc=item; item.style.opacity='0.5'; e.dataTransfer.effectAllowed='move'; });
+    item.addEventListener('dragend', () => { item.style.opacity='1'; manager.querySelectorAll('.slide-item').forEach(i=>i.style.background=''); });
+    item.addEventListener('dragover', e => { e.preventDefault(); e.dataTransfer.dropEffect='move'; item.style.background='var(--green-dim)'; });
+    item.addEventListener('dragleave', () => { item.style.background=''; });
     item.addEventListener('drop', e => {
-      e.preventDefault();
-      item.style.background = '';
-      if (dragSrc === item) return;
-
-      // Reorder sliderData
-      const srcId = dragSrc.dataset.id;
-      const dstId = item.dataset.id;
-      const srcIdx = sliderData.findIndex(s => s.id === srcId);
-      const dstIdx = sliderData.findIndex(s => s.id === dstId);
-
-      if (srcIdx < 0 || dstIdx < 0) return;
-
-      const [moved] = sliderData.splice(srcIdx, 1);
-      sliderData.splice(dstIdx, 0, moved);
-
-      // Update order numbers
-      sliderData.forEach((s, i) => s.order = i);
+      e.preventDefault(); item.style.background='';
+      if (dragSrc===item) return;
+      const srcId=dragSrc.dataset.id, dstId=item.dataset.id;
+      const srcIdx=sliderData.findIndex(s=>s.id===srcId), dstIdx=sliderData.findIndex(s=>s.id===dstId);
+      if (srcIdx<0||dstIdx<0) return;
+      const [moved]=sliderData.splice(srcIdx,1);
+      sliderData.splice(dstIdx,0,moved);
+      sliderData.forEach((s,i)=>s.order=i);
       renderSliderManager();
-      toast('ক্রম পরিবর্তন হয়েছে — সেভ করুন', 'info');
+      toast('ক্রম পরিবর্তন হয়েছে — সেভ করুন','info');
     });
   });
 }
 
-
 // ==================== INIT ====================
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
-  if (e.key === 'Enter' && $('loginScreen').style.display !== 'none') doLogin();
+  if (e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+  if (e.key==='Enter' && $('loginScreen').style.display!=='none') doLogin();
 });
 
 checkToken();

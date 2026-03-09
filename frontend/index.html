@@ -6,6 +6,15 @@
     <title>গ্লোবাল অর্গানিক ফুডস্ - প্রাকৃতিক ও ভেজালমুক্ত খাদ্যের বিশ্বস্ত উৎস</title>
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-J0DRNR0L4Y"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-J0DRNR0L4Y');
+</script>
     <style>
         :root {
             --forest: #0a3d2e;
@@ -70,6 +79,7 @@
         .page-section { display: none; }
         .page-section.active { display: block; }
 
+        /* ── HERO / SLIDER ── */
         .hero-wrap { position: relative; overflow: hidden; height: 560px; }
         @media (max-width: 768px) { .hero-wrap { height: 460px; } }
         @media (max-width: 480px) { .hero-wrap { height: 380px; } }
@@ -82,9 +92,28 @@
         .slide-desc { font-size: clamp(14px, 2vw, 17px); opacity: 0.9; margin-bottom: 28px; line-height: 1.6; }
         .slide-btn { display: inline-flex; align-items: center; gap: 10px; background: white; color: var(--forest); padding: 14px 28px; border-radius: 6px; font-weight: 700; font-size: 15px; text-decoration: none; transition: var(--transition); box-shadow: 0 8px 32px rgba(0,0,0,0.2); cursor: pointer; border: none; }
         .slide-btn:hover { background: var(--sage); transform: translateX(4px); }
-        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); color: white; width: 52px; height: 52px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: var(--transition); z-index: 10; }
+
+        /* Slider nav — hidden by default, visible on hover (desktop) */
+        .slider-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.25); color: white;
+            width: 52px; height: 52px; border-radius: 6px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+            transition: var(--transition); z-index: 10;
+            opacity: 0; pointer-events: none;
+        }
+        .hero-wrap:hover .slider-nav { opacity: 1; pointer-events: auto; }
         .slider-nav:hover { background: rgba(255,255,255,0.3); transform: translateY(-50%) scale(1.1); }
         .slider-prev { left: 24px; } .slider-next { right: 24px; }
+
+        /* Mobile: smaller arrows, always hidden until hover/touch */
+        @media (max-width: 768px) {
+            .slider-nav { width: 34px; height: 34px; font-size: 13px; opacity: 0; pointer-events: none; }
+            .hero-wrap.touch-show .slider-nav { opacity: 1; pointer-events: auto; }
+            .slider-prev { left: 10px; } .slider-next { right: 10px; }
+        }
+
         .slider-dots { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
         .dot { height: 8px; width: 8px; border-radius: 6px; background: rgba(255,255,255,0.45); cursor: pointer; transition: var(--transition); border: none; }
         .dot.active { background: white; width: 28px; }
@@ -97,6 +126,7 @@
         .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: var(--forest); margin-bottom: 16px; line-height: 1.25; }
         .section-desc { color: var(--slate); font-size: 16px; line-height: 1.7; max-width: 520px; }
 
+        /* trust strip — return item removed */
         .trust-strip { background: white; border-bottom: 1px solid rgba(10,61,46,0.07); padding: 20px 0; }
         .trust-items { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
         .trust-item { display: flex; align-items: center; gap: 10px; padding: 10px 28px; border-right: 1px solid rgba(10,61,46,0.1); font-size: 14px; font-weight: 500; color: var(--charcoal); }
@@ -200,6 +230,7 @@
         .btn-order:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(5,150,105,0.45); }
         .btn-call { min-width: 130px; background: white; color: var(--forest); padding: 15px 20px; border-radius: 6px; font-size: 16px; font-weight: 700; border: 2px solid var(--forest); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); text-decoration: none; }
         .btn-call:hover { background: var(--light); }
+        /* trust pills — return pill removed */
         .detail-trust { display: flex; gap: 8px; flex-wrap: wrap; }
         .trust-pill { display: flex; align-items: center; gap: 6px; background: var(--light); border: 1px solid rgba(5,150,105,0.2); padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--forest); }
         .trust-pill i { color: var(--emerald); font-size: 13px; }
@@ -237,6 +268,7 @@
         .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(5,150,105,0.5); }
         .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
+        /* Breadcrumb — now in Bangla */
         .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate); margin-bottom: 28px; flex-wrap: wrap; }
         .breadcrumb a { color: var(--emerald); text-decoration: none; font-weight: 600; cursor: pointer; }
         .breadcrumb a:hover { text-decoration: underline; }
@@ -248,7 +280,19 @@
         .page-header h1 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 700; margin-bottom: 10px; position: relative; }
         .page-header p { font-size: 16px; opacity: 0.85; position: relative; }
 
-        .wa-float { position: fixed; bottom: 28px; right: 22px; width: 58px; height: 58px; background: #25D366; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 28px rgba(37,211,102,0.5); cursor: pointer; z-index: 999; text-decoration: none; border: 3px solid rgba(255,255,255,0.35); animation: waPulse 2.5s infinite; transition: transform 0.3s; }
+        /* WhatsApp float — fully round */
+        .wa-float {
+            position: fixed; bottom: 28px; right: 22px;
+            width: 58px; height: 58px;
+            background: #25D366; color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 8px 28px rgba(37,211,102,0.5);
+            cursor: pointer; z-index: 999; text-decoration: none;
+            border: 3px solid rgba(255,255,255,0.35);
+            animation: waPulse 2.5s infinite; transition: transform 0.3s;
+        }
         .wa-float:hover { transform: scale(1.08) translateY(-4px); animation: none; }
         @keyframes waPulse { 0%, 100% { box-shadow: 0 8px 28px rgba(37,211,102,0.5), 0 0 0 0 rgba(37,211,102,0.5); } 50% { box-shadow: 0 8px 28px rgba(37,211,102,0.5), 0 0 0 14px rgba(37,211,102,0); } }
         .wa-tooltip { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); background: white; color: #075e54; padding: 9px 16px; border-radius: 6px; font-size: 13px; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 20px rgba(0,0,0,0.15); border: 1.5px solid #25D366; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.25s ease, visibility 0.25s ease; }
@@ -301,7 +345,7 @@
 </head>
 <body>
 
-<!-- WhatsApp -->
+<!-- WhatsApp — round -->
 <a href="javascript:void(0)" onclick="openWhatsApp()" class="wa-float" title="WhatsApp এ যোগাযোগ করুন">
     <i class="fab fa-whatsapp"></i>
     <span class="wa-tooltip">WhatsApp এ অর্ডার করুন</span>
@@ -360,7 +404,7 @@
 
 <!-- HOME -->
 <div id="home-section" class="page-section active">
-    <div class="hero-wrap">
+    <div class="hero-wrap" id="heroWrap">
         <div class="slider-track" id="sliderTrack">
             <div class="slide" style="background-image:url('images/image.png')">
                 <div class="slide-overlay"></div>
@@ -377,14 +421,14 @@
         <div class="slider-dots" id="sliderDots"></div>
     </div>
 
+    <!-- Trust strip — NO return item -->
     <div class="trust-strip">
         <div class="container">
             <div class="trust-items">
-                <div class="trust-item"><i class="fas fa-leaf"></i> 100% প্রাকৃতিক উপাদান</div>
+                <div class="trust-item"><i class="fas fa-leaf"></i> ১০০% প্রাকৃতিক উপাদান</div>
                 <div class="trust-item"><i class="fas fa-truck"></i> সারা বাংলাদেশে ফ্রি শিপিং</div>
                 <div class="trust-item"><i class="fas fa-hand-holding-usd"></i> ক্যাশ অন ডেলিভারি</div>
-                <div class="trust-item"><i class="fas fa-shield-alt"></i> <span id="returnText">৭</span> দিনের রিটার্ন গ্যারান্টি</div>
-                <div class="trust-item"><i class="fas fa-headset"></i> 24/7 কাস্টমার সাপোর্ট</div>
+                <div class="trust-item"><i class="fas fa-headset"></i> ২৪/৭ কাস্টমার সাপোর্ট</div>
             </div>
         </div>
     </div>
@@ -409,7 +453,7 @@
                 <h2 class="section-title" style="text-align:center">আমাদের বিশেষত্ব</h2>
             </div>
             <div class="features-grid">
-                <div class="feature-card"><div class="feature-icon"><i class="fas fa-leaf"></i></div><div class="feature-title">100% প্রাকৃতিক</div><div class="feature-desc">কোনো কেমিক্যাল বা কৃত্রিম উপাদান নেই</div></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-leaf"></i></div><div class="feature-title">১০০% প্রাকৃতিক</div><div class="feature-desc">কোনো কেমিক্যাল বা কৃত্রিম উপাদান নেই</div></div>
                 <div class="feature-card"><div class="feature-icon"><i class="fas fa-medal"></i></div><div class="feature-title">সর্বোচ্চ মানের</div><div class="feature-desc">কঠোর মান নিয়ন্ত্রণ প্রক্রিয়ায় তৈরি</div></div>
                 <div class="feature-card"><div class="feature-icon"><i class="fas fa-shipping-fast"></i></div><div class="feature-title">দ্রুত ডেলিভারি</div><div class="feature-desc">সারা বাংলাদেশে ফ্রি হোম ডেলিভারি</div></div>
                 <div class="feature-card"><div class="feature-icon"><i class="fas fa-hand-holding-heart"></i></div><div class="feature-title">ক্যাশ অন ডেলিভারি</div><div class="feature-desc">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন</div></div>
@@ -423,7 +467,8 @@
     <div class="page-header"><h1>আমাদের পণ্য</h1><p>প্রকৃতির নিখাদ উপাদানে তৈরি ভেষজ পণ্যসমূহ</p></div>
     <section class="section">
         <div class="container">
-            <div class="breadcrumb"><a onclick="showSection('home')">Home</a><i class="fas fa-chevron-right"></i><span>Products</span></div>
+            <!-- Bangla breadcrumb -->
+            <div class="breadcrumb"><a onclick="showSection('home')">হোম</a><i class="fas fa-chevron-right"></i><span>পণ্যসমূহ</span></div>
             <div class="products-grid" id="allProductsGrid">
                 <div class="loading-spinner" style="grid-column:1/-1"><i class="fas fa-spinner"></i>পণ্য লোড হচ্ছে...</div>
             </div>
@@ -436,16 +481,17 @@
     <div class="page-header"><h1>আমাদের সম্পর্কে</h1><p>প্রকৃতির টানে, সুস্বাস্থ্যের সন্ধানে</p></div>
     <section class="section">
         <div class="container">
-            <div class="breadcrumb"><a onclick="showSection('home')">Home</a><i class="fas fa-chevron-right"></i><span>About Us</span></div>
+            <!-- Bangla breadcrumb -->
+            <div class="breadcrumb"><a onclick="showSection('home')">হোম</a><i class="fas fa-chevron-right"></i><span>আমাদের সম্পর্কে</span></div>
             <div class="about-grid">
                 <div class="about-visual">
                     <div class="about-pattern"></div>
                     <i class="fas fa-seedling about-center-icon"></i>
                     <div class="about-stat-cards">
-                        <div class="about-stat"><div class="about-stat-num">100%</div><div class="about-stat-label">প্রাকৃতিক পণ্য</div></div>
-                        <div class="about-stat"><div class="about-stat-num">1000+</div><div class="about-stat-label">সন্তুষ্ট গ্রাহক</div></div>
-                        <div class="about-stat"><div class="about-stat-num" id="productCountStat">5+</div><div class="about-stat-label">ভেষজ পণ্য</div></div>
-                        <div class="about-stat"><div class="about-stat-num">10+</div><div class="about-stat-label">বছরের অভিজ্ঞতা</div></div>
+                        <div class="about-stat"><div class="about-stat-num">১০০%</div><div class="about-stat-label">প্রাকৃতিক পণ্য</div></div>
+                        <div class="about-stat"><div class="about-stat-num">১০০০+</div><div class="about-stat-label">সন্তুষ্ট গ্রাহক</div></div>
+                        <div class="about-stat"><div class="about-stat-num" id="productCountStat">৫+</div><div class="about-stat-label">ভেষজ পণ্য</div></div>
+                        <div class="about-stat"><div class="about-stat-num">১০+</div><div class="about-stat-label">বছরের অভিজ্ঞতা</div></div>
                     </div>
                 </div>
                 <div class="about-text">
@@ -471,14 +517,15 @@
     <div class="page-header"><h1>যোগাযোগ করুন</h1><p>আমরা সর্বদা আপনার সেবায় প্রস্তুত</p></div>
     <section class="section">
         <div class="container">
-            <div class="breadcrumb"><a onclick="showSection('home')">Home</a><i class="fas fa-chevron-right"></i><span>Contact</span></div>
+            <!-- Bangla breadcrumb -->
+            <div class="breadcrumb"><a onclick="showSection('home')">হোম</a><i class="fas fa-chevron-right"></i><span>যোগাযোগ</span></div>
             <div class="contact-grid">
                 <div class="contact-card">
                     <h3 style="font-size:20px;color:var(--forest);margin-bottom:4px;font-weight:700;">আমাদের সাথে কথা বলুন</h3>
                     <p style="font-size:14px;color:var(--slate);margin-bottom:20px;">যেকোনো প্রশ্ন বা অর্ডারের জন্য যোগাযোগ করুন</p>
-                    <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-phone-alt"></i></div><div><div class="contact-item-title">ফোন নম্বর</div><a id="contactPhone" href="tel:01711386880" class="contact-item-val">01711-386880</a><div class="contact-item-note">24/7 সাপোর্ট উপলব্ধ</div></div></div>
+                    <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-phone-alt"></i></div><div><div class="contact-item-title">ফোন নম্বর</div><a id="contactPhone" href="tel:01711386880" class="contact-item-val">01711-386880</a><div class="contact-item-note">২৪/৭ সাপোর্ট উপলব্ধ</div></div></div>
                     <div class="contact-item"><div class="contact-icon-box"><i class="fab fa-whatsapp"></i></div><div><div class="contact-item-title">হোয়াটসঅ্যাপ</div><a href="javascript:void(0)" onclick="openWhatsApp()" class="contact-item-val" id="contactWA">01711-386880</a><div class="contact-item-note">মেসেজ করুন যেকোনো সময়</div></div></div>
-                    <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-envelope"></i></div><div><div class="contact-item-title">ইমেইল</div><a id="contactEmail" href="/cdn-cgi/l/email-protection#6a191f1a1a05181e2a0d0605080b0605180d0b0403090c05050e1944090507" class="contact-item-val" style="font-size:14px;"><span class="__cf_email__" data-cfemail="bfcccacfcfd0cdcbffd8d3d0ddded3d0cdd8ded1d6dcd9d0d0dbcc91dcd0d2">[email&#160;protected]</span></a><div class="contact-item-note">24 ঘণ্টার মধ্যে রিপ্লাই</div></div></div>
+                    <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-envelope"></i></div><div><div class="contact-item-title">ইমেইল</div><a id="contactEmail" href="mailto:" class="contact-item-val" style="font-size:14px;">লোড হচ্ছে...</a><div class="contact-item-note">২৪ ঘণ্টার মধ্যে রিপ্লাই</div></div></div>
                     <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-map-marker-alt"></i></div><div><div class="contact-item-title">ঠিকানা</div><span class="contact-item-val" id="contactAddress" style="font-size:15px;">ঢাকা, বাংলাদেশ</span><div class="contact-item-note">শনি–বৃহস্পতি: সকাল ৯টা – সন্ধ্যা ৬টা</div></div></div>
                 </div>
                 <div>
@@ -500,12 +547,13 @@
 <div id="product-detail-section" class="page-section">
     <section class="section" style="padding-top:40px;">
         <div class="container">
+            <!-- Bangla breadcrumb -->
             <div class="breadcrumb" id="detailBreadcrumbRow">
-                <a onclick="showSection('home')">Home</a>
+                <a onclick="showSection('home')">হোম</a>
                 <i class="fas fa-chevron-right"></i>
-                <a onclick="showSection('products')">Products</a>
+                <a onclick="showSection('products')">পণ্যসমূহ</a>
                 <i class="fas fa-chevron-right"></i>
-                <span id="detailBreadcrumb">Detail</span>
+                <span id="detailBreadcrumb">বিস্তারিত</span>
             </div>
             <div id="productDetailContent"><div class="loading-spinner"><i class="fas fa-spinner"></i>লোড হচ্ছে...</div></div>
         </div>
@@ -521,18 +569,18 @@
                 <p>প্রকৃতির টানে, ভালোবাসার বাঁধনে। শতভাগ প্রাকৃতিক ও হারবাল পণ্য নিয়ে আপনার সুস্বাস্থ্যের পাশে আছি।</p>
             </div>
             <div class="footer-col"><h4>দ্রুত লিংক</h4><ul class="footer-links"><li><a onclick="showSection('home')">হোম</a></li><li><a onclick="showSection('products')">পণ্য</a></li><li><a onclick="showSection('about')">আমাদের সম্পর্কে</a></li><li><a onclick="showSection('contact')">যোগাযোগ</a></li></ul></div>
-            <div class="footer-col"><h4>গ্রাহক সেবা</h4><ul class="footer-links"><li><a href="#">রিটার্ন পলিসি</a></li><li><a href="#">শিপিং তথ্য</a></li><li><a href="#">প্রায়শ জিজ্ঞাসিত</a></li><li><a href="#">প্রাইভেসি পলিসি</a></li></ul></div>
+            <div class="footer-col"><h4>গ্রাহক সেবা</h4><ul class="footer-links"><li><a href="#">শিপিং তথ্য</a></li><li><a href="#">প্রায়শ জিজ্ঞাসিত</a></li><li><a href="#">প্রাইভেসি পলিসি</a></li></ul></div>
             <div class="footer-col"><h4>যোগাযোগ</h4>
                 <div class="footer-contact-items">
                     <div class="footer-contact-item"><i class="fas fa-phone-alt"></i><a id="footerPhone" href="tel:01711386880">01711-386880</a></div>
                     <div class="footer-contact-item"><i class="fab fa-whatsapp"></i><a href="javascript:void(0)" onclick="openWhatsApp()">WhatsApp এ যোগাযোগ</a></div>
-                    <div class="footer-contact-item"><i class="fas fa-envelope"></i><a id="footerEmail" href="/cdn-cgi/l/email-protection#1a696f6a6a75686e5a7d7675787b7675687d7b7473797c75757e6934797577"><span class="__cf_email__" data-cfemail="a3d0d6d3d3ccd1d7e3c4cfccc1c2cfccd1c4c2cdcac0c5ccccc7d08dc0ccce">[email&#160;protected]</span></a></div>
+                    <div class="footer-contact-item"><i class="fas fa-envelope"></i><a id="footerEmail" href="mailto:">ইমেইল</a></div>
                     <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span id="footerAddress">ঢাকা, বাংলাদেশ</span></div>
                 </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2026 <span id="footerCopyright">গ্লোবাল অর্গানিক ফুডস্</span> | সর্বস্বত্ব সংরক্ষিত</p>
+            <p>© ২০২৬ <span id="footerCopyright">গ্লোবাল অর্গানিক ফুডস্</span> | সর্বস্বত্ব সংরক্ষিত</p>
             <div class="footer-social">
                 <a href="javascript:void(0)" onclick="openWhatsApp()" class="social-btn"><i class="fab fa-whatsapp"></i></a>
                 <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
@@ -542,7 +590,7 @@
     </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ── Config ────────────────────────────────────────────
 const API_BASE = window.GOF_API || 'https://globalogranicfoods-ea8r.onrender.com/api';
 
@@ -567,11 +615,9 @@ async function loadSettings() {
     siteSettings = d.settings;
     const s = siteSettings;
 
-    // Announcement
     if (s.announcement) {
         document.getElementById('announceBar').innerHTML = `<i class="fas fa-gift"></i> &nbsp; ${s.announcement} &nbsp; <i class="fas fa-gift"></i>`;
     }
-    // Site name
     if (s.siteName) {
         document.getElementById('siteNameEl').textContent = s.siteName;
         document.getElementById('siteNameAbout').textContent = s.siteName;
@@ -579,7 +625,6 @@ async function loadSettings() {
         document.getElementById('footerCopyright').textContent = s.siteName;
         document.title = s.siteName + ' - প্রাকৃতিক ও ভেজালমুক্ত খাদ্যের বিশ্বস্ত উৎস';
     }
-    // Phone
     if (s.phone) {
         document.getElementById('phoneDisplay').textContent = s.phone;
         document.getElementById('mobilePhoneDisplay').textContent = s.phone;
@@ -600,9 +645,8 @@ async function loadSettings() {
         document.getElementById('contactAddress').textContent = s.address;
         document.getElementById('footerAddress').textContent = s.address;
     }
-    if (s.returnDays) document.getElementById('returnText').textContent = s.returnDays;
 
-    // ── Build slider from admin-controlled slides ──────
+    // Build slider from admin slides
     if (s.sliderSlides && s.sliderSlides.length) {
         const activeSlides = s.sliderSlides
             .filter(sl => sl.active !== false)
@@ -620,21 +664,16 @@ async function loadProducts() {
     if (!d.success || !d.products.length) return;
     allProducts = d.products;
 
-    // Product grids
     const html = allProducts.map(p => renderProductCard(p)).join('');
     document.getElementById('homeProductsGrid').innerHTML = html;
     document.getElementById('allProductsGrid').innerHTML = html;
 
-    // About count
     document.getElementById('productCountStat').textContent = allProducts.length + '+';
 
-    // Build slider from settings (loaded in loadSettings)
-    // If sliderSlides not available yet, use product images as fallback
     if (window._sliderBuilt) return;
     buildSliderFromProducts(allProducts.slice(0, 4));
 }
 
-// Fallback: build slider from products (used if no custom slides set)
 function buildSliderFromProducts(products) {
     if (window._sliderBuilt) return;
     window._sliderBuilt = true;
@@ -650,7 +689,6 @@ function buildSliderFromProducts(products) {
     })));
 }
 
-// Accepts both product-objects and admin slide-objects
 function buildSlider(slides) {
     const track = document.getElementById('sliderTrack');
     const fallbackImgs = [
@@ -666,7 +704,8 @@ function buildSlider(slides) {
         const desc  = s.desc || s.subtitle || '';
         const btnTxt = s.btnText || 'বিস্তারিত দেখুন';
 
-        // Button action: link to section OR specific product
+        // Determine button action
+        // Priority: btnProductId > btnLink
         let btnAction = '';
         if (s.btnProductId) {
             btnAction = `onclick="showProductDetail('${s.btnProductId}')"`;
@@ -706,7 +745,7 @@ function renderProductCard(p) {
                 <div class="product-price">
                     <span class="price-now">&#2547;${p.basePrice}</span>
                     <span class="price-old">&#2547;${p.baseOld}</span>
-                    <span class="price-save">${p.baseDiscount}% off</span>
+                    <span class="price-save">${p.baseDiscount}% ছাড়</span>
                 </div>
                 <div class="product-cta">বিস্তারিত দেখুন <i class="fas fa-arrow-right"></i></div>
             </div>
@@ -717,7 +756,6 @@ function renderProductCard(p) {
 // ── Product Detail ────────────────────────────────────
 async function showProductDetail(id) {
     currentProductId = id;
-    // Update URL without page reload
     const newUrl = window.location.pathname + '?product=' + id;
     history.pushState({ product: id }, '', newUrl);
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
@@ -762,13 +800,13 @@ async function showProductDetail(id) {
                         <div class="detail-price">&#2547;<span id="dprice">${p.prices?.['1kg']?.price||p.basePrice}</span></div>
                         <div class="detail-price-old">&#2547;<span id="dold">${p.prices?.['1kg']?.old||p.baseOld}</span></div>
                     </div>
-                    <span class="detail-discount"><span id="ddis">${p.prices?.['1kg']?.dis||p.baseDiscount}</span>% off</span>
+                    <span class="detail-discount"><span id="ddis">${p.prices?.['1kg']?.dis||p.baseDiscount}</span>% ছাড়</span>
                 </div>
                 <div class="weight-label">প্যাক সাইজ নির্বাচন করুন:</div>
                 <div class="weight-btns">
-                    <button class="weight-btn" onclick="selectWeight(this,'2kg','${id}')">2 কেজি <span class="wt-badge">-${p.prices?.['2kg']?.dis||18}%</span></button>
-                    <button class="weight-btn active" onclick="selectWeight(this,'1kg','${id}')">1 কেজি <span class="wt-badge">-${p.prices?.['1kg']?.dis||15}%</span></button>
-                    <button class="weight-btn" onclick="selectWeight(this,'500gm','${id}')">500 গ্রাম <span class="wt-badge">-${p.prices?.['500gm']?.dis||12}%</span></button>
+                    <button class="weight-btn" onclick="selectWeight(this,'2kg','${id}')">২ কেজি <span class="wt-badge">-${p.prices?.['2kg']?.dis||18}%</span></button>
+                    <button class="weight-btn active" onclick="selectWeight(this,'1kg','${id}')">১ কেজি <span class="wt-badge">-${p.prices?.['1kg']?.dis||15}%</span></button>
+                    <button class="weight-btn" onclick="selectWeight(this,'500gm','${id}')">৫০০ গ্রাম <span class="wt-badge">-${p.prices?.['500gm']?.dis||12}%</span></button>
                 </div>
                 <div class="weight-label">পরিমাণ:</div>
                 <div class="qty-wrap">
@@ -780,9 +818,9 @@ async function showProductDetail(id) {
                     <button class="btn-order" onclick="document.getElementById('orderFormSection').scrollIntoView({behavior:'smooth'})"><i class="fas fa-shopping-cart"></i> অর্ডার করুন</button>
                     <a href="tel:${siteSettings.phone||'01711386880'}" class="btn-call"><i class="fas fa-phone-alt"></i> কল করুন</a>
                 </div>
+                <!-- trust pills — no return pill -->
                 <div class="detail-trust">
                     <div class="trust-pill"><i class="fas fa-truck"></i>ফ্রি শিপিং</div>
-                    <div class="trust-pill"><i class="fas fa-undo"></i>${siteSettings.returnDays||7} দিন রিটার্ন</div>
                     <div class="trust-pill"><i class="fas fa-lock"></i>নিরাপদ পেমেন্ট</div>
                     <div class="trust-pill"><i class="fas fa-hand-holding-usd"></i>ক্যাশ অন ডেলিভারি</div>
                 </div>
@@ -921,7 +959,6 @@ function showSection(id) {
     document.getElementById('hamburger').classList.remove('open');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     currentProductId = '';
-    // Clear product from URL when navigating away
     if (window.location.search.includes('product=')) {
         history.pushState({}, '', window.location.pathname);
     }
@@ -957,6 +994,7 @@ function closePopup() { document.getElementById('popupOverlay').classList.remove
 
 // ── Slider ────────────────────────────────────────────
 let slide = 0, totalSlides = 1, sliderTimer;
+
 function buildDots(n) {
     totalSlides = n;
     const c = document.getElementById('sliderDots');
@@ -979,22 +1017,30 @@ function resetTimer() {
     sliderTimer = setInterval(() => slideChange(1), 5000);
 }
 
+// Mobile: show arrows briefly on touch
+(function() {
+    const hero = document.getElementById('heroWrap');
+    let hideTimer;
+    hero.addEventListener('touchstart', () => {
+        hero.classList.add('touch-show');
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => hero.classList.remove('touch-show'), 2500);
+    }, { passive: true });
+})();
+
 // ── URL Routing ───────────────────────────────────────
 function checkUrlAndRoute() {
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('product');
     if (productId) {
-        // Wait for products to load then show detail
         if (allProducts.length) {
             showProductDetail(productId);
         } else {
-            // Will be handled after loadProducts completes
             window._pendingProductId = productId;
         }
     }
 }
 
-// Handle browser back/forward buttons
 window.addEventListener('popstate', function(e) {
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('product');
@@ -1010,7 +1056,6 @@ window._sliderBuilt = false;
 (async () => {
     await loadSettings();
     await loadProducts();
-    // Check URL after products are loaded
     if (window._pendingProductId) {
         showProductDetail(window._pendingProductId);
         window._pendingProductId = null;
