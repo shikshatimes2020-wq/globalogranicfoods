@@ -202,15 +202,17 @@
         ═══════════════════════════════════════════════════════════════ */
 
         /* Breadcrumb */
-        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate); margin-bottom: 32px; flex-wrap: wrap; background: white; padding: 14px 20px; border-radius: 10px; border: 1px solid rgba(10,61,46,0.07); box-shadow: var(--shadow-sm); }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate); margin-bottom: 24px; flex-wrap: wrap; background: white; padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(10,61,46,0.07); box-shadow: var(--shadow-sm); }
         .breadcrumb a { color: var(--emerald); text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s; }
         .breadcrumb a:hover { color: var(--forest); }
         .breadcrumb span { font-weight: 700; color: var(--charcoal); }
         .breadcrumb i { font-size: 9px; color: #cbd5e1; }
+        @media (max-width: 480px) { .breadcrumb { font-size: 12px; padding: 10px 12px; gap: 6px; margin-bottom: 18px; } }
 
         /* Detail Layout */
-        .detail-page-wrap { background: linear-gradient(180deg, #f0fdf4 0%, var(--cream) 100%); padding: 40px 0 80px; }
-        @media (max-width: 768px) { .detail-page-wrap { padding: 24px 0 60px; } }
+        .detail-page-wrap { background: linear-gradient(180deg, #f0fdf4 0%, var(--cream) 100%); padding: 32px 0 80px; }
+        @media (max-width: 768px) { .detail-page-wrap { padding: 20px 0 50px; } }
+        @media (max-width: 480px) { .container { padding: 0 14px; } }
 
         .detail-grid {
             display: grid;
@@ -218,7 +220,8 @@
             gap: 52px;
             align-items: start;
         }
-        @media (max-width: 960px) { .detail-grid { grid-template-columns: 1fr; gap: 32px; } }
+        @media (max-width: 960px) { .detail-grid { grid-template-columns: 1fr; gap: 24px; } }
+        @media (max-width: 480px) { .detail-grid { gap: 18px; } }
 
         /* ── LEFT: IMAGE PANEL ── */
         .detail-img-panel { position: sticky; top: 96px; }
@@ -437,6 +440,11 @@
         .detail-price span { font-size: 1.4rem; font-weight: 600; }
         .detail-price-old { font-size: 14px; color: rgba(255,255,255,0.5); text-decoration: line-through; margin-top: 4px; }
         .price-right { text-align: center; }
+        @media (max-width: 380px) {
+            .detail-price { font-size: 1.9rem; }
+            .detail-price span { font-size: 1.1rem; }
+            .detail-price-box { padding: 16px 18px; }
+        }
         .detail-discount {
             background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
@@ -466,21 +474,23 @@
             display: flex;
             gap: 10px;
             margin-bottom: 22px;
+            padding-top: 10px; /* space for badge overflow */
         }
         .weight-btn {
             flex: 1;
-            padding: 13px 8px;
+            padding: 12px 6px 11px;
             border: 2px solid rgba(10,61,46,0.12);
             border-radius: 12px;
             background: white;
             cursor: pointer;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--charcoal);
             position: relative;
             transition: var(--transition);
             text-align: center;
             box-shadow: var(--shadow-sm);
+            overflow: visible;
         }
         .weight-btn:hover { border-color: var(--emerald); background: var(--light); transform: translateY(-2px); }
         .weight-btn.active {
@@ -492,26 +502,30 @@
         }
         .wt-badge {
             position: absolute;
-            top: -9px; right: -5px;
+            top: -10px; right: -2px;
             background: #ef4444;
             color: white;
             font-size: 9px;
-            padding: 2px 7px;
-            border-radius: 6px;
+            padding: 2px 6px;
+            border-radius: 5px;
             font-weight: 800;
             white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(239,68,68,0.4);
+            box-shadow: 0 2px 6px rgba(239,68,68,0.4);
+            line-height: 1.4;
         }
         .weight-btn.active .wt-badge { background: #fbbf24; color: #1a2332; }
+        @media (max-width: 400px) {
+            .weight-btn { font-size: 12px; padding: 11px 4px 10px; }
+            .wt-badge { font-size: 8px; padding: 2px 5px; right: -1px; }
+        }
 
         /* Quantity + CTA combined row */
         .qty-cta-row {
             display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 16px;
             align-items: stretch;
         }
-        @media (max-width: 480px) { .qty-cta-row { flex-direction: column; } }
 
         .qty-wrap {
             display: flex;
@@ -522,6 +536,7 @@
             overflow: hidden;
             box-shadow: var(--shadow-sm);
             flex-shrink: 0;
+            height: 52px;
         }
         .qty-btn {
             width: 44px; height: 52px;
@@ -532,7 +547,7 @@
         }
         .qty-btn:hover { background: var(--light); }
         .qty-input {
-            width: 52px; text-align: center;
+            width: 48px; text-align: center;
             font-size: 18px; font-weight: 800;
             border: none;
             border-left: 1px solid rgba(10,61,46,0.08);
@@ -540,25 +555,30 @@
             outline: none;
             color: var(--forest);
             height: 52px;
+            background: white;
         }
 
         .btn-order {
             flex: 1;
             background: linear-gradient(135deg, var(--forest) 0%, var(--emerald) 100%);
-            color: white; padding: 0 24px;
+            color: white; padding: 0 16px;
             border-radius: 12px;
-            font-size: 15px; font-weight: 800;
+            font-size: 14px; font-weight: 800;
             border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: var(--transition); text-decoration: none;
             box-shadow: 0 8px 28px rgba(5,150,105,0.38);
             height: 52px;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
+            min-width: 0;
+            overflow: hidden;
         }
         .btn-order:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(5,150,105,0.5); }
+        .btn-order span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .btn-call {
-            min-width: 52px; width: 52px; height: 52px;
+            width: 52px; height: 52px;
+            min-width: 52px;
             background: white;
             color: var(--forest);
             border-radius: 12px;
@@ -573,36 +593,64 @@
         }
         .btn-call:hover { background: var(--light); border-color: var(--emerald); color: var(--emerald); }
 
+        /* Mobile: qty row becomes two rows */
+        @media (max-width: 480px) {
+            .qty-cta-row {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .qty-wrap {
+                flex: 1;
+                min-width: 0;
+            }
+            .btn-call {
+                flex-shrink: 0;
+            }
+            .btn-order {
+                width: 100%;
+                flex: none;
+                order: 3;
+                font-size: 15px;
+                height: 54px;
+                padding: 0 20px;
+            }
+        }
+
         /* WhatsApp button */
         .btn-whatsapp {
             width: 100%;
             background: linear-gradient(135deg, #25D366, #128C7E);
-            color: white; padding: 14px 20px;
+            color: white; padding: 15px 20px;
             border-radius: 12px;
             font-size: 15px; font-weight: 700;
             border: none; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 10px;
             transition: var(--transition);
             box-shadow: 0 6px 20px rgba(37,211,102,0.35);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,211,102,0.45); }
+        @media (max-width: 480px) { .btn-whatsapp { font-size: 14px; padding: 14px 16px; } }
 
         /* Delivery info row */
         .delivery-info-box {
             background: white;
             border: 1px solid rgba(10,61,46,0.09);
             border-radius: 14px;
-            padding: 16px 18px;
-            margin-bottom: 20px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             box-shadow: var(--shadow-sm);
         }
         .delivery-icon { width: 40px; height: 40px; background: var(--light); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--emerald); font-size: 18px; flex-shrink: 0; }
-        .delivery-text strong { display: block; font-size: 14px; font-weight: 700; color: var(--forest); }
+        .delivery-text strong { display: block; font-size: 13px; font-weight: 700; color: var(--forest); }
         .delivery-text span { font-size: 12px; color: var(--slate); }
+        @media (max-width: 400px) {
+            .delivery-text strong { font-size: 12px; }
+            .delivery-text span { font-size: 11px; }
+        }
 
         /* Trust pills row */
         .detail-trust {
@@ -610,16 +658,15 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
         }
-        @media (max-width: 480px) { .detail-trust { grid-template-columns: repeat(3, 1fr); gap: 6px; } }
         .trust-pill {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
             background: white;
             border: 1px solid rgba(10,61,46,0.09);
-            padding: 12px 8px;
+            padding: 11px 6px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: 600;
@@ -629,7 +676,11 @@
             transition: var(--transition);
         }
         .trust-pill:hover { border-color: var(--emerald); background: var(--light); transform: translateY(-2px); }
-        .trust-pill i { color: var(--emerald); font-size: 18px; }
+        .trust-pill i { color: var(--emerald); font-size: 16px; }
+        @media (max-width: 380px) {
+            .trust-pill { font-size: 10px; padding: 10px 4px; }
+            .trust-pill i { font-size: 14px; }
+        }
 
         /* ── TABS (info sections) ── */
         .info-tabs { margin-top: 52px; }
@@ -649,13 +700,13 @@
         .tab-btn {
             flex: 1;
             flex-shrink: 0;
-            padding: 11px 16px;
+            padding: 10px 14px;
             border-radius: 10px;
             border: none; background: none;
-            font-size: 13px; font-weight: 700;
+            font-size: 12px; font-weight: 700;
             color: var(--slate); cursor: pointer;
             transition: var(--transition);
-            display: flex; align-items: center; justify-content: center; gap: 7px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
             white-space: nowrap;
         }
         .tab-btn.active {
@@ -664,6 +715,7 @@
             box-shadow: 0 4px 14px rgba(5,150,105,0.3);
         }
         .tab-btn:not(.active):hover { background: var(--light); color: var(--forest); }
+        @media (max-width: 480px) { .tab-btn { padding: 9px 8px; font-size: 11px; gap: 4px; } .tab-btn i { display: none; } }
         .tab-pane { display: none; }
         .tab-pane.active { display: block; animation: fadeIn 0.25s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -783,17 +835,18 @@
         .submit-btn {
             width: 100%;
             background: linear-gradient(135deg, var(--forest) 0%, var(--emerald) 100%);
-            color: white; padding: 18px;
-            border-radius: 14px; font-size: 17px; font-weight: 800;
+            color: white; padding: 17px;
+            border-radius: 14px; font-size: 16px; font-weight: 800;
             border: none; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 10px;
             transition: var(--transition);
             box-shadow: 0 10px 32px rgba(5,150,105,0.4);
-            margin-top: 22px;
+            margin-top: 20px;
             letter-spacing: 0.3px;
         }
         .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 16px 44px rgba(5,150,105,0.5); }
         .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        @media (max-width: 480px) { .submit-btn { font-size: 15px; padding: 16px; gap: 8px; } }
 
         /* Order assurance strip */
         .order-assurance {
@@ -801,15 +854,17 @@
             gap: 0;
             border-top: 1px solid rgba(10,61,46,0.07);
             margin-top: 24px;
+            flex-wrap: wrap;
         }
         .assurance-item {
             flex: 1;
+            min-width: 25%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 5px;
-            padding: 14px 8px;
+            padding: 14px 6px;
             text-align: center;
             border-right: 1px solid rgba(10,61,46,0.07);
             font-size: 11px;
@@ -818,6 +873,12 @@
         }
         .assurance-item:last-child { border-right: none; }
         .assurance-item i { color: var(--emerald); font-size: 16px; }
+        @media (max-width: 480px) {
+            .assurance-item { min-width: 50%; padding: 12px 4px; font-size: 10px; }
+            .assurance-item:nth-child(2) { border-right: none; }
+            .assurance-item:nth-child(3) { border-top: 1px solid rgba(10,61,46,0.07); }
+            .assurance-item:nth-child(4) { border-right: none; border-top: 1px solid rgba(10,61,46,0.07); }
+        }
 
         /* Related products */
         .related-section { margin-top: 64px; }
@@ -1405,7 +1466,7 @@ async function showProductDetail(id) {
                         <button class="qty-btn" onclick="changeQty(1)">+</button>
                     </div>
                     <button class="btn-order" onclick="document.getElementById('orderFormSection').scrollIntoView({behavior:'smooth'})">
-                        <i class="fas fa-shopping-bag"></i> এখনই অর্ডার করুন
+                        <i class="fas fa-shopping-bag"></i> <span>এখনই অর্ডার করুন</span>
                     </button>
                     <a href="tel:${phoneNum}" class="btn-call" title="কল করুন">
                         <i class="fas fa-phone-alt"></i>
