@@ -12,7 +12,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-J0DRNR0L4Y');
 </script>
     <style>
@@ -93,7 +92,6 @@
         .slide-btn { display: inline-flex; align-items: center; gap: 10px; background: white; color: var(--forest); padding: 14px 28px; border-radius: 6px; font-weight: 700; font-size: 15px; text-decoration: none; transition: var(--transition); box-shadow: 0 8px 32px rgba(0,0,0,0.2); cursor: pointer; border: none; }
         .slide-btn:hover { background: var(--sage); transform: translateX(4px); }
 
-        /* Slider nav — hidden by default, visible on hover (desktop) */
         .slider-nav {
             position: absolute; top: 50%; transform: translateY(-50%);
             background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
@@ -107,7 +105,6 @@
         .slider-nav:hover { background: rgba(255,255,255,0.3); transform: translateY(-50%) scale(1.1); }
         .slider-prev { left: 24px; } .slider-next { right: 24px; }
 
-        /* Mobile: smaller arrows, always hidden until hover/touch */
         @media (max-width: 768px) {
             .slider-nav { width: 34px; height: 34px; font-size: 13px; opacity: 0; pointer-events: none; }
             .hero-wrap.touch-show .slider-nav { opacity: 1; pointer-events: auto; }
@@ -126,7 +123,6 @@
         .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: var(--forest); margin-bottom: 16px; line-height: 1.25; }
         .section-desc { color: var(--slate); font-size: 16px; line-height: 1.7; max-width: 520px; }
 
-        /* trust strip — return item removed */
         .trust-strip { background: white; border-bottom: 1px solid rgba(10,61,46,0.07); padding: 20px 0; }
         .trust-items { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
         .trust-item { display: flex; align-items: center; gap: 10px; padding: 10px 28px; border-right: 1px solid rgba(10,61,46,0.1); font-size: 14px; font-weight: 500; color: var(--charcoal); }
@@ -201,86 +197,639 @@
         .contact-map-placeholder { border-radius: 6px; overflow: hidden; height: 280px; background: linear-gradient(135deg, var(--light), var(--warm)); display: flex; align-items: center; justify-content: center; border: 2px dashed rgba(5,150,105,0.25); flex-direction: column; gap: 12px; color: var(--slate); }
         .contact-map-placeholder i { font-size: 48px; color: var(--sage); }
 
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
-        @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; gap: 32px; } }
-        .detail-main-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; box-shadow: var(--shadow-md); }
-        .detail-thumbs { display: flex; gap: 10px; margin-top: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
-        .detail-thumbs::-webkit-scrollbar { display: none; }
-        .detail-thumb { width: 70px; height: 70px; border-radius: 6px; flex-shrink: 0; cursor: pointer; border: 2.5px solid transparent; background-size: cover; background-position: center; transition: var(--transition); opacity: 0.65; }
-        .detail-thumb.active { border-color: var(--emerald); opacity: 1; }
-        .detail-brand { font-size: 12px; font-weight: 700; color: var(--emerald); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
-        .detail-name { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; color: var(--forest); margin-bottom: 6px; }
-        .detail-sub { font-size: 15px; color: var(--slate); margin-bottom: 20px; }
-        .detail-price-box { background: var(--light); border-radius: 6px; padding: 18px 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 20px; border: 1px solid rgba(5,150,105,0.15); }
-        .detail-price { font-size: 2rem; font-weight: 600; color: var(--forest); }
-        .detail-price-old { font-size: 15px; color: #94a3b8; text-decoration: line-through; }
-        .detail-discount { background: #ef4444; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; }
-        .weight-label { font-size: 13px; font-weight: 600; color: var(--slate); margin-bottom: 10px; }
-        .weight-btns { display: flex; gap: 10px; margin-bottom: 20px; }
-        .weight-btn { flex: 1; padding: 12px 8px; border: 2px solid rgba(10,61,46,0.15); border-radius: 6px; background: white; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--charcoal); position: relative; transition: var(--transition); text-align: center; }
-        .weight-btn:hover { border-color: var(--emerald); background: var(--light); }
-        .weight-btn.active { border-color: var(--emerald); background: var(--emerald); color: white; }
-        .wt-badge { position: absolute; top: -9px; right: -4px; background: #ef4444; color: white; font-size: 9px; padding: 2px 7px; border-radius: 4px; font-weight: 700; white-space: nowrap; }
-        .qty-wrap { display: flex; align-items: center; background: white; border: 2px solid rgba(10,61,46,0.15); border-radius: 6px; width: fit-content; margin-bottom: 24px; overflow: hidden; }
-        .qty-btn { width: 44px; height: 44px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--emerald); display: flex; align-items: center; justify-content: center; transition: var(--transition); font-weight: 700; }
-        .qty-btn:hover { background: var(--light); }
-        .qty-input { width: 52px; text-align: center; font-size: 18px; font-weight: 700; border: none; border-left: 1px solid rgba(10,61,46,0.1); border-right: 1px solid rgba(10,61,46,0.1); outline: none; color: var(--forest); }
-        .action-btns { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-        .btn-order { flex: 1; min-width: 160px; background: linear-gradient(135deg, var(--forest), var(--emerald)); color: white; padding: 15px 24px; border-radius: 6px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition); text-decoration: none; box-shadow: 0 8px 24px rgba(5,150,105,0.35); }
-        .btn-order:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(5,150,105,0.45); }
-        .btn-call { min-width: 130px; background: white; color: var(--forest); padding: 15px 20px; border-radius: 6px; font-size: 16px; font-weight: 700; border: 2px solid var(--forest); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); text-decoration: none; }
-        .btn-call:hover { background: var(--light); }
-        /* trust pills — return pill removed */
-        .detail-trust { display: flex; gap: 8px; flex-wrap: wrap; }
-        .trust-pill { display: flex; align-items: center; gap: 6px; background: var(--light); border: 1px solid rgba(5,150,105,0.2); padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--forest); }
-        .trust-pill i { color: var(--emerald); font-size: 13px; }
+        /* ═══════════════════════════════════════════════════════════════
+           PRODUCT DETAIL — MODERN REDESIGN
+        ═══════════════════════════════════════════════════════════════ */
 
-        .info-tabs { margin-top: 40px; }
-        .tabs-nav { display: flex; gap: 4px; background: var(--warm); padding: 6px; border-radius: 6px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: none; }
-        .tabs-nav::-webkit-scrollbar { display: none; }
-        .tab-btn { flex-shrink: 0; padding: 10px 18px; border-radius: 5px; border: none; background: none; font-size: 13px; font-weight: 600; color: var(--slate); cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 6px; }
-        .tab-btn.active { background: white; color: var(--forest); box-shadow: var(--shadow-sm); }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
-        .info-card { background: white; border-radius: 6px; padding: 28px; border: 1px solid rgba(10,61,46,0.07); }
-        .info-list { list-style: none; }
-        .info-list li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(10,61,46,0.05); font-size: 15px; color: var(--charcoal); line-height: 1.5; }
-        .info-list li:last-child { border-bottom: none; }
-        .info-list li i { color: var(--emerald); font-size: 13px; margin-top: 3px; width: 18px; flex-shrink: 0; }
-
-        .order-section { background: white; border-radius: 6px; padding: 36px; border: 1px solid rgba(10,61,46,0.08); box-shadow: var(--shadow-sm); margin-top: 40px; }
-        @media (max-width: 600px) { .order-section { padding: 24px 20px; } }
-        .order-title { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; color: var(--forest); margin-bottom: 28px; padding-bottom: 16px; border-bottom: 2px solid var(--light); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; gap: 12px; } }
-        .form-full { grid-column: 1 / -1; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-label { font-size: 13px; font-weight: 600; color: var(--forest); display: flex; align-items: center; gap: 6px; }
-        .form-label i { color: var(--emerald); font-size: 12px; }
-        .form-input { border: 2px solid rgba(10,61,46,0.12); border-radius: 6px; padding: 13px 16px; font-size: 15px; color: var(--charcoal); background: var(--cream); transition: var(--transition); outline: none; width: 100%; }
-        .form-input:focus { border-color: var(--emerald); background: white; box-shadow: 0 0 0 4px rgba(5,150,105,0.08); }
-        .form-input.error { border-color: #ef4444; background: #fef2f2; }
-        textarea.form-input { resize: vertical; min-height: 90px; }
-        .total-display { background: var(--light); border: 2px solid rgba(5,150,105,0.2); border-radius: 6px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
-        .total-label { font-size: 14px; font-weight: 600; color: var(--slate); }
-        .total-amount { font-size: 22px; font-weight: 600; color: var(--forest); }
-        .submit-btn { width: 100%; background: linear-gradient(135deg, var(--forest), var(--emerald)); color: white; padding: 18px; border-radius: 6px; font-size: 17px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition); box-shadow: 0 8px 28px rgba(5,150,105,0.4); margin-top: 20px; }
-        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(5,150,105,0.5); }
-        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-        /* Breadcrumb — now in Bangla */
-        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate); margin-bottom: 28px; flex-wrap: wrap; }
-        .breadcrumb a { color: var(--emerald); text-decoration: none; font-weight: 600; cursor: pointer; }
-        .breadcrumb a:hover { text-decoration: underline; }
+        /* Breadcrumb */
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate); margin-bottom: 32px; flex-wrap: wrap; background: white; padding: 14px 20px; border-radius: 10px; border: 1px solid rgba(10,61,46,0.07); box-shadow: var(--shadow-sm); }
+        .breadcrumb a { color: var(--emerald); text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+        .breadcrumb a:hover { color: var(--forest); }
         .breadcrumb span { font-weight: 700; color: var(--charcoal); }
         .breadcrumb i { font-size: 9px; color: #cbd5e1; }
 
+        /* Detail Layout */
+        .detail-page-wrap { background: linear-gradient(180deg, #f0fdf4 0%, var(--cream) 100%); padding: 40px 0 80px; }
+        @media (max-width: 768px) { .detail-page-wrap { padding: 24px 0 60px; } }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 52px;
+            align-items: start;
+        }
+        @media (max-width: 960px) { .detail-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+        /* ── LEFT: IMAGE PANEL ── */
+        .detail-img-panel { position: sticky; top: 96px; }
+        @media (max-width: 960px) { .detail-img-panel { position: static; } }
+
+        .detail-main-img-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 20px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 24px 64px rgba(10,61,46,0.14);
+            border: 1px solid rgba(10,61,46,0.06);
+        }
+        .detail-main-img-wrap::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(110,231,183,0.06) 0%, transparent 60%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .detail-main-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+        }
+        .detail-main-img-wrap:hover .detail-main-img { transform: scale(1.04); }
+
+        /* Badge overlay on image */
+        .detail-img-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 3;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 8px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+        }
+        .detail-img-share {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 3;
+            width: 36px; height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--slate);
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+        .detail-img-share:hover { background: var(--light); color: var(--emerald); }
+
+        /* Thumbnail strip */
+        .detail-thumbs {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding-bottom: 2px;
+        }
+        .detail-thumbs::-webkit-scrollbar { display: none; }
+        .detail-thumb {
+            width: 68px;
+            height: 68px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 2.5px solid rgba(10,61,46,0.08);
+            background-size: cover;
+            background-position: center;
+            transition: var(--transition);
+            opacity: 0.62;
+            background-color: white;
+        }
+        .detail-thumb.active { border-color: var(--emerald); opacity: 1; box-shadow: 0 0 0 3px rgba(5,150,105,0.15); }
+        .detail-thumb:hover { opacity: 0.9; border-color: var(--mint); }
+
+        /* Quick trust bar under image */
+        .img-trust-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .img-trust-pill {
+            flex: 1;
+            min-width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: white;
+            border: 1px solid rgba(10,61,46,0.09);
+            padding: 9px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--forest);
+            box-shadow: var(--shadow-sm);
+        }
+        .img-trust-pill i { color: var(--emerald); font-size: 13px; }
+
+        /* ── RIGHT: INFO PANEL ── */
+        .detail-info-panel {}
+
+        /* Brand + name */
+        .detail-brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .detail-brand-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--light);
+            border: 1px solid rgba(5,150,105,0.25);
+            color: var(--emerald);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: 6px;
+        }
+        .detail-stock-dot {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--emerald);
+        }
+        .detail-stock-dot::before {
+            content: '';
+            width: 8px; height: 8px;
+            background: var(--emerald);
+            border-radius: 50%;
+            animation: pulseDot 1.5s infinite;
+        }
+
+        .detail-name {
+            font-size: clamp(1.5rem, 3.5vw, 2rem);
+            font-weight: 800;
+            color: var(--forest);
+            line-height: 1.2;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+        .detail-sub {
+            font-size: 14px;
+            color: var(--slate);
+            margin-bottom: 22px;
+            line-height: 1.6;
+        }
+
+        /* Rating row */
+        .detail-rating-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 22px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(10,61,46,0.08);
+        }
+        .stars { color: #f59e0b; font-size: 14px; display: flex; gap: 2px; }
+        .rating-text { font-size: 13px; color: var(--slate); font-weight: 500; }
+        .rating-count { font-size: 13px; color: var(--slate); }
+        .rating-divider { width: 1px; height: 16px; background: rgba(10,61,46,0.12); }
+
+        /* Price box */
+        .detail-price-box {
+            background: linear-gradient(135deg, var(--forest) 0%, #0d5c40 100%);
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            box-shadow: 0 12px 32px rgba(10,61,46,0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .detail-price-box::before {
+            content: '';
+            position: absolute;
+            top: -30px; right: -30px;
+            width: 100px; height: 100px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+        }
+        .detail-price-box::after {
+            content: '';
+            position: absolute;
+            bottom: -40px; left: -20px;
+            width: 120px; height: 120px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+        }
+        .price-left {}
+        .price-label { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 500; letter-spacing: 0.8px; margin-bottom: 4px; text-transform: uppercase; }
+        .detail-price { font-size: 2.4rem; font-weight: 800; color: white; line-height: 1; letter-spacing: -1px; }
+        .detail-price span { font-size: 1.4rem; font-weight: 600; }
+        .detail-price-old { font-size: 14px; color: rgba(255,255,255,0.5); text-decoration: line-through; margin-top: 4px; }
+        .price-right { text-align: center; }
+        .detail-discount {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 800;
+            box-shadow: 0 4px 16px rgba(239,68,68,0.5);
+            display: block;
+        }
+        .detail-discount small { font-size: 11px; display: block; font-weight: 600; opacity: 0.9; margin-top: 1px; }
+
+        /* Weight selector */
+        .option-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .option-section-title i { color: var(--emerald); font-size: 12px; }
+        .option-section-title span { margin-left: auto; font-size: 12px; color: var(--emerald); font-weight: 600; cursor: pointer; }
+
+        .weight-btns {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .weight-btn {
+            flex: 1;
+            padding: 13px 8px;
+            border: 2px solid rgba(10,61,46,0.12);
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--charcoal);
+            position: relative;
+            transition: var(--transition);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .weight-btn:hover { border-color: var(--emerald); background: var(--light); transform: translateY(-2px); }
+        .weight-btn.active {
+            border-color: var(--emerald);
+            background: linear-gradient(135deg, var(--forest), var(--emerald));
+            color: white;
+            box-shadow: 0 6px 20px rgba(5,150,105,0.3);
+            transform: translateY(-2px);
+        }
+        .wt-badge {
+            position: absolute;
+            top: -9px; right: -5px;
+            background: #ef4444;
+            color: white;
+            font-size: 9px;
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-weight: 800;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(239,68,68,0.4);
+        }
+        .weight-btn.active .wt-badge { background: #fbbf24; color: #1a2332; }
+
+        /* Quantity + CTA combined row */
+        .qty-cta-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            align-items: stretch;
+        }
+        @media (max-width: 480px) { .qty-cta-row { flex-direction: column; } }
+
+        .qty-wrap {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid rgba(10,61,46,0.12);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+        .qty-btn {
+            width: 44px; height: 52px;
+            background: none; border: none; cursor: pointer;
+            font-size: 20px; color: var(--emerald);
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition); font-weight: 700;
+        }
+        .qty-btn:hover { background: var(--light); }
+        .qty-input {
+            width: 52px; text-align: center;
+            font-size: 18px; font-weight: 800;
+            border: none;
+            border-left: 1px solid rgba(10,61,46,0.08);
+            border-right: 1px solid rgba(10,61,46,0.08);
+            outline: none;
+            color: var(--forest);
+            height: 52px;
+        }
+
+        .btn-order {
+            flex: 1;
+            background: linear-gradient(135deg, var(--forest) 0%, var(--emerald) 100%);
+            color: white; padding: 0 24px;
+            border-radius: 12px;
+            font-size: 15px; font-weight: 800;
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: var(--transition); text-decoration: none;
+            box-shadow: 0 8px 28px rgba(5,150,105,0.38);
+            height: 52px;
+            letter-spacing: 0.3px;
+        }
+        .btn-order:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(5,150,105,0.5); }
+
+        .btn-call {
+            min-width: 52px; width: 52px; height: 52px;
+            background: white;
+            color: var(--forest);
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            border: 2px solid rgba(10,61,46,0.14);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition); text-decoration: none;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+        .btn-call:hover { background: var(--light); border-color: var(--emerald); color: var(--emerald); }
+
+        /* WhatsApp button */
+        .btn-whatsapp {
+            width: 100%;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white; padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 15px; font-weight: 700;
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: var(--transition);
+            box-shadow: 0 6px 20px rgba(37,211,102,0.35);
+            margin-bottom: 20px;
+        }
+        .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(37,211,102,0.45); }
+
+        /* Delivery info row */
+        .delivery-info-box {
+            background: white;
+            border: 1px solid rgba(10,61,46,0.09);
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+        .delivery-icon { width: 40px; height: 40px; background: var(--light); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--emerald); font-size: 18px; flex-shrink: 0; }
+        .delivery-text strong { display: block; font-size: 14px; font-weight: 700; color: var(--forest); }
+        .delivery-text span { font-size: 12px; color: var(--slate); }
+
+        /* Trust pills row */
+        .detail-trust {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        @media (max-width: 480px) { .detail-trust { grid-template-columns: repeat(3, 1fr); gap: 6px; } }
+        .trust-pill {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: white;
+            border: 1px solid rgba(10,61,46,0.09);
+            padding: 12px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--forest);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        .trust-pill:hover { border-color: var(--emerald); background: var(--light); transform: translateY(-2px); }
+        .trust-pill i { color: var(--emerald); font-size: 18px; }
+
+        /* ── TABS (info sections) ── */
+        .info-tabs { margin-top: 52px; }
+        .tabs-nav {
+            display: flex;
+            gap: 0;
+            background: white;
+            border: 1px solid rgba(10,61,46,0.09);
+            border-radius: 14px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 6px;
+            box-shadow: var(--shadow-sm);
+        }
+        .tabs-nav::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            flex: 1;
+            flex-shrink: 0;
+            padding: 11px 16px;
+            border-radius: 10px;
+            border: none; background: none;
+            font-size: 13px; font-weight: 700;
+            color: var(--slate); cursor: pointer;
+            transition: var(--transition);
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--forest), var(--emerald));
+            color: white;
+            box-shadow: 0 4px 14px rgba(5,150,105,0.3);
+        }
+        .tab-btn:not(.active):hover { background: var(--light); color: var(--forest); }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(10,61,46,0.08);
+            box-shadow: var(--shadow-sm);
+        }
+        @media (max-width: 600px) { .info-card { padding: 20px; } }
+        .info-list { list-style: none; }
+        .info-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 13px 0;
+            border-bottom: 1px solid rgba(10,61,46,0.05);
+            font-size: 15px;
+            color: var(--charcoal);
+            line-height: 1.6;
+        }
+        .info-list li:last-child { border-bottom: none; }
+        .info-list li i { color: var(--emerald); font-size: 13px; margin-top: 4px; width: 18px; flex-shrink: 0; background: var(--light); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        /* ── ORDER FORM ── */
+        .order-section {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            border: 1px solid rgba(10,61,46,0.09);
+            box-shadow: 0 12px 48px rgba(10,61,46,0.1);
+            margin-top: 52px;
+            overflow: hidden;
+        }
+        .order-header {
+            background: linear-gradient(135deg, var(--forest) 0%, #0d6845 60%, var(--emerald) 100%);
+            padding: 28px 36px;
+            position: relative;
+            overflow: hidden;
+        }
+        .order-header::before {
+            content: '';
+            position: absolute;
+            top: -40px; right: -40px;
+            width: 160px; height: 160px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+        .order-header::after {
+            content: '';
+            position: absolute;
+            bottom: -50px; left: 20%;
+            width: 120px; height: 120px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+        }
+        @media (max-width: 600px) { .order-header { padding: 22px 20px; } }
+        .order-title {
+            display: flex; align-items: center; gap: 14px;
+            font-size: 22px; font-weight: 800; color: white;
+            position: relative; z-index: 1;
+        }
+        .order-title-icon {
+            width: 44px; height: 44px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+        .order-subtitle { font-size: 13px; color: rgba(255,255,255,0.75); margin-top: 4px; position: relative; z-index: 1; }
+
+        .order-body { padding: 32px 36px; }
+        @media (max-width: 600px) { .order-body { padding: 20px; } }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; gap: 14px; } }
+        .form-full { grid-column: 1 / -1; }
+
+        .form-group { display: flex; flex-direction: column; gap: 7px; }
+        .form-label {
+            font-size: 13px; font-weight: 700; color: var(--forest);
+            display: flex; align-items: center; gap: 7px;
+        }
+        .form-label i { color: var(--emerald); font-size: 11px; background: var(--light); width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+        .form-input {
+            border: 2px solid rgba(10,61,46,0.1);
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 15px;
+            color: var(--charcoal);
+            background: var(--cream);
+            transition: var(--transition);
+            outline: none;
+            width: 100%;
+        }
+        .form-input:focus { border-color: var(--emerald); background: white; box-shadow: 0 0 0 4px rgba(5,150,105,0.08); }
+        .form-input.error { border-color: #ef4444; background: #fef2f2; box-shadow: 0 0 0 3px rgba(239,68,68,0.08); }
+        textarea.form-input { resize: vertical; min-height: 90px; }
+
+        /* Total display */
+        .total-display {
+            background: linear-gradient(135deg, var(--light), #dcfce7);
+            border: 2px solid rgba(5,150,105,0.2);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+        .total-label { font-size: 13px; font-weight: 700; color: var(--slate); }
+        .total-amount { font-size: 22px; font-weight: 800; color: var(--forest); }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--forest) 0%, var(--emerald) 100%);
+            color: white; padding: 18px;
+            border-radius: 14px; font-size: 17px; font-weight: 800;
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: var(--transition);
+            box-shadow: 0 10px 32px rgba(5,150,105,0.4);
+            margin-top: 22px;
+            letter-spacing: 0.3px;
+        }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 16px 44px rgba(5,150,105,0.5); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* Order assurance strip */
+        .order-assurance {
+            display: flex;
+            gap: 0;
+            border-top: 1px solid rgba(10,61,46,0.07);
+            margin-top: 24px;
+        }
+        .assurance-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 14px 8px;
+            text-align: center;
+            border-right: 1px solid rgba(10,61,46,0.07);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--slate);
+        }
+        .assurance-item:last-child { border-right: none; }
+        .assurance-item i { color: var(--emerald); font-size: 16px; }
+
+        /* Related products */
+        .related-section { margin-top: 64px; }
+        .related-header { text-align: center; margin-bottom: 32px; }
+
+        /* ══ PAGE HEADER ══ */
         .page-header { background: linear-gradient(135deg, var(--forest) 0%, #0d6845 50%, var(--emerald) 100%); padding: 56px 24px; text-align: center; color: white; position: relative; overflow: hidden; }
         .page-header::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 50px 50px; }
         .page-header h1 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 700; margin-bottom: 10px; position: relative; }
         .page-header p { font-size: 16px; opacity: 0.85; position: relative; }
 
-        /* WhatsApp float — fully round */
+        /* WhatsApp float */
         .wa-float {
             position: fixed; bottom: 28px; right: 22px;
             width: 58px; height: 58px;
@@ -421,7 +970,6 @@
         <div class="slider-dots" id="sliderDots"></div>
     </div>
 
-    <!-- Trust strip — NO return item -->
     <div class="trust-strip">
         <div class="container">
             <div class="trust-items">
@@ -467,7 +1015,6 @@
     <div class="page-header"><h1>আমাদের পণ্য</h1><p>প্রকৃতির নিখাদ উপাদানে তৈরি ভেষজ পণ্যসমূহ</p></div>
     <section class="section">
         <div class="container">
-            <!-- Bangla breadcrumb -->
             <div class="breadcrumb"><a onclick="showSection('home')">হোম</a><i class="fas fa-chevron-right"></i><span>পণ্যসমূহ</span></div>
             <div class="products-grid" id="allProductsGrid">
                 <div class="loading-spinner" style="grid-column:1/-1"><i class="fas fa-spinner"></i>পণ্য লোড হচ্ছে...</div>
@@ -481,7 +1028,6 @@
     <div class="page-header"><h1>আমাদের সম্পর্কে</h1><p>প্রকৃতির টানে, সুস্বাস্থ্যের সন্ধানে</p></div>
     <section class="section">
         <div class="container">
-            <!-- Bangla breadcrumb -->
             <div class="breadcrumb"><a onclick="showSection('home')">হোম</a><i class="fas fa-chevron-right"></i><span>আমাদের সম্পর্কে</span></div>
             <div class="about-grid">
                 <div class="about-visual">
@@ -517,7 +1063,6 @@
     <div class="page-header"><h1>যোগাযোগ করুন</h1><p>আমরা সর্বদা আপনার সেবায় প্রস্তুত</p></div>
     <section class="section">
         <div class="container">
-            <!-- Bangla breadcrumb -->
             <div class="breadcrumb"><a onclick="showSection('home')">হোম</a><i class="fas fa-chevron-right"></i><span>যোগাযোগ</span></div>
             <div class="contact-grid">
                 <div class="contact-card">
@@ -545,11 +1090,10 @@
 
 <!-- PRODUCT DETAIL -->
 <div id="product-detail-section" class="page-section">
-    <section class="section" style="padding-top:40px;">
+    <div class="detail-page-wrap">
         <div class="container">
-            <!-- Bangla breadcrumb -->
             <div class="breadcrumb" id="detailBreadcrumbRow">
-                <a onclick="showSection('home')">হোম</a>
+                <a onclick="showSection('home')"><i class="fas fa-home" style="font-size:11px"></i> হোম</a>
                 <i class="fas fa-chevron-right"></i>
                 <a onclick="showSection('products')">পণ্যসমূহ</a>
                 <i class="fas fa-chevron-right"></i>
@@ -557,7 +1101,7 @@
             </div>
             <div id="productDetailContent"><div class="loading-spinner"><i class="fas fa-spinner"></i>লোড হচ্ছে...</div></div>
         </div>
-    </section>
+    </div>
 </div>
 
 <!-- FOOTER -->
@@ -646,7 +1190,6 @@ async function loadSettings() {
         document.getElementById('footerAddress').textContent = s.address;
     }
 
-    // Build slider from admin slides
     if (s.sliderSlides && s.sliderSlides.length) {
         const activeSlides = s.sliderSlides
             .filter(sl => sl.active !== false)
@@ -704,8 +1247,6 @@ function buildSlider(slides) {
         const desc  = s.desc || s.subtitle || '';
         const btnTxt = s.btnText || 'বিস্তারিত দেখুন';
 
-        // Determine button action
-        // Priority: btnProductId > btnLink
         let btnAction = '';
         if (s.btnProductId) {
             btnAction = `onclick="showProductDetail('${s.btnProductId}')"`;
@@ -774,58 +1315,127 @@ async function showProductDetail(id) {
     activeWeight = '1kg';
     currentProductPrice = p.prices?.['1kg']?.price || p.basePrice;
 
-    const imgThumbs = (p.imgs || [p.img]).filter(Boolean).map((src, i) =>
-        `<div class="detail-thumb ${i===0?'active':''}" style="background-image:url('${src}')" onclick="changeDetailImg(this,'${src}')"></div>`).join('');
+    const imgs = (p.imgs || [p.img]).filter(Boolean);
+    const imgThumbsHtml = imgs.map((src, i) =>
+        `<div class="detail-thumb ${i===0?'active':''}" style="background-image:url('${src}')" onclick="changeDetailImg(this,'${src}')"></div>`
+    ).join('');
 
     const benefitsHtml = (p.benefits||[]).map(b => `<li><i class="fas fa-check"></i>${b}</li>`).join('');
     const ingredientsHtml = (p.ingredients||[]).map(b => `<li><i class="fas fa-seedling"></i>${b}</li>`).join('');
     const usageHtml = (p.usage||[]).map(b => `<li><i class="fas fa-clock"></i>${b}</li>`).join('');
-
     const relatedHtml = allProducts.filter(x => x.id !== id).slice(0, 4).map(x => renderProductCard(x)).join('');
+
     const deliveryIn  = siteSettings.deliveryInside  || 80;
     const deliveryOut = siteSettings.deliveryOutside || 130;
+    const phoneNum    = siteSettings.phone || '01711386880';
 
     document.getElementById('productDetailContent').innerHTML = `
+        <!-- Main Detail Grid -->
         <div class="detail-grid">
-            <div>
-                <img id="detailMainImg" src="${(p.imgs||[p.img])[0]||''}" alt="${p.name}" class="detail-main-img">
-                <div class="detail-thumbs">${imgThumbs}</div>
+
+            <!-- LEFT: Images -->
+            <div class="detail-img-panel">
+                <div class="detail-main-img-wrap">
+                    <img id="detailMainImg" src="${imgs[0]||''}" alt="${p.name}" class="detail-main-img">
+                    ${p.badge ? `<div class="detail-img-badge">${p.badge}</div>` : ''}
+                    <div class="detail-img-share" onclick="openWhatsApp()" title="শেয়ার করুন">
+                        <i class="fab fa-whatsapp" style="color:#25D366"></i>
+                    </div>
+                </div>
+                ${imgs.length > 1 ? `<div class="detail-thumbs">${imgThumbsHtml}</div>` : ''}
+                <div class="img-trust-row">
+                    <div class="img-trust-pill"><i class="fas fa-shield-alt"></i> মানসম্পন্ন</div>
+                    <div class="img-trust-pill"><i class="fas fa-leaf"></i> প্রাকৃতিক</div>
+                    <div class="img-trust-pill"><i class="fas fa-award"></i> সেরা মান</div>
+                </div>
             </div>
-            <div>
-                <div class="detail-brand">NATURO — BACK TO NATURE</div>
+
+            <!-- RIGHT: Info -->
+            <div class="detail-info-panel">
+
+                <!-- Brand + Stock -->
+                <div class="detail-brand-row">
+                    <div class="detail-brand-tag"><i class="fas fa-seedling"></i> NATURO — BACK TO NATURE</div>
+                    <div class="detail-stock-dot">স্টকে আছে</div>
+                </div>
+
                 <h1 class="detail-name">${p.name}</h1>
                 <p class="detail-sub">${p.subtitle||''}</p>
-                <div class="detail-price-box">
-                    <div>
-                        <div class="detail-price">&#2547;<span id="dprice">${p.prices?.['1kg']?.price||p.basePrice}</span></div>
-                        <div class="detail-price-old">&#2547;<span id="dold">${p.prices?.['1kg']?.old||p.baseOld}</span></div>
+
+                <!-- Rating -->
+                <div class="detail-rating-row">
+                    <div class="stars">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
                     </div>
-                    <span class="detail-discount"><span id="ddis">${p.prices?.['1kg']?.dis||p.baseDiscount}</span>% ছাড়</span>
+                    <span class="rating-text">৪.৮/৫</span>
+                    <div class="rating-divider"></div>
+                    <span class="rating-count">১০০০+ রিভিউ</span>
                 </div>
-                <div class="weight-label">প্যাক সাইজ নির্বাচন করুন:</div>
+
+                <!-- Price -->
+                <div class="detail-price-box">
+                    <div class="price-left">
+                        <div class="price-label">বর্তমান মূল্য</div>
+                        <div class="detail-price">৳<span id="dprice">${p.prices?.['1kg']?.price||p.basePrice}</span></div>
+                        <div class="detail-price-old">৳<span id="dold">${p.prices?.['1kg']?.old||p.baseOld}</span></div>
+                    </div>
+                    <div class="price-right">
+                        <span class="detail-discount">
+                            <span id="ddis">${p.prices?.['1kg']?.dis||p.baseDiscount}</span>%
+                            <small>সাশ্রয়</small>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Weight -->
+                <div class="option-section-title"><i class="fas fa-weight-hanging"></i> প্যাক সাইজ নির্বাচন করুন</div>
                 <div class="weight-btns">
                     <button class="weight-btn" onclick="selectWeight(this,'2kg','${id}')">২ কেজি <span class="wt-badge">-${p.prices?.['2kg']?.dis||18}%</span></button>
                     <button class="weight-btn active" onclick="selectWeight(this,'1kg','${id}')">১ কেজি <span class="wt-badge">-${p.prices?.['1kg']?.dis||15}%</span></button>
                     <button class="weight-btn" onclick="selectWeight(this,'500gm','${id}')">৫০০ গ্রাম <span class="wt-badge">-${p.prices?.['500gm']?.dis||12}%</span></button>
                 </div>
-                <div class="weight-label">পরিমাণ:</div>
-                <div class="qty-wrap">
-                    <button class="qty-btn" onclick="changeQty(-1)">−</button>
-                    <input type="text" class="qty-input" id="qtyInput" value="1" readonly>
-                    <button class="qty-btn" onclick="changeQty(1)">+</button>
+
+                <!-- Quantity + CTA -->
+                <div class="option-section-title" style="margin-top:4px"><i class="fas fa-sort-numeric-up"></i> পরিমাণ নির্বাচন করুন</div>
+                <div class="qty-cta-row">
+                    <div class="qty-wrap">
+                        <button class="qty-btn" onclick="changeQty(-1)">−</button>
+                        <input type="text" class="qty-input" id="qtyInput" value="1" readonly>
+                        <button class="qty-btn" onclick="changeQty(1)">+</button>
+                    </div>
+                    <button class="btn-order" onclick="document.getElementById('orderFormSection').scrollIntoView({behavior:'smooth'})">
+                        <i class="fas fa-shopping-bag"></i> এখনই অর্ডার করুন
+                    </button>
+                    <a href="tel:${phoneNum}" class="btn-call" title="কল করুন">
+                        <i class="fas fa-phone-alt"></i>
+                    </a>
                 </div>
-                <div class="action-btns">
-                    <button class="btn-order" onclick="document.getElementById('orderFormSection').scrollIntoView({behavior:'smooth'})"><i class="fas fa-shopping-cart"></i> অর্ডার করুন</button>
-                    <a href="tel:${siteSettings.phone||'01711386880'}" class="btn-call"><i class="fas fa-phone-alt"></i> কল করুন</a>
+
+                <!-- WhatsApp -->
+                <button class="btn-whatsapp" onclick="openWhatsApp()">
+                    <i class="fab fa-whatsapp" style="font-size:20px"></i> WhatsApp এ অর্ডার করুন
+                </button>
+
+                <!-- Delivery info -->
+                <div class="delivery-info-box">
+                    <div class="delivery-icon"><i class="fas fa-truck"></i></div>
+                    <div class="delivery-text">
+                        <strong>ঢাকায় ৳${deliveryIn} • ঢাকার বাইরে ৳${deliveryOut}</strong>
+                        <span>সারা বাংলাদেশে ডেলিভারি • ক্যাশ অন ডেলিভারি</span>
+                    </div>
                 </div>
-                <!-- trust pills — no return pill -->
+
+                <!-- Trust pills -->
                 <div class="detail-trust">
                     <div class="trust-pill"><i class="fas fa-truck"></i>ফ্রি শিপিং</div>
-                    <div class="trust-pill"><i class="fas fa-lock"></i>নিরাপদ পেমেন্ট</div>
                     <div class="trust-pill"><i class="fas fa-hand-holding-usd"></i>ক্যাশ অন ডেলিভারি</div>
+                    <div class="trust-pill"><i class="fas fa-lock"></i>নিরাপদ পেমেন্ট</div>
                 </div>
             </div>
         </div>
+
+        <!-- Info Tabs -->
         <div class="info-tabs">
             <div class="tabs-nav">
                 <button class="tab-btn active" onclick="switchTab(this,'tab-desc')"><i class="fas fa-info-circle"></i> বিবরণ</button>
@@ -833,25 +1443,75 @@ async function showProductDetail(id) {
                 <button class="tab-btn" onclick="switchTab(this,'tab-ingredients')"><i class="fas fa-leaf"></i> উপাদান</button>
                 <button class="tab-btn" onclick="switchTab(this,'tab-usage')"><i class="fas fa-clock"></i> ব্যবহার বিধি</button>
             </div>
-            <div id="tab-desc" class="tab-pane active"><div class="info-card"><p style="font-size:16px;line-height:1.8;color:var(--slate)">${p.desc||''}</p></div></div>
+            <div id="tab-desc" class="tab-pane active"><div class="info-card"><p style="font-size:16px;line-height:1.9;color:var(--slate)">${p.desc||''}</p></div></div>
             <div id="tab-benefits" class="tab-pane"><div class="info-card"><ul class="info-list">${benefitsHtml}</ul></div></div>
             <div id="tab-ingredients" class="tab-pane"><div class="info-card"><ul class="info-list">${ingredientsHtml}</ul></div></div>
             <div id="tab-usage" class="tab-pane"><div class="info-card"><ul class="info-list">${usageHtml}</ul></div></div>
         </div>
+
+        <!-- Order Form -->
         <div class="order-section" id="orderFormSection">
-            <div class="order-title"><i class="fas fa-box-open"></i> অর্ডার করুন</div>
-            <form onsubmit="event.preventDefault(); submitOrder('${id}')">
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label"><i class="fas fa-user"></i> আপনার নাম *</label><input type="text" id="oName" class="form-input" placeholder="আপনার পুরো নাম লিখুন"></div>
-                    <div class="form-group"><label class="form-label"><i class="fas fa-phone-alt"></i> মোবাইল নম্বর *</label><input type="tel" id="oPhone" class="form-input" placeholder="01XXXXXXXXX"></div>
-                    <div class="form-group form-full"><label class="form-label"><i class="fas fa-map-marker-alt"></i> সম্পূর্ণ ঠিকানা *</label><textarea id="oAddress" class="form-input" placeholder="জেলা, উপজেলা, গ্রাম/এলাকা সহ সম্পূর্ণ ঠিকানা"></textarea></div>
-                    <div class="form-group"><label class="form-label"><i class="fas fa-truck"></i> ডেলিভারি এলাকা *</label><select id="oDelivery" class="form-input" onchange="this.classList.remove('error'); updateTotal()"><option value="" disabled selected>— এলাকা নির্বাচন করুন —</option><option value="${deliveryIn}">ঢাকার ভিতরে (${deliveryIn} টাকা)</option><option value="${deliveryOut}">ঢাকার বাহিরে (${deliveryOut} টাকা)</option></select></div>
-                    <div class="form-group" style="justify-content:center"><label class="form-label" style="opacity:0">মোট</label><div class="total-display"><span class="total-label">মোট মূল্য:</span><span class="total-amount" id="oTotal">নির্বাচন করুন</span></div></div>
+            <div class="order-header">
+                <div class="order-title">
+                    <div class="order-title-icon"><i class="fas fa-box-open"></i></div>
+                    অর্ডার ফর্ম
                 </div>
-                <button type="submit" id="submitOrderBtn" class="submit-btn"><i class="fas fa-check-circle"></i> অর্ডার কনফার্ম করুন</button>
-            </form>
+                <div class="order-subtitle">নিচের ফর্মটি পূরণ করুন — আমরা দ্রুত যোগাযোগ করব</div>
+            </div>
+            <div class="order-body">
+                <form onsubmit="event.preventDefault(); submitOrder('${id}')">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-user"></i> আপনার নাম <span style="color:#ef4444">*</span></label>
+                            <input type="text" id="oName" class="form-input" placeholder="আপনার পুরো নাম লিখুন">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-phone-alt"></i> মোবাইল নম্বর <span style="color:#ef4444">*</span></label>
+                            <input type="tel" id="oPhone" class="form-input" placeholder="01XXXXXXXXX">
+                        </div>
+                        <div class="form-group form-full">
+                            <label class="form-label"><i class="fas fa-map-marker-alt"></i> সম্পূর্ণ ঠিকানা <span style="color:#ef4444">*</span></label>
+                            <textarea id="oAddress" class="form-input" placeholder="জেলা, উপজেলা, গ্রাম/এলাকা সহ সম্পূর্ণ ঠিকানা"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-truck"></i> ডেলিভারি এলাকা <span style="color:#ef4444">*</span></label>
+                            <select id="oDelivery" class="form-input" onchange="this.classList.remove('error'); updateTotal()">
+                                <option value="" disabled selected>— এলাকা নির্বাচন করুন —</option>
+                                <option value="${deliveryIn}">ঢাকার ভিতরে (${deliveryIn} টাকা)</option>
+                                <option value="${deliveryOut}">ঢাকার বাহিরে (${deliveryOut} টাকা)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="justify-content:flex-end">
+                            <label class="form-label" style="opacity:0">মোট</label>
+                            <div class="total-display">
+                                <span class="total-label"><i class="fas fa-receipt" style="color:var(--emerald);margin-right:6px"></i>মোট মূল্য:</span>
+                                <span class="total-amount" id="oTotal">নির্বাচন করুন</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" id="submitOrderBtn" class="submit-btn">
+                        <i class="fas fa-check-circle"></i> অর্ডার কনফার্ম করুন
+                    </button>
+                </form>
+                <div class="order-assurance">
+                    <div class="assurance-item"><i class="fas fa-shield-alt"></i>নিরাপদ অর্ডার</div>
+                    <div class="assurance-item"><i class="fas fa-hand-holding-usd"></i>ক্যাশ অন ডেলিভারি</div>
+                    <div class="assurance-item"><i class="fas fa-headset"></i>২৪/৭ সাপোর্ট</div>
+                    <div class="assurance-item"><i class="fas fa-leaf"></i>১০০% প্রাকৃতিক</div>
+                </div>
+            </div>
         </div>
-        ${relatedHtml ? `<div style="margin-top:60px;"><div style="text-align:center;margin-bottom:28px;"><div class="section-label" style="justify-content:center">আরও পণ্য</div><h3 class="section-title" style="text-align:center;font-size:1.6rem">অন্যান্য পণ্য দেখুন</h3></div><div class="related-grid">${relatedHtml}</div></div>` : ''}`;
+
+        <!-- Related Products -->
+        ${relatedHtml ? `
+        <div class="related-section">
+            <div class="related-header">
+                <div class="section-label" style="justify-content:center">আরও পণ্য</div>
+                <h3 class="section-title" style="text-align:center;font-size:1.7rem">অন্যান্য পণ্য দেখুন</h3>
+            </div>
+            <div class="related-grid">${relatedHtml}</div>
+        </div>` : ''}
+    `;
 }
 
 function changeDetailImg(el, src) {
@@ -1017,7 +1677,6 @@ function resetTimer() {
     sliderTimer = setInterval(() => slideChange(1), 5000);
 }
 
-// Mobile: show arrows briefly on touch
 (function() {
     const hero = document.getElementById('heroWrap');
     let hideTimer;
