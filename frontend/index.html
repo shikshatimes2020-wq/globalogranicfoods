@@ -670,10 +670,10 @@ function buildSlider(slides) {
         let btnAction = '';
         if (s.btnProductId) {
             btnAction = `onclick="showProductDetail('${s.btnProductId}')"`;
-        } else if (s.btnLink) {
-            btnAction = `onclick="showSection('${s.btnLink}')"`;
-        } else {
+        } else if (s.btnLink === 'products' || !s.btnLink) {
             btnAction = `onclick="showSection('products')"`;
+        } else {
+            btnAction = `onclick="showSection('${s.btnLink}')"`;
         }
 
         return `<div class="slide" style="background-image:url('${img}')">
@@ -691,7 +691,7 @@ function buildSlider(slides) {
 }
 
 function renderProductCard(p) {
-    return `<a href="javascript:void(0)" onclick="showProductDetail('${p.id}')" class="product-card">
+    return `<a href="?product=${p.id}" onclick="event.preventDefault(); showProductDetail('${p.id}')" class="product-card">
         <div class="product-img-wrap">
             <div class="product-img" style="background-image:url('${p.img}')"></div>
             ${p.badge ? `<span class="product-badge ${p.badgeClass||''}">${p.badge}</span>` : ''}
@@ -717,6 +717,9 @@ function renderProductCard(p) {
 // ── Product Detail ────────────────────────────────────
 async function showProductDetail(id) {
     currentProductId = id;
+    // Update URL without page reload
+    const newUrl = window.location.pathname + '?product=' + id;
+    history.pushState({ product: id }, '', newUrl);
     document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
     document.getElementById('product-detail-section').classList.add('active');
     document.getElementById('productDetailContent').innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i>লোড হচ্ছে...</div>';
@@ -918,6 +921,10 @@ function showSection(id) {
     document.getElementById('hamburger').classList.remove('open');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     currentProductId = '';
+    // Clear product from URL when navigating away
+    if (window.location.search.includes('product=')) {
+        history.pushState({}, '', window.location.pathname);
+    }
 }
 
 function toggleMenu() {
@@ -972,11 +979,44 @@ function resetTimer() {
     sliderTimer = setInterval(() => slideChange(1), 5000);
 }
 
+// ── URL Routing ───────────────────────────────────────
+function checkUrlAndRoute() {
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('product');
+    if (productId) {
+        // Wait for products to load then show detail
+        if (allProducts.length) {
+            showProductDetail(productId);
+        } else {
+            // Will be handled after loadProducts completes
+            window._pendingProductId = productId;
+        }
+    }
+}
+
+// Handle browser back/forward buttons
+window.addEventListener('popstate', function(e) {
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('product');
+    if (productId) {
+        showProductDetail(productId);
+    } else {
+        showSection('home');
+    }
+});
+
 // ── Init ──────────────────────────────────────────────
 window._sliderBuilt = false;
 (async () => {
     await loadSettings();
     await loadProducts();
+    // Check URL after products are loaded
+    if (window._pendingProductId) {
+        showProductDetail(window._pendingProductId);
+        window._pendingProductId = null;
+    } else {
+        checkUrlAndRoute();
+    }
     resetTimer();
 })();
 </script>
