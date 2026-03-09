@@ -56,13 +56,14 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:5500', 'https://globalogranicfoods-5dse.vercel.app', 'https://globalogranicfoods.vercel.app'];
+  : ['http://localhost:3000','http://localhost:5500','http://127.0.0.1:5500','*'];
 
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log('Blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
