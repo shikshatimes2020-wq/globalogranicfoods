@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>গ্লোবাল অর্গানিক ফুডস্ - প্রাকৃতিক ও ভেজালমুক্ত খাদ্যের বিশ্বস্ত উৎস</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        :root {
+            --forest: #0a3d2e;
+            --emerald: #059669;
+            --mint: #10b981;
+            --sage: #6ee7b7;
+            --cream: #faf7f2;
+            --warm: #f5f0e8;
+            --gold: #d97706;
+            --amber: #f59e0b;
+            --charcoal: #1a2332;
+            --slate: #475569;
+            --light: #f0fdf4;
+            --white: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(10,61,46,0.08);
+            --shadow-md: 0 8px 32px rgba(10,61,46,0.12);
+            --shadow-lg: 0 20px 60px rgba(10,61,46,0.18);
+            --radius: 16px;
+            --radius-sm: 6px;
+            --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { font-family: 'Hind Siliguri', sans-serif !important; margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        .fab, .fas, .far, .fa { font-family: 'Font Awesome 6 Brands', 'Font Awesome 6 Free', sans-serif !important; }
+        body { background-color: var(--cream); color: var(--charcoal); overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--cream); }
+        ::-webkit-scrollbar-thumb { background: var(--sage); border-radius: 3px; }
+
+        .announce-bar { background: linear-gradient(90deg, var(--forest), #0d5c40, var(--forest)); color: var(--sage); text-align: center; padding: 10px 20px; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; position: relative; overflow: hidden; }
+        .announce-bar::before { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent); animation: shimmer 3s infinite; }
+        @keyframes shimmer { to { left: 150%; } }
+        .announce-bar span { color: var(--amber); font-weight: 700; }
+
+        .navbar { background: rgba(255,255,255,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(10,61,46,0.08); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 24px rgba(10,61,46,0.06); }
+        .nav-inner { max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+        .logo-wrap { display: flex; align-items: center; gap: 14px; text-decoration: none; cursor: pointer; }
+        .logo-icon { width: 48px; height: 48px; background: #ffffff; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--forest); font-size: 22px; box-shadow: 0 4px 16px rgba(5,150,105,0.20), 0 0 0 1.5px rgba(5,150,105,0.18); flex-shrink: 0; }
+        .logo-text { line-height: 1.2; }
+        .logo-title { font-size: 20px; font-weight: 700; background: linear-gradient(135deg, var(--forest), var(--emerald)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .logo-sub { font-size: 11px; color: var(--slate); font-weight: 400; }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-link { color: var(--charcoal); text-decoration: none; font-weight: 500; font-size: 15px; padding: 8px 16px; border-radius: 6px; transition: var(--transition); cursor: pointer; border: none; background: none; }
+        .nav-link:hover, .nav-link.active { background: var(--light); color: var(--emerald); }
+        .nav-cta { background: linear-gradient(135deg, var(--forest), var(--emerald)); color: white !important; padding: 10px 20px; border-radius: 6px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px; font-size: 14px; box-shadow: 0 4px 16px rgba(5,150,105,0.35); transition: var(--transition); margin-left: 8px; }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(5,150,105,0.45); }
+        .nav-cta .pulse-dot { width: 8px; height: 8px; background: var(--sage); border-radius: 50%; animation: pulseDot 1.5s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.3); } }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; border-radius: 6px; transition: var(--transition); background: none; border: none; }
+        .hamburger:hover { background: var(--light); }
+        .hamburger span { width: 24px; height: 2.5px; background: var(--forest); border-radius: 2px; transition: var(--transition); display: block; }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+        .mobile-menu { display: none; background: white; border-top: 1px solid rgba(10,61,46,0.08); padding: 12px 20px 20px; box-shadow: 0 10px 40px rgba(10,61,46,0.1); }
+        .mobile-menu.open { display: block; }
+        .mobile-menu a { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 6px; text-decoration: none; color: var(--charcoal); font-weight: 500; font-size: 16px; transition: var(--transition); cursor: pointer; }
+        .mobile-menu a:hover, .mobile-menu a.active { background: var(--light); color: var(--emerald); }
+        .mobile-menu a i { width: 20px; color: var(--emerald); }
+        .mob-call { background: linear-gradient(135deg, var(--forest), var(--emerald)) !important; color: white !important; margin-top: 8px; border-radius: 6px !important; }
+        .mob-call i { color: white !important; }
+
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+
+        .hero-wrap { position: relative; overflow: hidden; height: 560px; }
+        @media (max-width: 768px) { .hero-wrap { height: 460px; } }
+        @media (max-width: 480px) { .hero-wrap { height: 380px; } }
+        .slider-track { display: flex; height: 100%; transition: transform 0.7s cubic-bezier(0.77, 0, 0.18, 1); }
+        .slide { min-width: 100%; height: 100%; background-size: cover; background-position: center; position: relative; }
+        .slide-overlay { position: absolute; inset: 0; background: linear-gradient(120deg, rgba(10,61,46,0.82) 0%, rgba(10,61,46,0.35) 60%, rgba(0,0,0,0.1) 100%); }
+        .slide-content { position: absolute; top: 50%; left: 8%; transform: translateY(-50%); color: white; max-width: 560px; }
+        .slide-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; color: var(--sage); }
+        .slide-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.15; margin-bottom: 12px; text-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+        .slide-desc { font-size: clamp(14px, 2vw, 17px); opacity: 0.9; margin-bottom: 28px; line-height: 1.6; }
+        .slide-btn { display: inline-flex; align-items: center; gap: 10px; background: white; color: var(--forest); padding: 14px 28px; border-radius: 6px; font-weight: 700; font-size: 15px; text-decoration: none; transition: var(--transition); box-shadow: 0 8px 32px rgba(0,0,0,0.2); cursor: pointer; border: none; }
+        .slide-btn:hover { background: var(--sage); transform: translateX(4px); }
+        .slider-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.25); color: white; width: 52px; height: 52px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: var(--transition); z-index: 10; }
+        .slider-nav:hover { background: rgba(255,255,255,0.3); transform: translateY(-50%) scale(1.1); }
+        .slider-prev { left: 24px; } .slider-next { right: 24px; }
+        .slider-dots { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
+        .dot { height: 8px; width: 8px; border-radius: 6px; background: rgba(255,255,255,0.45); cursor: pointer; transition: var(--transition); border: none; }
+        .dot.active { background: white; width: 28px; }
+
+        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        .section { padding: 80px 0; }
+        @media (max-width: 768px) { .section { padding: 48px 0; } }
+        .section-label { display: inline-flex; align-items: center; gap: 8px; color: var(--emerald); font-weight: 600; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+        .section-label::before, .section-label::after { content: ''; height: 1px; width: 24px; background: var(--emerald); }
+        .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; color: var(--forest); margin-bottom: 16px; line-height: 1.25; }
+        .section-desc { color: var(--slate); font-size: 16px; line-height: 1.7; max-width: 520px; }
+
+        .trust-strip { background: white; border-bottom: 1px solid rgba(10,61,46,0.07); padding: 20px 0; }
+        .trust-items { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
+        .trust-item { display: flex; align-items: center; gap: 10px; padding: 10px 28px; border-right: 1px solid rgba(10,61,46,0.1); font-size: 14px; font-weight: 500; color: var(--charcoal); }
+        .trust-item:last-child { border-right: none; }
+        .trust-item i { color: var(--emerald); font-size: 18px; }
+        @media (max-width: 600px) { .trust-item { border: none; padding: 8px 16px; font-size: 12px; } }
+
+        .products-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; }
+        @media (max-width: 1100px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 640px) { .products-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+        .related-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        @media (max-width: 900px) { .related-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+
+        .product-card { background: white; border-radius: 6px; overflow: hidden; border: 1px solid rgba(10,61,46,0.07); transition: var(--transition); cursor: pointer; text-decoration: none; display: block; position: relative; width: 100%; }
+        .product-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); border-color: rgba(5,150,105,0.3); }
+        .product-img-wrap { position: relative; width: 100%; height: 165.67px; overflow: hidden; background: var(--warm); flex-shrink: 0; }
+        @media (max-width: 640px) { .product-img-wrap { height: 140px; } }
+        .product-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background-size: cover; background-position: center; transition: transform 0.5s ease; }
+        .product-card:hover .product-img { transform: scale(1.07); }
+        .product-badge { position: absolute; top: 10px; left: 10px; padding: 3px 9px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; z-index: 2; }
+        .badge-hot { background: #ef4444; color: white; }
+        .badge-best { background: var(--gold); color: white; }
+        .badge-new { background: var(--forest); color: white; }
+        .badge-sale { background: #8b5cf6; color: white; }
+        .product-body { width: 100%; min-height: 80px; padding: 10px 12px 12px; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-brand { font-size: 9px; font-weight: 700; color: var(--emerald); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px; }
+        .product-name { font-size: 13px; font-weight: 700; color: var(--charcoal); line-height: 1.25; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-sub { font-size: 10px; color: var(--slate); margin-bottom: 6px; }
+        .product-price { display: flex; align-items: baseline; gap: 5px; margin-bottom: 5px; flex-wrap: wrap; }
+        .price-now { font-size: 15px; font-weight: 600; color: var(--emerald); }
+        .price-old { font-size: 11px; color: #94a3b8; text-decoration: line-through; }
+        .price-save { font-size: 9px; font-weight: 700; color: #ef4444; background: #fee2e2; padding: 2px 6px; border-radius: 4px; }
+        .product-cta { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--emerald); }
+        .product-cta i { font-size: 9px; transition: transform 0.2s; }
+        .product-card:hover .product-cta i { transform: translateX(4px); }
+
+        .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+        .feature-card { background: white; border-radius: 6px; padding: 28px 22px; text-align: center; border: 1px solid rgba(10,61,46,0.07); transition: var(--transition); position: relative; overflow: hidden; }
+        .feature-card::before { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--forest), var(--emerald)); transform: scaleX(0); transition: transform 0.35s ease; transform-origin: left; }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .feature-card:hover::before { transform: scaleX(1); }
+        .feature-icon { width: 60px; height: 60px; background: var(--light); border-radius: 6px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; color: var(--emerald); transition: var(--transition); }
+        .feature-card:hover .feature-icon { background: var(--emerald); color: white; transform: rotate(-5deg) scale(1.1); }
+        .feature-title { font-size: 15px; font-weight: 700; color: var(--forest); margin-bottom: 6px; }
+        .feature-desc { font-size: 13px; color: var(--slate); line-height: 1.5; }
+
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; gap: 40px; } }
+        .about-visual { position: relative; border-radius: 6px; overflow: hidden; aspect-ratio: 4/3; background: linear-gradient(135deg, var(--forest) 0%, #0d6845 50%, var(--emerald) 100%); display: flex; align-items: center; justify-content: center; }
+        .about-pattern { position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 1px, transparent 1px), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 40px 40px; }
+        .about-center-icon { font-size: 80px; color: rgba(255,255,255,0.15); position: relative; z-index: 1; }
+        .about-stat-cards { position: absolute; bottom: 24px; left: 24px; right: 24px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .about-stat { background: rgba(255,255,255,0.12); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; padding: 16px; color: white; text-align: center; }
+        .about-stat-num { font-size: 26px; font-weight: 600; color: var(--sage); }
+        .about-stat-label { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+        .about-text p { color: var(--slate); line-height: 1.8; margin-bottom: 16px; font-size: 16px; }
+        .about-benefits { list-style: none; margin: 24px 0; display: flex; flex-direction: column; gap: 12px; }
+        .about-benefits li { display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--charcoal); }
+        .about-benefits li i { color: var(--emerald); font-size: 14px; width: 20px; }
+
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; } }
+        .contact-card { background: white; border-radius: 6px; padding: 32px; border: 1px solid rgba(10,61,46,0.08); box-shadow: var(--shadow-sm); }
+        .contact-item { display: flex; align-items: flex-start; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(10,61,46,0.06); }
+        .contact-item:last-child { border-bottom: none; }
+        .contact-icon-box { width: 48px; height: 48px; background: var(--light); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--emerald); font-size: 20px; flex-shrink: 0; }
+        .contact-item-title { font-size: 12px; font-weight: 700; color: var(--slate); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+        .contact-item-val { font-size: 16px; font-weight: 600; color: var(--forest); text-decoration: none; display: block; }
+        .contact-item-val:hover { color: var(--emerald); }
+        .contact-item-note { font-size: 12px; color: var(--slate); margin-top: 2px; }
+        .contact-map-placeholder { border-radius: 6px; overflow: hidden; height: 280px; background: linear-gradient(135deg, var(--light), var(--warm)); display: flex; align-items: center; justify-content: center; border: 2px dashed rgba(5,150,105,0.25); flex-direction: column; gap: 12px; color: var(--slate); }
+        .contact-map-placeholder i { font-size: 48px; color: var(--sage); }
+
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+        @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; gap: 32px; } }
+        .detail-main-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; box-shadow: var(--shadow-md); }
+        .detail-thumbs { display: flex; gap: 10px; margin-top: 14px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+        .detail-thumbs::-webkit-scrollbar { display: none; }
+        .detail-thumb { width: 70px; height: 70px; border-radius: 6px; flex-shrink: 0; cursor: pointer; border: 2.5px solid transparent; background-size: cover; background-position: center; transition: var(--transition); opacity: 0.65; }
+        .detail-thumb.active { border-color: var(--emerald); opacity: 1; }
+        .detail-brand { font-size: 12px; font-weight: 700; color: var(--emerald); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px; }
+        .detail-name { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; color: var(--forest); margin-bottom: 6px; }
+        .detail-sub { font-size: 15px; color: var(--slate); margin-bottom: 20px; }
+        .detail-price-box { background: var(--light); border-radius: 6px; padding: 18px 20px; display: flex; align-items: center; gap: 14px; margin-bottom: 20px; border: 1px solid rgba(5,150,105,0.15); }
+        .detail-price { font-size: 2rem; font-weight: 600; color: var(--forest); }
+        .detail-price-old { font-size: 15px; color: #94a3b8; text-decoration: line-through; }
+        .detail-discount { background: #ef4444; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; }
+        .weight-label { font-size: 13px; font-weight: 600; color: var(--slate); margin-bottom: 10px; }
+        .weight-btns { display: flex; gap: 10px; margin-bottom: 20px; }
+        .weight-btn { flex: 1; padding: 12px 8px; border: 2px solid rgba(10,61,46,0.15); border-radius: 6px; background: white; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--charcoal); position: relative; transition: var(--transition); text-align: center; }
+        .weight-btn:hover { border-color: var(--emerald); background: var(--light); }
+        .weight-btn.active { border-color: var(--emerald); background: var(--emerald); color: white; }
+        .wt-badge { position: absolute; top: -9px; right: -4px; background: #ef4444; color: white; font-size: 9px; padding: 2px 7px; border-radius: 4px; font-weight: 700; white-space: nowrap; }
+        .qty-wrap { display: flex; align-items: center; background: white; border: 2px solid rgba(10,61,46,0.15); border-radius: 6px; width: fit-content; margin-bottom: 24px; overflow: hidden; }
+        .qty-btn { width: 44px; height: 44px; background: none; border: none; cursor: pointer; font-size: 18px; color: var(--emerald); display: flex; align-items: center; justify-content: center; transition: var(--transition); font-weight: 700; }
+        .qty-btn:hover { background: var(--light); }
+        .qty-input { width: 52px; text-align: center; font-size: 18px; font-weight: 700; border: none; border-left: 1px solid rgba(10,61,46,0.1); border-right: 1px solid rgba(10,61,46,0.1); outline: none; color: var(--forest); }
+        .action-btns { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .btn-order { flex: 1; min-width: 160px; background: linear-gradient(135deg, var(--forest), var(--emerald)); color: white; padding: 15px 24px; border-radius: 6px; font-size: 16px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition); text-decoration: none; box-shadow: 0 8px 24px rgba(5,150,105,0.35); }
+        .btn-order:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(5,150,105,0.45); }
+        .btn-call { min-width: 130px; background: white; color: var(--forest); padding: 15px 20px; border-radius: 6px; font-size: 16px; font-weight: 700; border: 2px solid var(--forest); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition); text-decoration: none; }
+        .btn-call:hover { background: var(--light); }
+        .detail-trust { display: flex; gap: 8px; flex-wrap: wrap; }
+        .trust-pill { display: flex; align-items: center; gap: 6px; background: var(--light); border: 1px solid rgba(5,150,105,0.2); padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--forest); }
+        .trust-pill i { color: var(--emerald); font-size: 13px; }
+
+        .info-tabs { margin-top: 40px; }
+        .tabs-nav { display: flex; gap: 4px; background: var(--warm); padding: 6px; border-radius: 6px; margin-bottom: 24px; overflow-x: auto; scrollbar-width: none; }
+        .tabs-nav::-webkit-scrollbar { display: none; }
+        .tab-btn { flex-shrink: 0; padding: 10px 18px; border-radius: 5px; border: none; background: none; font-size: 13px; font-weight: 600; color: var(--slate); cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 6px; }
+        .tab-btn.active { background: white; color: var(--forest); box-shadow: var(--shadow-sm); }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        .info-card { background: white; border-radius: 6px; padding: 28px; border: 1px solid rgba(10,61,46,0.07); }
+        .info-list { list-style: none; }
+        .info-list li { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(10,61,46,0.05); font-size: 15px; color: var(--charcoal); line-height: 1.5; }
+        .info-list li:last-child { border-bottom: none; }
+        .info-list li i { color: var(--emerald); font-size: 13px; margin-top: 3px; width: 18px; flex-shrink: 0; }
+
+        .order-section { background: white; border-radius: 6px; padding: 36px; border: 1px solid rgba(10,61,46,0.08); box-shadow: var(--shadow-sm); margin-top: 40px; }
+        @media (max-width: 600px) { .order-section { padding: 24px 20px; } }
+        .order-title { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; color: var(--forest); margin-bottom: 28px; padding-bottom: 16px; border-bottom: 2px solid var(--light); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; gap: 12px; } }
+        .form-full { grid-column: 1 / -1; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-label { font-size: 13px; font-weight: 600; color: var(--forest); display: flex; align-items: center; gap: 6px; }
+        .form-label i { color: var(--emerald); font-size: 12px; }
+        .form-input { border: 2px solid rgba(10,61,46,0.12); border-radius: 6px; padding: 13px 16px; font-size: 15px; color: var(--charcoal); background: var(--cream); transition: var(--transition); outline: none; width: 100%; }
+        .form-input:focus { border-color: var(--emerald); background: white; box-shadow: 0 0 0 4px rgba(5,150,105,0.08); }
+        .form-input.error { border-color: #ef4444; background: #fef2f2; }
+        textarea.form-input { resize: vertical; min-height: 90px; }
+        .total-display { background: var(--light); border: 2px solid rgba(5,150,105,0.2); border-radius: 6px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+        .total-label { font-size: 14px; font-weight: 600; color: var(--slate); }
+        .total-amount { font-size: 22px; font-weight: 600; color: var(--forest); }
+        .submit-btn { width: 100%; background: linear-gradient(135deg, var(--forest), var(--emerald)); color: white; padding: 18px; border-radius: 6px; font-size: 17px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: var(--transition); box-shadow: 0 8px 28px rgba(5,150,105,0.4); margin-top: 20px; }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(5,150,105,0.5); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--slate); margin-bottom: 28px; flex-wrap: wrap; }
+        .breadcrumb a { color: var(--emerald); text-decoration: none; font-weight: 600; cursor: pointer; }
+        .breadcrumb a:hover { text-decoration: underline; }
+        .breadcrumb span { font-weight: 700; color: var(--charcoal); }
+        .breadcrumb i { font-size: 9px; color: #cbd5e1; }
+
+        .page-header { background: linear-gradient(135deg, var(--forest) 0%, #0d6845 50%, var(--emerald) 100%); padding: 56px 24px; text-align: center; color: white; position: relative; overflow: hidden; }
+        .page-header::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 50px 50px; }
+        .page-header h1 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 700; margin-bottom: 10px; position: relative; }
+        .page-header p { font-size: 16px; opacity: 0.85; position: relative; }
+
+        .wa-float { position: fixed; bottom: 28px; right: 22px; width: 58px; height: 58px; background: #25D366; color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 8px 28px rgba(37,211,102,0.5); cursor: pointer; z-index: 999; text-decoration: none; border: 3px solid rgba(255,255,255,0.35); animation: waPulse 2.5s infinite; transition: transform 0.3s; }
+        .wa-float:hover { transform: scale(1.08) translateY(-4px); animation: none; }
+        @keyframes waPulse { 0%, 100% { box-shadow: 0 8px 28px rgba(37,211,102,0.5), 0 0 0 0 rgba(37,211,102,0.5); } 50% { box-shadow: 0 8px 28px rgba(37,211,102,0.5), 0 0 0 14px rgba(37,211,102,0); } }
+        .wa-tooltip { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); background: white; color: #075e54; padding: 9px 16px; border-radius: 6px; font-size: 13px; font-weight: 700; white-space: nowrap; box-shadow: 0 6px 20px rgba(0,0,0,0.15); border: 1.5px solid #25D366; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.25s ease, visibility 0.25s ease; }
+        .wa-float:hover .wa-tooltip { opacity: 1; visibility: visible; }
+
+        .popup-overlay { position: fixed; inset: 0; background: rgba(10,61,46,0.35); backdrop-filter: blur(6px); z-index: 1000; display: none; align-items: center; justify-content: center; }
+        .popup-overlay.open { display: flex; }
+        .popup-box { background: white; border-radius: 6px; padding: 40px 32px; max-width: 380px; width: 90%; text-align: center; box-shadow: 0 40px 80px rgba(10,61,46,0.3); animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        .popup-icon { width: 72px; height: 72px; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; }
+        .popup-icon.success { background: #f0fdf4; color: var(--emerald); }
+        .popup-icon.error { background: #fef2f2; color: #ef4444; }
+        .popup-title { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+        .popup-title.success { color: var(--forest); }
+        .popup-title.error { color: #dc2626; }
+        .popup-msg { font-size: 15px; color: var(--slate); line-height: 1.7; margin-bottom: 24px; white-space: pre-line; }
+        .popup-close { background: var(--light); border: none; padding: 12px 32px; border-radius: 6px; font-weight: 700; font-size: 15px; color: var(--forest); cursor: pointer; transition: var(--transition); }
+        .popup-close:hover { background: var(--sage); }
+
+        footer { background: var(--forest); color: rgba(255,255,255,0.85); padding: 56px 0 0; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; padding-bottom: 40px; }
+        @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; } }
+        @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; gap: 28px; } }
+        .footer-brand p { font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.65); margin-top: 14px; max-width: 260px; }
+        .footer-logo-row { display: flex; align-items: center; gap: 12px; }
+        .footer-logo-icon { width: 42px; height: 42px; background: rgba(255,255,255,0.12); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .footer-logo-name { font-size: 18px; font-weight: 700; color: white; }
+        .footer-col h4 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--sage); margin-bottom: 18px; }
+        .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .footer-links a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: 14px; transition: color 0.2s; cursor: pointer; }
+        .footer-links a:hover { color: var(--sage); }
+        .footer-contact-items { display: flex; flex-direction: column; gap: 14px; }
+        .footer-contact-item { display: flex; align-items: flex-start; gap: 12px; }
+        .footer-contact-item i { color: var(--sage); font-size: 15px; margin-top: 2px; width: 16px; flex-shrink: 0; }
+        .footer-contact-item a { color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; }
+        .footer-contact-item span { color: rgba(255,255,255,0.65); font-size: 14px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding: 20px 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .footer-bottom p { font-size: 13px; color: rgba(255,255,255,0.5); }
+        .footer-social { display: flex; gap: 10px; }
+        .social-btn { width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 15px; transition: var(--transition); cursor: pointer; text-decoration: none; }
+        .social-btn:hover { background: var(--emerald); color: white; transform: translateY(-2px); }
+        .loading-spinner { text-align: center; padding: 40px; color: var(--slate); font-size: 16px; }
+        .loading-spinner i { font-size: 28px; color: var(--emerald); display: block; margin-bottom: 10px; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) { .hamburger { display: flex; } .nav-links { display: none; } }
+        .logo-img { width: 40px; height: 40px; object-fit: contain; }
+        .social-link-btn { display: flex; align-items: center; gap: 8px; padding: 10px 18px; color: white; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<!-- WhatsApp -->
+<a href="javascript:void(0)" onclick="openWhatsApp()" class="wa-float" title="WhatsApp এ যোগাযোগ করুন">
+    <i class="fab fa-whatsapp"></i>
+    <span class="wa-tooltip">WhatsApp এ অর্ডার করুন</span>
+</a>
+
+<!-- Popup -->
+<div class="popup-overlay" id="popupOverlay" onclick="closePopup()">
+    <div class="popup-box" onclick="event.stopPropagation()">
+        <div class="popup-icon" id="popupIcon"><i class="fas fa-check-circle"></i></div>
+        <h3 class="popup-title" id="popupTitle"></h3>
+        <p class="popup-msg" id="popupMsg"></p>
+        <button class="popup-close" onclick="closePopup()">ঠিক আছে</button>
+    </div>
+</div>
+
+<!-- Announcement Bar -->
+<div class="announce-bar" id="announceBar">
+    <i class="fas fa-gift"></i> &nbsp; লোড হচ্ছে... &nbsp; <i class="fas fa-gift"></i>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="nav-inner">
+        <div class="logo-wrap" onclick="showSection('home')">
+            <div class="logo-icon">
+                <img src="images/global-logo.png" alt="Logo" class="logo-img" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-seedling\'></i>'">
+            </div>
+            <div class="logo-text">
+                <div class="logo-title" id="siteNameEl">গ্লোবাল অর্গানিক ফুডস্</div>
+                <div class="logo-sub">প্রাকৃতিক ও ভেজালমুক্ত খাদ্যের বিশ্বস্ত উৎস</div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <button class="nav-link active" id="nav-home" onclick="showSection('home')"><i class="fas fa-home" style="font-size:12px;margin-right:5px"></i>হোম</button>
+            <button class="nav-link" id="nav-products" onclick="showSection('products')"><i class="fas fa-th-large" style="font-size:12px;margin-right:5px"></i>পণ্য</button>
+            <button class="nav-link" id="nav-about" onclick="showSection('about')"><i class="fas fa-leaf" style="font-size:12px;margin-right:5px"></i>সম্পর্কে</button>
+            <button class="nav-link" id="nav-contact" onclick="showSection('contact')"><i class="fas fa-envelope" style="font-size:12px;margin-right:5px"></i>যোগাযোগ</button>
+            <a href="javascript:void(0)" id="phoneLink" class="nav-cta" onclick="callPhone()">
+                <div class="pulse-dot"></div>
+                <i class="fas fa-phone-alt"></i>
+                <span id="phoneDisplay">লোড হচ্ছে...</span>
+            </a>
+        </div>
+        <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+        <a onclick="showSection('home')" id="mnav-home"><i class="fas fa-home"></i>হোম</a>
+        <a onclick="showSection('products')" id="mnav-products"><i class="fas fa-th-large"></i>পণ্য</a>
+        <a onclick="showSection('about')" id="mnav-about"><i class="fas fa-leaf"></i>আমাদের সম্পর্কে</a>
+        <a onclick="showSection('contact')" id="mnav-contact"><i class="fas fa-envelope"></i>যোগাযোগ</a>
+        <a id="mobileCallLink" href="tel:01711386880" class="mob-call"><i class="fas fa-phone-alt"></i><span id="mobilePhoneDisplay">01711-386880</span> কল করুন</a>
+    </div>
+</nav>
+
+<!-- HOME -->
+<div id="home-section" class="page-section active">
+    <div class="hero-wrap">
+        <div class="slider-track" id="sliderTrack">
+            <div class="slide" style="background-image:url('images/image.png')">
+                <div class="slide-overlay"></div>
+                <div class="slide-content">
+                    <div class="slide-tag"><i class="fas fa-star"></i> বেস্টসেলার পণ্য</div>
+                    <h2 class="slide-title">প্রকৃতির সেরা<br>ভেষজ পণ্য</h2>
+                    <p class="slide-desc">শতভাগ প্রাকৃতিক উপাদানে তৈরি — আপনার সুস্বাস্থ্যের জন্য</p>
+                    <button class="slide-btn" onclick="showSection('products')">পণ্য দেখুন <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+        <button class="slider-nav slider-prev" onclick="slideChange(-1)"><i class="fas fa-chevron-left"></i></button>
+        <button class="slider-nav slider-next" onclick="slideChange(1)"><i class="fas fa-chevron-right"></i></button>
+        <div class="slider-dots" id="sliderDots"></div>
+    </div>
+
+    <div class="trust-strip">
+        <div class="container">
+            <div class="trust-items">
+                <div class="trust-item"><i class="fas fa-leaf"></i> 100% প্রাকৃতিক উপাদান</div>
+                <div class="trust-item"><i class="fas fa-truck"></i> সারা বাংলাদেশে ফ্রি শিপিং</div>
+                <div class="trust-item"><i class="fas fa-hand-holding-usd"></i> ক্যাশ অন ডেলিভারি</div>
+                <div class="trust-item"><i class="fas fa-shield-alt"></i> <span id="returnText">৭</span> দিনের রিটার্ন গ্যারান্টি</div>
+                <div class="trust-item"><i class="fas fa-headset"></i> 24/7 কাস্টমার সাপোর্ট</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="section" style="background: var(--warm);">
+        <div class="container">
+            <div style="text-align:center; margin-bottom: 48px;">
+                <div class="section-label" style="justify-content:center">আমাদের পণ্য</div>
+                <h2 class="section-title" style="text-align:center">প্রকৃতির সেরা উপহার</h2>
+                <p class="section-desc" style="margin: 0 auto; text-align:center">শতভাগ প্রাকৃতিক ও ভেষজ উপাদানে তৈরি আমাদের বিশেষ পণ্যসমূহ।</p>
+            </div>
+            <div class="products-grid" id="homeProductsGrid">
+                <div class="loading-spinner" style="grid-column:1/-1"><i class="fas fa-spinner"></i>পণ্য লোড হচ্ছে...</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="background: var(--cream);">
+        <div class="container">
+            <div style="text-align:center; margin-bottom: 48px;">
+                <div class="section-label" style="justify-content:center">কেন আমরা</div>
+                <h2 class="section-title" style="text-align:center">আমাদের বিশেষত্ব</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-leaf"></i></div><div class="feature-title">100% প্রাকৃতিক</div><div class="feature-desc">কোনো কেমিক্যাল বা কৃত্রিম উপাদান নেই</div></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-medal"></i></div><div class="feature-title">সর্বোচ্চ মানের</div><div class="feature-desc">কঠোর মান নিয়ন্ত্রণ প্রক্রিয়ায় তৈরি</div></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-shipping-fast"></i></div><div class="feature-title">দ্রুত ডেলিভারি</div><div class="feature-desc">সারা বাংলাদেশে ফ্রি হোম ডেলিভারি</div></div>
+                <div class="feature-card"><div class="feature-icon"><i class="fas fa-hand-holding-heart"></i></div><div class="feature-title">ক্যাশ অন ডেলিভারি</div><div class="feature-desc">পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন</div></div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- PRODUCTS -->
+<div id="products-section" class="page-section">
+    <div class="page-header"><h1>আমাদের পণ্য</h1><p>প্রকৃতির নিখাদ উপাদানে তৈরি ভেষজ পণ্যসমূহ</p></div>
+    <section class="section">
+        <div class="container">
+            <div class="breadcrumb"><a onclick="showSection('home')">Home</a><i class="fas fa-chevron-right"></i><span>Products</span></div>
+            <div class="products-grid" id="allProductsGrid">
+                <div class="loading-spinner" style="grid-column:1/-1"><i class="fas fa-spinner"></i>পণ্য লোড হচ্ছে...</div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- ABOUT -->
+<div id="about-section" class="page-section">
+    <div class="page-header"><h1>আমাদের সম্পর্কে</h1><p>প্রকৃতির টানে, সুস্বাস্থ্যের সন্ধানে</p></div>
+    <section class="section">
+        <div class="container">
+            <div class="breadcrumb"><a onclick="showSection('home')">Home</a><i class="fas fa-chevron-right"></i><span>About Us</span></div>
+            <div class="about-grid">
+                <div class="about-visual">
+                    <div class="about-pattern"></div>
+                    <i class="fas fa-seedling about-center-icon"></i>
+                    <div class="about-stat-cards">
+                        <div class="about-stat"><div class="about-stat-num">100%</div><div class="about-stat-label">প্রাকৃতিক পণ্য</div></div>
+                        <div class="about-stat"><div class="about-stat-num">1000+</div><div class="about-stat-label">সন্তুষ্ট গ্রাহক</div></div>
+                        <div class="about-stat"><div class="about-stat-num" id="productCountStat">5+</div><div class="about-stat-label">ভেষজ পণ্য</div></div>
+                        <div class="about-stat"><div class="about-stat-num">10+</div><div class="about-stat-label">বছরের অভিজ্ঞতা</div></div>
+                    </div>
+                </div>
+                <div class="about-text">
+                    <div class="section-label">আমাদের গল্প</div>
+                    <h2 class="section-title">প্রকৃতির শ্রেষ্ঠ উপহার আপনার দরজায়</h2>
+                    <p>স্বাগতম <strong id="siteNameAbout">গ্লোবাল অর্গানিক ফুডস্</strong>-এ। আমরা একটি প্রতিশ্রুতিবদ্ধ উদ্যোগ যা প্রকৃতির নিখাদ উপাদানগুলোকে আধুনিক বিজ্ঞানের সাথে সমন্বয় করে তৈরি করি শতভাগ প্রাকৃতিক ও ভেষজ পণ্য।</p>
+                    <p>আমাদের লক্ষ্য হল প্রতিটি ঘরে পৌঁছে দেওয়া প্রকৃতির অমূল্য উপাদানগুলো।</p>
+                    <ul class="about-benefits">
+                        <li><i class="fas fa-check-circle"></i> শতভাগ প্রাকৃতিক ও কেমিক্যাল মুক্ত উপাদান</li>
+                        <li><i class="fas fa-check-circle"></i> আয়ুর্বেদিক পদ্ধতিতে প্রস্তুত</li>
+                        <li><i class="fas fa-check-circle"></i> কঠোর মান নিয়ন্ত্রণ প্রক্রিয়া</li>
+                        <li><i class="fas fa-check-circle"></i> হাজারেরও বেশি সন্তুষ্ট গ্রাহক</li>
+                        <li><i class="fas fa-check-circle"></i> ১০ বছরেরও বেশি অভিজ্ঞতা</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- CONTACT -->
+<div id="contact-section" class="page-section">
+    <div class="page-header"><h1>যোগাযোগ করুন</h1><p>আমরা সর্বদা আপনার সেবায় প্রস্তুত</p></div>
+    <section class="section">
+        <div class="container">
+            <div class="breadcrumb"><a onclick="showSection('home')">Home</a><i class="fas fa-chevron-right"></i><span>Contact</span></div>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h3 style="font-size:20px;color:var(--forest);margin-bottom:4px;font-weight:700;">আমাদের সাথে কথা বলুন</h3>
+                    <p style="font-size:14px;color:var(--slate);margin-bottom:20px;">যেকোনো প্রশ্ন বা অর্ডারের জন্য যোগাযোগ করুন</p>
+                    <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-phone-alt"></i></div><div><div class="contact-item-title">ফোন নম্বর</div><a id="contactPhone" href="tel:01711386880" class="contact-item-val">01711-386880</a><div class="contact-item-note">24/7 সাপোর্ট উপলব্ধ</div></div></div>
+                    <div class="contact-item"><div class="contact-icon-box"><i class="fab fa-whatsapp"></i></div><div><div class="contact-item-title">হোয়াটসঅ্যাপ</div><a href="javascript:void(0)" onclick="openWhatsApp()" class="contact-item-val" id="contactWA">01711-386880</a><div class="contact-item-note">মেসেজ করুন যেকোনো সময়</div></div></div>
+                    <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-envelope"></i></div><div><div class="contact-item-title">ইমেইল</div><a id="contactEmail" href="mailto:support@globalorganicfoods.com" class="contact-item-val" style="font-size:14px;">support@globalorganicfoods.com</a><div class="contact-item-note">24 ঘণ্টার মধ্যে রিপ্লাই</div></div></div>
+                    <div class="contact-item"><div class="contact-icon-box"><i class="fas fa-map-marker-alt"></i></div><div><div class="contact-item-title">ঠিকানা</div><span class="contact-item-val" id="contactAddress" style="font-size:15px;">ঢাকা, বাংলাদেশ</span><div class="contact-item-note">শনি–বৃহস্পতি: সকাল ৯টা – সন্ধ্যা ৬টা</div></div></div>
+                </div>
+                <div>
+                    <div class="contact-map-placeholder"><i class="fas fa-map-marked-alt"></i><p>ঢাকা, বাংলাদেশ</p><span>আমাদের অফিসের অবস্থান</span></div>
+                    <div style="margin-top:20px;background:white;border-radius:6px;padding:24px;border:1px solid rgba(10,61,46,0.08);">
+                        <h4 style="font-size:16px;font-weight:700;color:var(--forest);margin-bottom:16px;"><i class="fas fa-share-alt" style="color:var(--emerald);margin-right:8px;"></i>সোশ্যাল মিডিয়া</h4>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                            <a href="javascript:void(0)" onclick="openWhatsApp()" class="social-link-btn" style="background:#25D366;"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                            <a href="#" class="social-link-btn" style="background:#1877f2;"><i class="fab fa-facebook-f"></i> Facebook</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- PRODUCT DETAIL -->
+<div id="product-detail-section" class="page-section">
+    <section class="section" style="padding-top:40px;">
+        <div class="container">
+            <div class="breadcrumb" id="detailBreadcrumbRow">
+                <a onclick="showSection('home')">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a onclick="showSection('products')">Products</a>
+                <i class="fas fa-chevron-right"></i>
+                <span id="detailBreadcrumb">Detail</span>
+            </div>
+            <div id="productDetailContent"><div class="loading-spinner"><i class="fas fa-spinner"></i>লোড হচ্ছে...</div></div>
+        </div>
+    </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo-row"><div class="footer-logo-icon"><i class="fas fa-seedling"></i></div><div class="footer-logo-name" id="footerSiteName">গ্লোবাল অর্গানিক ফুডস্</div></div>
+                <p>প্রকৃতির টানে, ভালোবাসার বাঁধনে। শতভাগ প্রাকৃতিক ও হারবাল পণ্য নিয়ে আপনার সুস্বাস্থ্যের পাশে আছি।</p>
+            </div>
+            <div class="footer-col"><h4>দ্রুত লিংক</h4><ul class="footer-links"><li><a onclick="showSection('home')">হোম</a></li><li><a onclick="showSection('products')">পণ্য</a></li><li><a onclick="showSection('about')">আমাদের সম্পর্কে</a></li><li><a onclick="showSection('contact')">যোগাযোগ</a></li></ul></div>
+            <div class="footer-col"><h4>গ্রাহক সেবা</h4><ul class="footer-links"><li><a href="#">রিটার্ন পলিসি</a></li><li><a href="#">শিপিং তথ্য</a></li><li><a href="#">প্রায়শ জিজ্ঞাসিত</a></li><li><a href="#">প্রাইভেসি পলিসি</a></li></ul></div>
+            <div class="footer-col"><h4>যোগাযোগ</h4>
+                <div class="footer-contact-items">
+                    <div class="footer-contact-item"><i class="fas fa-phone-alt"></i><a id="footerPhone" href="tel:01711386880">01711-386880</a></div>
+                    <div class="footer-contact-item"><i class="fab fa-whatsapp"></i><a href="javascript:void(0)" onclick="openWhatsApp()">WhatsApp এ যোগাযোগ</a></div>
+                    <div class="footer-contact-item"><i class="fas fa-envelope"></i><a id="footerEmail" href="mailto:support@globalorganicfoods.com">support@globalorganicfoods.com</a></div>
+                    <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span id="footerAddress">ঢাকা, বাংলাদেশ</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 <span id="footerCopyright">গ্লোবাল অর্গানিক ফুডস্</span> | সর্বস্বত্ব সংরক্ষিত</p>
+            <div class="footer-social">
+                <a href="javascript:void(0)" onclick="openWhatsApp()" class="social-btn"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ── Config ────────────────────────────────────────────
+const API_BASE = window.GOF_API || 'https://globalorganicfoods-backend.onrender.com/api';
+
+let siteSettings = {};
+let allProducts = [];
+let currentProductId = '';
+let currentProductPrice = 0;
+let activeWeight = '1kg';
+
+// ── API ───────────────────────────────────────────────
+async function fetchAPI(path) {
+    try {
+        const r = await fetch(API_BASE + path);
+        return await r.json();
+    } catch(e) { console.error('API Error:', e); return { success: false }; }
+}
+
+// ── Load Settings ─────────────────────────────────────
+async function loadSettings() {
+    const d = await fetchAPI('/settings');
+    if (!d.success) return;
+    siteSettings = d.settings;
+    const s = siteSettings;
+
+    // Announcement
+    if (s.announcement) {
+        document.getElementById('announceBar').innerHTML = `<i class="fas fa-gift"></i> &nbsp; ${s.announcement} &nbsp; <i class="fas fa-gift"></i>`;
+    }
+    // Site name
+    if (s.siteName) {
+        document.getElementById('siteNameEl').textContent = s.siteName;
+        document.getElementById('siteNameAbout').textContent = s.siteName;
+        document.getElementById('footerSiteName').textContent = s.siteName;
+        document.getElementById('footerCopyright').textContent = s.siteName;
+        document.title = s.siteName + ' - প্রাকৃতিক ও ভেজালমুক্ত খাদ্যের বিশ্বস্ত উৎস';
+    }
+    // Phone
+    if (s.phone) {
+        document.getElementById('phoneDisplay').textContent = s.phone;
+        document.getElementById('mobilePhoneDisplay').textContent = s.phone;
+        document.getElementById('contactPhone').textContent = s.phone;
+        document.getElementById('contactPhone').href = 'tel:' + s.phone;
+        document.getElementById('mobileCallLink').href = 'tel:' + s.phone;
+        document.getElementById('footerPhone').textContent = s.phone;
+        document.getElementById('footerPhone').href = 'tel:' + s.phone;
+    }
+    if (s.whatsapp) document.getElementById('contactWA').textContent = s.phone || s.whatsapp;
+    if (s.email) {
+        document.getElementById('contactEmail').textContent = s.email;
+        document.getElementById('contactEmail').href = 'mailto:' + s.email;
+        document.getElementById('footerEmail').textContent = s.email;
+        document.getElementById('footerEmail').href = 'mailto:' + s.email;
+    }
+    if (s.address) {
+        document.getElementById('contactAddress').textContent = s.address;
+        document.getElementById('footerAddress').textContent = s.address;
+    }
+    if (s.returnDays) document.getElementById('returnText').textContent = s.returnDays;
+}
+
+// ── Load Products ─────────────────────────────────────
+async function loadProducts() {
+    const d = await fetchAPI('/products');
+    if (!d.success || !d.products.length) return;
+    allProducts = d.products;
+
+    // Slider
+    buildSlider(allProducts.slice(0, 4));
+
+    // Product grids
+    const html = allProducts.map(p => renderProductCard(p)).join('');
+    document.getElementById('homeProductsGrid').innerHTML = html;
+    document.getElementById('allProductsGrid').innerHTML = html;
+
+    // About count
+    document.getElementById('productCountStat').textContent = allProducts.length + '+';
+}
+
+function buildSlider(products) {
+    const track = document.getElementById('sliderTrack');
+    const heroImgs = [
+        'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1400&q=80',
+        'https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=1400&q=80',
+        'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1400&q=80',
+        'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=1400&q=80',
+    ];
+    track.innerHTML = products.map((p, i) => `
+        <div class="slide" style="background-image:url('${p.img || heroImgs[i % heroImgs.length]}')">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <div class="slide-tag"><i class="fas fa-star"></i> ${p.badge || 'বিশেষ পণ্য'}</div>
+                <h2 class="slide-title">${p.name}</h2>
+                <p class="slide-desc">${p.subtitle || ''}</p>
+                <button class="slide-btn" onclick="showProductDetail('${p.id}')">বিস্তারিত দেখুন <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>`).join('');
+    buildDots(products.length);
+    resetTimer();
+}
+
+function renderProductCard(p) {
+    return `<a href="javascript:void(0)" onclick="showProductDetail('${p.id}')" class="product-card">
+        <div class="product-img-wrap">
+            <div class="product-img" style="background-image:url('${p.img}')"></div>
+            ${p.badge ? `<span class="product-badge ${p.badgeClass||''}">${p.badge}</span>` : ''}
+        </div>
+        <div class="product-body">
+            <div>
+                <div class="product-brand">NATURO</div>
+                <div class="product-name">${p.name}</div>
+                <div class="product-sub">BACK TO NATURE</div>
+            </div>
+            <div>
+                <div class="product-price">
+                    <span class="price-now">&#2547;${p.basePrice}</span>
+                    <span class="price-old">&#2547;${p.baseOld}</span>
+                    <span class="price-save">${p.baseDiscount}% off</span>
+                </div>
+                <div class="product-cta">বিস্তারিত দেখুন <i class="fas fa-arrow-right"></i></div>
+            </div>
+        </div>
+    </a>`;
+}
+
+// ── Product Detail ────────────────────────────────────
+async function showProductDetail(id) {
+    currentProductId = id;
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('product-detail-section').classList.add('active');
+    document.getElementById('productDetailContent').innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner"></i>লোড হচ্ছে...</div>';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    let p = allProducts.find(x => x.id === id);
+    if (!p) {
+        const d = await fetchAPI('/products/' + id);
+        if (!d.success) { document.getElementById('productDetailContent').innerHTML = '<p>পণ্য পাওয়া যায়নি</p>'; return; }
+        p = d.product;
+    }
+
+    document.getElementById('detailBreadcrumb').textContent = p.name;
+    activeWeight = '1kg';
+    currentProductPrice = p.prices?.['1kg']?.price || p.basePrice;
+
+    const imgThumbs = (p.imgs || [p.img]).filter(Boolean).map((src, i) =>
+        `<div class="detail-thumb ${i===0?'active':''}" style="background-image:url('${src}')" onclick="changeDetailImg(this,'${src}')"></div>`).join('');
+
+    const benefitsHtml = (p.benefits||[]).map(b => `<li><i class="fas fa-check"></i>${b}</li>`).join('');
+    const ingredientsHtml = (p.ingredients||[]).map(b => `<li><i class="fas fa-seedling"></i>${b}</li>`).join('');
+    const usageHtml = (p.usage||[]).map(b => `<li><i class="fas fa-clock"></i>${b}</li>`).join('');
+
+    const relatedHtml = allProducts.filter(x => x.id !== id).slice(0, 4).map(x => renderProductCard(x)).join('');
+    const deliveryIn  = siteSettings.deliveryInside  || 80;
+    const deliveryOut = siteSettings.deliveryOutside || 130;
+
+    document.getElementById('productDetailContent').innerHTML = `
+        <div class="detail-grid">
+            <div>
+                <img id="detailMainImg" src="${(p.imgs||[p.img])[0]||''}" alt="${p.name}" class="detail-main-img">
+                <div class="detail-thumbs">${imgThumbs}</div>
+            </div>
+            <div>
+                <div class="detail-brand">NATURO — BACK TO NATURE</div>
+                <h1 class="detail-name">${p.name}</h1>
+                <p class="detail-sub">${p.subtitle||''}</p>
+                <div class="detail-price-box">
+                    <div>
+                        <div class="detail-price">&#2547;<span id="dprice">${p.prices?.['1kg']?.price||p.basePrice}</span></div>
+                        <div class="detail-price-old">&#2547;<span id="dold">${p.prices?.['1kg']?.old||p.baseOld}</span></div>
+                    </div>
+                    <span class="detail-discount"><span id="ddis">${p.prices?.['1kg']?.dis||p.baseDiscount}</span>% off</span>
+                </div>
+                <div class="weight-label">প্যাক সাইজ নির্বাচন করুন:</div>
+                <div class="weight-btns">
+                    <button class="weight-btn" onclick="selectWeight(this,'2kg','${id}')">2 কেজি <span class="wt-badge">-${p.prices?.['2kg']?.dis||18}%</span></button>
+                    <button class="weight-btn active" onclick="selectWeight(this,'1kg','${id}')">1 কেজি <span class="wt-badge">-${p.prices?.['1kg']?.dis||15}%</span></button>
+                    <button class="weight-btn" onclick="selectWeight(this,'500gm','${id}')">500 গ্রাম <span class="wt-badge">-${p.prices?.['500gm']?.dis||12}%</span></button>
+                </div>
+                <div class="weight-label">পরিমাণ:</div>
+                <div class="qty-wrap">
+                    <button class="qty-btn" onclick="changeQty(-1)">−</button>
+                    <input type="text" class="qty-input" id="qtyInput" value="1" readonly>
+                    <button class="qty-btn" onclick="changeQty(1)">+</button>
+                </div>
+                <div class="action-btns">
+                    <button class="btn-order" onclick="document.getElementById('orderFormSection').scrollIntoView({behavior:'smooth'})"><i class="fas fa-shopping-cart"></i> অর্ডার করুন</button>
+                    <a href="tel:${siteSettings.phone||'01711386880'}" class="btn-call"><i class="fas fa-phone-alt"></i> কল করুন</a>
+                </div>
+                <div class="detail-trust">
+                    <div class="trust-pill"><i class="fas fa-truck"></i>ফ্রি শিপিং</div>
+                    <div class="trust-pill"><i class="fas fa-undo"></i>${siteSettings.returnDays||7} দিন রিটার্ন</div>
+                    <div class="trust-pill"><i class="fas fa-lock"></i>নিরাপদ পেমেন্ট</div>
+                    <div class="trust-pill"><i class="fas fa-hand-holding-usd"></i>ক্যাশ অন ডেলিভারি</div>
+                </div>
+            </div>
+        </div>
+        <div class="info-tabs">
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab(this,'tab-desc')"><i class="fas fa-info-circle"></i> বিবরণ</button>
+                <button class="tab-btn" onclick="switchTab(this,'tab-benefits')"><i class="fas fa-check-circle"></i> উপকারিতা</button>
+                <button class="tab-btn" onclick="switchTab(this,'tab-ingredients')"><i class="fas fa-leaf"></i> উপাদান</button>
+                <button class="tab-btn" onclick="switchTab(this,'tab-usage')"><i class="fas fa-clock"></i> ব্যবহার বিধি</button>
+            </div>
+            <div id="tab-desc" class="tab-pane active"><div class="info-card"><p style="font-size:16px;line-height:1.8;color:var(--slate)">${p.desc||''}</p></div></div>
+            <div id="tab-benefits" class="tab-pane"><div class="info-card"><ul class="info-list">${benefitsHtml}</ul></div></div>
+            <div id="tab-ingredients" class="tab-pane"><div class="info-card"><ul class="info-list">${ingredientsHtml}</ul></div></div>
+            <div id="tab-usage" class="tab-pane"><div class="info-card"><ul class="info-list">${usageHtml}</ul></div></div>
+        </div>
+        <div class="order-section" id="orderFormSection">
+            <div class="order-title"><i class="fas fa-box-open"></i> অর্ডার করুন</div>
+            <form onsubmit="event.preventDefault(); submitOrder('${id}')">
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label"><i class="fas fa-user"></i> আপনার নাম *</label><input type="text" id="oName" class="form-input" placeholder="আপনার পুরো নাম লিখুন"></div>
+                    <div class="form-group"><label class="form-label"><i class="fas fa-phone-alt"></i> মোবাইল নম্বর *</label><input type="tel" id="oPhone" class="form-input" placeholder="01XXXXXXXXX"></div>
+                    <div class="form-group form-full"><label class="form-label"><i class="fas fa-map-marker-alt"></i> সম্পূর্ণ ঠিকানা *</label><textarea id="oAddress" class="form-input" placeholder="জেলা, উপজেলা, গ্রাম/এলাকা সহ সম্পূর্ণ ঠিকানা"></textarea></div>
+                    <div class="form-group"><label class="form-label"><i class="fas fa-truck"></i> ডেলিভারি এলাকা *</label><select id="oDelivery" class="form-input" onchange="this.classList.remove('error'); updateTotal()"><option value="" disabled selected>— এলাকা নির্বাচন করুন —</option><option value="${deliveryIn}">ঢাকার ভিতরে (${deliveryIn} টাকা)</option><option value="${deliveryOut}">ঢাকার বাহিরে (${deliveryOut} টাকা)</option></select></div>
+                    <div class="form-group" style="justify-content:center"><label class="form-label" style="opacity:0">মোট</label><div class="total-display"><span class="total-label">মোট মূল্য:</span><span class="total-amount" id="oTotal">নির্বাচন করুন</span></div></div>
+                </div>
+                <button type="submit" id="submitOrderBtn" class="submit-btn"><i class="fas fa-check-circle"></i> অর্ডার কনফার্ম করুন</button>
+            </form>
+        </div>
+        ${relatedHtml ? `<div style="margin-top:60px;"><div style="text-align:center;margin-bottom:28px;"><div class="section-label" style="justify-content:center">আরও পণ্য</div><h3 class="section-title" style="text-align:center;font-size:1.6rem">অন্যান্য পণ্য দেখুন</h3></div><div class="related-grid">${relatedHtml}</div></div>` : ''}`;
+}
+
+function changeDetailImg(el, src) {
+    document.getElementById('detailMainImg').src = src;
+    document.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function selectWeight(el, wt, productId) {
+    document.querySelectorAll('.weight-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    activeWeight = wt;
+    const p = allProducts.find(x => x.id === productId) || {};
+    const pd = p.prices?.[wt] || {};
+    if (document.getElementById('dprice')) document.getElementById('dprice').textContent = pd.price || '';
+    if (document.getElementById('dold')) document.getElementById('dold').textContent = pd.old || '';
+    if (document.getElementById('ddis')) document.getElementById('ddis').textContent = pd.dis || '';
+    currentProductPrice = pd.price || 0;
+    updateTotal();
+}
+
+function changeQty(delta) {
+    const inp = document.getElementById('qtyInput');
+    if (!inp) return;
+    let v = parseInt(inp.value) + delta;
+    if (v < 1) v = 1;
+    inp.value = v;
+    updateTotal();
+}
+
+function updateTotal() {
+    const del = document.getElementById('oDelivery');
+    const qty = parseInt(document.getElementById('qtyInput')?.value) || 1;
+    const tot = document.getElementById('oTotal');
+    if (!tot) return;
+    if (del && del.value) {
+        tot.textContent = (currentProductPrice * qty + parseInt(del.value)) + ' টাকা';
+    } else {
+        tot.textContent = (currentProductPrice * qty) + ' টাকা + ডেলিভারি';
+    }
+}
+
+function switchTab(btn, tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+}
+
+async function submitOrder(productId) {
+    const name = document.getElementById('oName').value.trim();
+    const phone = document.getElementById('oPhone').value.trim();
+    const address = document.getElementById('oAddress').value.trim();
+    const delivery = document.getElementById('oDelivery');
+    let err = '';
+    [document.getElementById('oName'), document.getElementById('oPhone'), document.getElementById('oAddress'), delivery].forEach(el => el && el.classList.remove('error'));
+    if (!name) { document.getElementById('oName').classList.add('error'); err = err || 'আপনার নাম লিখুন'; }
+    if (!phone) { document.getElementById('oPhone').classList.add('error'); err = err || 'মোবাইল নম্বর লিখুন'; }
+    if (!address) { document.getElementById('oAddress').classList.add('error'); err = err || 'সম্পূর্ণ ঠিকানা লিখুন'; }
+    if (!delivery.value) { delivery.classList.add('error'); err = err || 'ডেলিভারি এলাকা নির্বাচন করুন'; }
+    if (err) { showPopup(false, 'অনুগ্রহ করে সকল তথ্য সঠিকভাবে পূরণ করুন।\n\n' + err); return; }
+
+    const p = allProducts.find(x => x.id === productId) || {};
+    const qty = parseInt(document.getElementById('qtyInput').value) || 1;
+    const deliveryCharge = parseInt(delivery.value);
+    const deliveryArea = delivery.options[delivery.selectedIndex].text;
+    const btn = document.getElementById('submitOrderBtn');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> পাঠানো হচ্ছে...';
+
+    try {
+        const r = await fetch(API_BASE + '/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                productId, productName: p.name, weight: activeWeight,
+                quantity: qty, unitPrice: currentProductPrice,
+                deliveryCharge, totalPrice: currentProductPrice * qty + deliveryCharge,
+                customerName: name, phone, address, deliveryArea,
+            })
+        });
+        const d = await r.json();
+        if (d.success) {
+            showPopup(true, `${p.name} অর্ডার সফলভাবে গ্রহণ করা হয়েছে!\n\nঅর্ডার নম্বর: ${d.orderNumber}\nপরিমাণ: ${qty} প্যাক (${activeWeight})\nমূল্য: ৳${currentProductPrice * qty + deliveryCharge}\n\nআমাদের প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবেন।`);
+            document.getElementById('oName').value = '';
+            document.getElementById('oPhone').value = '';
+            document.getElementById('oAddress').value = '';
+            delivery.selectedIndex = 0;
+            document.getElementById('qtyInput').value = '1';
+            document.getElementById('oTotal').textContent = 'নির্বাচন করুন';
+        } else { showPopup(false, d.message || 'অর্ডার সম্পন্ন হয়নি। পুনরায় চেষ্টা করুন।'); }
+    } catch(e) { showPopup(false, 'সার্ভারের সাথে সংযোগ করা যায়নি। পরে চেষ্টা করুন।'); }
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-check-circle"></i> অর্ডার কনফার্ম করুন';
+}
+
+// ── Navigation ────────────────────────────────────────
+function showSection(id) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id + '-section').classList.add('active');
+    document.querySelectorAll('.nav-link, #mobileMenu a').forEach(l => l.classList.remove('active'));
+    const navEl = document.getElementById('nav-' + id);
+    const mnavEl = document.getElementById('mnav-' + id);
+    if (navEl) navEl.classList.add('active');
+    if (mnavEl) mnavEl.classList.add('active');
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    currentProductId = '';
+}
+
+function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+    document.getElementById('hamburger').classList.toggle('open');
+}
+
+function openWhatsApp() {
+    const wa = siteSettings.whatsapp || '8801711386880';
+    let msg = 'আমি একটি অর্ডার করতে চাই। দয়া করে বিস্তারিত জানান।';
+    if (currentProductId) {
+        const p = allProducts.find(x => x.id === currentProductId) || {};
+        const qty = document.getElementById('qtyInput')?.value || '1';
+        msg = `আমি "${p.name}" অর্ডার করতে চাই।\nপরিমাণ: ${qty} প্যাক (${activeWeight})\nমূল্য: ৳${currentProductPrice}\nদয়া করে অর্ডার কনফার্ম করুন।`;
+    }
+    window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function callPhone() { window.location.href = 'tel:' + (siteSettings.phone || '01711386880'); }
+
+function showPopup(success, msg) {
+    document.getElementById('popupIcon').className = 'popup-icon ' + (success ? 'success' : 'error');
+    document.getElementById('popupIcon').innerHTML = success ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-circle"></i>';
+    document.getElementById('popupTitle').className = 'popup-title ' + (success ? 'success' : 'error');
+    document.getElementById('popupTitle').textContent = success ? 'অভিনন্দন! 🎉' : 'দুঃখিত!';
+    document.getElementById('popupMsg').textContent = msg;
+    document.getElementById('popupOverlay').classList.add('open');
+}
+function closePopup() { document.getElementById('popupOverlay').classList.remove('open'); }
+
+// ── Slider ────────────────────────────────────────────
+let slide = 0, totalSlides = 1, sliderTimer;
+function buildDots(n) {
+    totalSlides = n;
+    const c = document.getElementById('sliderDots');
+    c.innerHTML = '';
+    for (let i = 0; i < n; i++) {
+        const d = document.createElement('button');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        d.onclick = () => goSlide(i);
+        c.appendChild(d);
+    }
+}
+function updateSlider() {
+    document.getElementById('sliderTrack').style.transform = `translateX(-${slide * 100}%)`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === slide));
+}
+function slideChange(d) { slide = (slide + d + totalSlides) % totalSlides; updateSlider(); resetTimer(); }
+function goSlide(i) { slide = i; updateSlider(); resetTimer(); }
+function resetTimer() { clearInterval(sliderTimer); sliderTimer = setInterval(() => slideChange(1), 5000); }
+
+// ── Init ──────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    loadSettings();
+    loadProducts();
+});
+</script>
+</body>
+</html>
