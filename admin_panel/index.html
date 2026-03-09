@@ -976,7 +976,7 @@ async function changePassword() {
 // Allow API URL configuration
 const savedApi = localStorage.getItem('gof_api');
 if (!savedApi) {
-  const url = prompt('Backend API URL দিন (e.g. https://your-backend.onrender.com):', 'https://globalorganicfoods-backend.onrender.com');
+  const url = prompt('Backend API URL দিন (e.g. https://globalogranicfoods.onrender.com):', 'https://globalogranicfoods-backend.onrender.com');
   if (url) localStorage.setItem('gof_api', url.replace(/\/$/, ''));
   location.reload();
 } else {
