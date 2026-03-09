@@ -460,25 +460,22 @@ select.form-input{cursor:pointer;}
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-// ✅ API URL hardcoded - no prompt needed
-const BACKEND_URL = 'https://globalogranicfoods.onrender.com';
-localStorage.setItem('gof_api', BACKEND_URL);
-{
-  const API = BACKEND_URL + '/api';
-  let TOKEN = localStorage.getItem('gof_token') || '';
-  let ordersPage = 1, ordersDebTimer;
-  let editingProductId = null;
-  let productImgUrls = [];
+// ✅ API URL hardcoded — no prompt needed
+const API = 'https://globalogranicfoods.onrender.com/api';
+let TOKEN = localStorage.getItem('gof_token') || '';
+let ordersPage = 1, ordersDebTimer;
+let editingProductId = null;
+let productImgUrls = [];
 
-  const $  = id => document.getElementById(id);
-  const headers = () => ({ 'Content-Type':'application/json', 'Authorization':'Bearer '+TOKEN });
+const $ = id => document.getElementById(id);
+const headers = () => ({ 'Content-Type':'application/json', 'Authorization':'Bearer '+TOKEN });
 
-  async function api(path, opts={}) {
+async function api(path, opts={}) {
     const r = await fetch(API+path, { headers: headers(), ...opts });
     return r.json();
   }
 
-  function toast(msg, type='success') {
+function toast(msg, type='success') {
     const t = document.createElement('div');
     t.className = `toast ${type}`;
     t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle'}"></i>${msg}`;
@@ -486,16 +483,16 @@ localStorage.setItem('gof_api', BACKEND_URL);
     setTimeout(() => t.remove(), 3500);
   }
 
-  function closeModal(id) { $(id).classList.remove('open'); }
-  function openModal(id)  { $(id).classList.add('open'); }
+function closeModal(id) { $(id).classList.remove('open'); }
+function openModal(id)  { $(id).classList.add('open'); }
 
-  function statusHtml(s) {
+function statusHtml(s) {
     const map = { pending:'s-pending', confirmed:'s-confirmed', processing:'s-processing', shipped:'s-shipped', delivered:'s-delivered', cancelled:'s-cancelled' };
     const lbl = { pending:'⏳ পেন্ডিং', confirmed:'✅ নিশ্চিত', processing:'⚙️ প্রক্রিয়াধীন', shipped:'🚚 পাঠানো হয়েছে', delivered:'🎉 ডেলিভারি হয়েছে', cancelled:'❌ বাতিল' };
     return `<span class="status ${map[s]||''}">${lbl[s]||s}</span>`;
   }
 
-  async function doLogin() {
+async function doLogin() {
     const username = $('loginUser').value.trim();
     const password = $('loginPass').value.trim();
     try {
@@ -519,7 +516,7 @@ localStorage.setItem('gof_api', BACKEND_URL);
     }
   }
 
-  async function checkToken() {
+async function checkToken() {
     if (!TOKEN) return;
     try {
       const d = await api('/auth/verify');
@@ -533,13 +530,13 @@ localStorage.setItem('gof_api', BACKEND_URL);
     } catch { TOKEN=''; localStorage.removeItem('gof_token'); }
   }
 
-  function doLogout() {
+function doLogout() {
     TOKEN = ''; localStorage.removeItem('gof_token');
     $('app').style.display = 'none';
     $('loginScreen').style.display = 'flex';
   }
 
-  function showPage(id) {
+function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     $('page-'+id).classList.add('active');
@@ -553,12 +550,12 @@ localStorage.setItem('gof_api', BACKEND_URL);
     $('sidebar').classList.remove('mobile-open');
   }
 
-  function pageName(id) {
+function pageName(id) {
     const m = { dashboard:'ড্যাশ', orders:'অর্ডার', products:'পণ্য', settings:'সাইট', changepass:'পাস' };
     return m[id] || id;
   }
 
-  function toggleSidebar() {
+function toggleSidebar() {
     if (window.innerWidth <= 768) {
       $('sidebar').classList.toggle('mobile-open');
     } else {
@@ -567,7 +564,7 @@ localStorage.setItem('gof_api', BACKEND_URL);
     }
   }
 
-  async function loadDashboard() {
+async function loadDashboard() {
     const d = await api('/admin/stats');
     if (!d.success) return;
     const s = d.stats;
@@ -632,12 +629,12 @@ localStorage.setItem('gof_api', BACKEND_URL);
     }
   }
 
-  function debounceOrders() {
+function debounceOrders() {
     clearTimeout(ordersDebTimer);
     ordersDebTimer = setTimeout(() => { ordersPage=1; loadOrders(); }, 400);
   }
 
-  async function loadOrders() {
+async function loadOrders() {
     const search = $('orderSearch').value;
     const status = $('orderStatusFilter').value;
     const d = await api(`/admin/orders?page=${ordersPage}&limit=20&status=${status}&search=${encodeURIComponent(search)}`);
@@ -678,21 +675,21 @@ localStorage.setItem('gof_api', BACKEND_URL);
     } else { $('ordersPagination').innerHTML=''; }
   }
 
-  async function updateOrderStatus(id, status) {
+async function updateOrderStatus(id, status) {
     const d = await api('/admin/orders/'+id, { method:'PUT', body: JSON.stringify({status}) });
     if (d.success) toast('স্ট্যাটাস আপডেট হয়েছে');
     else toast(d.message,'error');
     loadDashboard();
   }
 
-  async function deleteOrder(id) {
+async function deleteOrder(id) {
     if (!confirm('এই অর্ডারটি মুছে ফেলতে চান?')) return;
     const d = await api('/admin/orders/'+id, { method:'DELETE' });
     if (d.success) { toast('অর্ডার মুছে ফেলা হয়েছে'); loadOrders(); }
     else toast(d.message,'error');
   }
 
-  function viewOrder(o) {
+function viewOrder(o) {
     $('orderModalBody').innerHTML = `
       <div style="display:flex;flex-direction:column;gap:14px">
         <div style="background:var(--surface2);border-radius:10px;padding:16px">
@@ -717,7 +714,7 @@ localStorage.setItem('gof_api', BACKEND_URL);
     openModal('orderModal');
   }
 
-  async function loadProducts() {
+async function loadProducts() {
     const d = await api('/admin/products');
     if (!d.success) return;
     if (!d.products.length) {
@@ -742,7 +739,7 @@ localStorage.setItem('gof_api', BACKEND_URL);
       </tr>`).join('')}</tbody></table>`;
   }
 
-  async function openProductModal(productId) {
+async function openProductModal(productId) {
     editingProductId = productId;
     productImgUrls = [];
     $('imgPreviewGrid').innerHTML = '';
@@ -786,7 +783,7 @@ localStorage.setItem('gof_api', BACKEND_URL);
     openModal('productModal');
   }
 
-  async function handleImgUpload(input) {
+async function handleImgUpload(input) {
     if (!input.files.length) return;
     const area = $('imgUploadArea');
     area.querySelector('p').textContent = 'আপলোড হচ্ছে...';
@@ -806,7 +803,7 @@ localStorage.setItem('gof_api', BACKEND_URL);
     input.value = '';
   }
 
-  function renderImgPreviews() {
+function renderImgPreviews() {
     $('imgPreviewGrid').innerHTML = productImgUrls.map((url,i)=>`
       <div class="img-preview-item ${i===0?'main-img':''}">
         <img src="${url}" loading="lazy">
@@ -814,13 +811,13 @@ localStorage.setItem('gof_api', BACKEND_URL);
       </div>`).join('');
   }
 
-  function removeImg(i) {
+function removeImg(i) {
     productImgUrls.splice(i,1);
     $('pm-imgs').value = JSON.stringify(productImgUrls);
     renderImgPreviews();
   }
 
-  function addTag(e, wrapperId) {
+function addTag(e, wrapperId) {
     if (e.key !== 'Enter') return;
     const val = e.target.value.trim();
     if (!val) return;
@@ -829,7 +826,7 @@ localStorage.setItem('gof_api', BACKEND_URL);
     e.preventDefault();
   }
 
-  function addTagValue(wrapperId, val) {
+function addTagValue(wrapperId, val) {
     const wrap = $(wrapperId);
     const tag = document.createElement('div');
     tag.className = 'tag';
@@ -838,11 +835,11 @@ localStorage.setItem('gof_api', BACKEND_URL);
     wrap.insertBefore(tag, wrap.querySelector('input'));
   }
 
-  function getTagValues(wrapperId) {
+function getTagValues(wrapperId) {
     return [...$(wrapperId).querySelectorAll('.tag')].map(t=>t.dataset.val);
   }
 
-  async function saveProduct() {
+async function saveProduct() {
     const id = $('pm-id').value.trim();
     const name = $('pm-name').value.trim();
     if (!id||!name) { toast('ID এবং নাম আবশ্যক','error'); return; }
@@ -888,14 +885,14 @@ localStorage.setItem('gof_api', BACKEND_URL);
     } else toast(d.message,'error');
   }
 
-  async function deleteProduct(id) {
+async function deleteProduct(id) {
     if (!confirm(`"${id}" পণ্যটি মুছে ফেলতে চান?`)) return;
     const d = await api('/admin/products/'+id, { method:'DELETE' });
     if (d.success) { toast('পণ্য মুছে ফেলা হয়েছে'); loadProducts(); }
     else toast(d.message,'error');
   }
 
-  async function loadSettings() {
+async function loadSettings() {
     const d = await api('/settings');
     if (!d.success) return;
     const s = d.settings;
@@ -906,7 +903,7 @@ localStorage.setItem('gof_api', BACKEND_URL);
     if (s.siteName) document.title = `Admin — ${s.siteName}`;
   }
 
-  async function saveSettings() {
+async function saveSettings() {
     const keys = ['siteName','phone','whatsapp','email','address','announcement','deliveryInside','deliveryOutside','returnDays'];
     const updates = {};
     keys.forEach(k => {
@@ -918,7 +915,7 @@ localStorage.setItem('gof_api', BACKEND_URL);
     else toast(d.message,'error');
   }
 
-  async function changePassword() {
+async function changePassword() {
     const cur = $('cp-current').value;
     const nw  = $('cp-new').value;
     const cnf = $('cp-confirm').value;
@@ -931,7 +928,6 @@ localStorage.setItem('gof_api', BACKEND_URL);
 
   document.addEventListener('keydown', e => { if(e.key==='Enter' && $('loginScreen').style.display !== 'none') doLogin(); });
   checkToken();
-}
 </script>
 </body>
 </html>
