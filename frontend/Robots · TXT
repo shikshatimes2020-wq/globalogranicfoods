@@ -1,0 +1,21 @@
+# গ্লোবাল অর্গানিক ফুডস্ - robots.txt
+# https://globalof.shop
+
+User-agent: *
+Allow: /
+Allow: /images/
+Disallow: /admin
+Disallow: /api/
+Disallow: /cdn-cgi/
+
+# Google Bot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Google Image Bot
+User-agent: Googlebot-Image
+Allow: /images/
+
+# Sitemap
+Sitemap: https://globalof.shop/sitemap.xml
