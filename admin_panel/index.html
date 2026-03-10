@@ -595,17 +595,8 @@ select.form-input{cursor:pointer;}
       </div>
 
       <div class="section-divider"><i class="fas fa-tags"></i>মূল্য নির্ধারণ</div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">১ কেজি বিক্রয় মূল্য (৳) *</label><input type="number" id="pm-p1" class="form-input" placeholder="550"></div>
-        <div class="form-group"><label class="form-label">১ কেজি আসল মূল্য (৳)</label><input type="number" id="pm-o1" class="form-input" placeholder="650"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">২ কেজি বিক্রয় মূল্য (৳)</label><input type="number" id="pm-p2" class="form-input"></div>
-        <div class="form-group"><label class="form-label">২ কেজি আসল মূল্য (৳)</label><input type="number" id="pm-o2" class="form-input"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">৫০০ গ্রাম বিক্রয় মূল্য (৳)</label><input type="number" id="pm-p5" class="form-input"></div>
-        <div class="form-group"><label class="form-label">৫০০ গ্রাম আসল মূল্য (৳)</label><input type="number" id="pm-o5" class="form-input"></div>
+      <div id="priceFieldsContainer">
+        <div style="text-align:center;padding:12px;color:var(--text3);font-size:13px"><i class="fas fa-spinner fa-spin"></i> প্যাক সাইজ লোড হচ্ছে...</div>
       </div>
 
       <div class="section-divider"><i class="fas fa-align-left"></i>বিবরণ ও বিস্তারিত</div>
@@ -1145,6 +1136,10 @@ async function openProductModal(productId) {
   $('imgUrlInput').value = '';
   ['benefitsTags','ingredientsTags','usageTags'].forEach(id => { $(id).querySelectorAll('.tag').forEach(t=>t.remove()); });
   $('productModalTitle').innerHTML = `<i class="fas fa-${productId?'edit':'plus'}"></i>${productId?'পণ্য সম্পাদনা':'নতুন পণ্য যোগ করুন'}`;
+
+  // Load pack sizes first, then render price fields
+  await renderPriceFields({});
+
   if (productId) {
     openModal('productModal');
     $('saveProductBtn').disabled = true;
@@ -1159,12 +1154,8 @@ async function openProductModal(productId) {
     $('pm-badge').value = p.badge||''; $('pm-badgeClass').value = p.badgeClass||'';
     $('pm-desc').value = p.desc||''; $('pm-order').value = p.order||0;
     $('pm-active').value = p.isActive?'true':'false';
-    $('pm-p1').value = p.prices?.['1kg']?.price||p.basePrice||'';
-    $('pm-o1').value = p.prices?.['1kg']?.old||p.baseOld||'';
-    $('pm-p2').value = p.prices?.['2kg']?.price||'';
-    $('pm-o2').value = p.prices?.['2kg']?.old||'';
-    $('pm-p5').value = p.prices?.['500gm']?.price||'';
-    $('pm-o5').value = p.prices?.['500gm']?.old||'';
+    // Fill dynamic price fields with existing product prices
+    await renderPriceFields(p.prices || {}, p.basePrice, p.baseOld);
     productImgUrls = Array.isArray(p.imgs)&&p.imgs.length?[...p.imgs]:(p.img?[p.img]:[]);
     $('pm-imgs').value = JSON.stringify(productImgUrls);
     renderImgPreviews();
@@ -1177,7 +1168,7 @@ async function openProductModal(productId) {
     if (p.videoUrl) { setTimeout(() => previewVideo(), 400); }
   } else {
     $('pm-id').readOnly = false;
-    ['pm-id','pm-name','pm-subtitle','pm-badge','pm-desc','pm-p1','pm-o1','pm-p2','pm-o2','pm-p5','pm-o5'].forEach(id=>$(id).value='');
+    ['pm-id','pm-name','pm-subtitle','pm-badge','pm-desc'].forEach(id=>$(id).value='');
     $('pm-badgeClass').value=''; $('pm-order').value=0; $('pm-active').value='true'; $('pm-imgs').value='[]';
     $('pm-videoUrl').value=''; $('pm-videoTitle').value='';
     $('pm-videoPreview').style.display='none'; $('pm-videoFrame').src='';
@@ -1407,20 +1398,91 @@ function resetVideoUploadUI() {
   }
 }
 
+// ── Dynamic Price Fields from Pack Sizes ─────────────────
+let _cachedPackSizes = null;
+
+async function getPackSizes() {
+  if (_cachedPackSizes) return _cachedPackSizes;
+  const d = await api('/admin/pack-sizes');
+  if (d.success && d.sizes && d.sizes.length) {
+    _cachedPackSizes = d.sizes.filter(s => s.isActive !== false);
+  } else {
+    // fallback defaults
+    _cachedPackSizes = [
+      { size:'1kg',   label:'১ কেজি',   _id:'fallback-1' },
+      { size:'2kg',   label:'২ কেজি',   _id:'fallback-2' },
+      { size:'500gm', label:'৫০০ গ্রাম', _id:'fallback-3' },
+    ];
+  }
+  return _cachedPackSizes;
+}
+
+async function renderPriceFields(existingPrices = {}, basePrice = '', baseOld = '') {
+  const container = $('priceFieldsContainer');
+  if (!container) return;
+  container.innerHTML = `<div style="text-align:center;padding:12px;color:var(--text3);font-size:13px"><i class="fas fa-spinner fa-spin"></i> লোড হচ্ছে...</div>`;
+  const sizes = await getPackSizes();
+  // First size acts as base price
+  const firstSize = sizes[0];
+  let html = '';
+  sizes.forEach((ps, i) => {
+    const existing = existingPrices[ps.size] || {};
+    const pVal = existing.price || (i === 0 ? basePrice : '') || '';
+    const oVal = existing.old   || (i === 0 ? baseOld   : '') || '';
+    html += `
+      <div class="form-row" data-pack-size="${ps.size}">
+        <div class="form-group">
+          <label class="form-label">${ps.label} বিক্রয় মূল্য (৳)${i===0?' *':''}</label>
+          <input type="number" id="pm-price-${ps.size}" class="form-input pm-price-field" data-size="${ps.size}" placeholder="${i===0?'০':''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">${ps.label} আসল মূল্য (৳)</label>
+          <input type="number" id="pm-old-${ps.size}" class="form-input pm-old-field" data-size="${ps.size}">
+        </div>
+      </div>`;
+  });
+  container.innerHTML = html || '<p style="color:var(--text3);font-size:13px;padding:8px 0">কোনো প্যাক সাইজ পাওয়া যায়নি। প্যাক সাইজ পরিচালনা থেকে যোগ করুন।</p>';
+  // Fill values
+  sizes.forEach((ps, i) => {
+    const existing = existingPrices[ps.size] || {};
+    const pEl = $(`pm-price-${ps.size}`);
+    const oEl = $(`pm-old-${ps.size}`);
+    if (pEl) pEl.value = existing.price || (i === 0 ? basePrice : '') || '';
+    if (oEl) oEl.value = existing.old   || (i === 0 ? baseOld   : '') || '';
+  });
+}
+
+function getPricesFromFields() {
+  const prices = {};
+  document.querySelectorAll('#priceFieldsContainer [data-pack-size]').forEach(row => {
+    const size = row.getAttribute('data-pack-size');
+    const p = parseFloat(document.getElementById(`pm-price-${size}`)?.value) || 0;
+    const o = parseFloat(document.getElementById(`pm-old-${size}`)?.value) || 0;
+    const dis = (o > 0 && p < o) ? Math.round((o - p) / o * 100) : 0;
+    prices[size] = { price: p, old: o, dis };
+  });
+  return prices;
+}
+
 async function saveProduct(btn) {
   const id = $('pm-id').value.trim();
   const name = $('pm-name').value.trim();
   if (!id||!name) { toast('পণ্য ID এবং নাম আবশ্যক','error'); return; }
   const imgs = JSON.parse($('pm-imgs').value||'[]');
-  const p1=parseFloat($('pm-p1').value)||0, o1=parseFloat($('pm-o1').value)||0;
-  const p2=parseFloat($('pm-p2').value)||0, o2=parseFloat($('pm-o2').value)||0;
-  const p5=parseFloat($('pm-p5').value)||0, o5=parseFloat($('pm-o5').value)||0;
-  const dis=(v,o)=>(o>0&&v<o)?Math.round((o-v)/o*100):0;
+
+  // Collect prices from dynamic fields
+  const prices = getPricesFromFields();
+  const sizes = await getPackSizes();
+  const firstSize = sizes[0]?.size;
+  const basePrice = prices[firstSize]?.price || 0;
+  const baseOld   = prices[firstSize]?.old   || 0;
+  const baseDiscount = prices[firstSize]?.dis || 0;
+
   const payload = {
     id, name, subtitle:$('pm-subtitle').value||'', badge:$('pm-badge').value||null,
     badgeClass:$('pm-badgeClass').value||null, img:imgs[0]||'', imgs,
-    basePrice:p1, baseOld:o1, baseDiscount:dis(p1,o1),
-    prices:{'1kg':{price:p1,old:o1,dis:dis(p1,o1)},'2kg':{price:p2,old:o2,dis:dis(p2,o2)},'500gm':{price:p5,old:o5,dis:dis(p5,o5)}},
+    basePrice, baseOld, baseDiscount,
+    prices,
     desc:$('pm-desc').value||'',
     benefits:getTagValues('benefitsTags'), ingredients:getTagValues('ingredientsTags'), usage:getTagValues('usageTags'),
     order:parseInt($('pm-order').value)||0, isActive:$('pm-active').value==='true',
@@ -1888,6 +1950,7 @@ async function savePackSize(btn) {
   if (d.success) {
     toast(`✅ প্যাক সাইজ ${id?'আপডেট':'যুক্ত'} হয়েছে`);
     closeModal('packSizeModal');
+    _cachedPackSizes = null; // clear cache so product modal reloads fresh
     await loadPackSizes();
   } else {
     toast(d.message || 'ব্যর্থ হয়েছে', 'error');
@@ -1907,6 +1970,7 @@ async function deletePackSize() {
   if (d.success) {
     toast('✅ প্যাক সাইজ মুছে ফেলা হয়েছে');
     closeModal('packSizeModal');
+    _cachedPackSizes = null; // clear cache
     await loadPackSizes();
   } else {
     toast(d.message || 'ব্যর্থ হয়েছে', 'error');

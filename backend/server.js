@@ -505,26 +505,82 @@ app.get('/api/settings', async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ✅ Get pack sizes
+// ══════════════════════════════════════════════════════════
+// PACK SIZES — Full CRUD  (admin panel expects these routes)
+// ══════════════════════════════════════════════════════════
+
+const PackSizeSchema = new mongoose.Schema({
+  size:     { type: String, required: true, unique: true }, // e.g. '1kg', '250gm'
+  label:    { type: String, required: true },               // e.g. '১ কেজি', '২৫০ গ্রাম'
+  order:    { type: Number, default: 0 },
+  isActive: { type: Boolean, default: true },
+  createdAt:{ type: Date, default: Date.now },
+  updatedAt:{ type: Date, default: Date.now },
+});
+const PackSize = mongoose.model('PackSize', PackSizeSchema);
+
+// Seed default pack sizes once
+async function seedPackSizes() {
+  const count = await PackSize.countDocuments();
+  if (count === 0) {
+    await PackSize.insertMany([
+      { size: '2kg',   label: '২ কেজি',   order: 1 },
+      { size: '1kg',   label: '১ কেজি',   order: 2 },
+      { size: '500gm', label: '৫০০ গ্রাম', order: 3 },
+    ]);
+    console.log('✅ Default pack sizes seeded');
+  }
+}
+
+// Public: get active pack sizes (used by frontend)
 app.get('/api/pack-sizes', async (req, res) => {
   try {
-    let packSizes = await SiteSettings.findOne({ key: 'packSizes' });
-    if (!packSizes) {
-      packSizes = await SiteSettings.create({ key: 'packSizes', value: ['2kg', '1kg', '500gm'] });
-    }
-    res.json({ success: true, packSizes: packSizes.value });
+    await seedPackSizes();
+    const sizes = await PackSize.find({ isActive: true }).sort({ order: 1 });
+    res.json({ success: true, packSizes: sizes.map(s => s.size), sizes });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ✅ Update pack sizes (Admin only)
-app.put('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
+// Admin: get all pack sizes (including inactive)
+app.get('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
   try {
-    const { packSizes } = req.body;
-    if (!Array.isArray(packSizes) || packSizes.length === 0) {
-      return res.status(400).json({ success: false, message: 'প্যাক সাইজ লিস্ট বৈধ হতে হবে' });
-    }
-    await SiteSettings.findOneAndUpdate({ key: 'packSizes' }, { value: packSizes, updatedAt: new Date() }, { upsert: true });
-    res.json({ success: true, message: 'প্যাক সাইজ আপডেট করা হয়েছে', packSizes });
+    await seedPackSizes();
+    const sizes = await PackSize.find().sort({ order: 1 });
+    res.json({ success: true, sizes });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// Admin: create new pack size
+app.post('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
+  try {
+    const { size, label, order, isActive } = req.body;
+    if (!size || !label) return res.status(400).json({ success: false, message: 'সাইজ কোড এবং লেবেল আবশ্যক' });
+    const exists = await PackSize.findOne({ size });
+    if (exists) return res.status(400).json({ success: false, message: 'এই সাইজ কোড ইতিমধ্যে আছে' });
+    const ps = await PackSize.create({ size, label, order: order || 0, isActive: isActive !== false });
+    res.json({ success: true, packSize: ps, message: 'প্যাক সাইজ যুক্ত হয়েছে' });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// Admin: update pack size
+app.put('/api/admin/pack-sizes/:id', authMiddleware, async (req, res) => {
+  try {
+    const { label, order, isActive } = req.body;
+    const ps = await PackSize.findByIdAndUpdate(
+      req.params.id,
+      { label, order, isActive, updatedAt: new Date() },
+      { new: true }
+    );
+    if (!ps) return res.status(404).json({ success: false, message: 'পাওয়া যায়নি' });
+    res.json({ success: true, packSize: ps, message: 'আপডেট হয়েছে' });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// Admin: delete pack size
+app.delete('/api/admin/pack-sizes/:id', authMiddleware, async (req, res) => {
+  try {
+    await PackSize.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'মুছে ফেলা হয়েছে' });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
