@@ -225,6 +225,10 @@ select.form-input{cursor:pointer;}
 .empty-state p{font-size:15px;color:var(--text2);}
 .loading{text-align:center;padding:32px;color:var(--text2);}
 .loading i{font-size:24px;animation:spin 1s linear infinite;}
+/* VIDEO TAB RESPONSIVE */
+@media(max-width:480px){
+  #videoTabBar button { font-size:12px; padding:9px 6px; gap:4px; }
+}
 @keyframes spin{to{transform:rotate(360deg);}}
 .toast-wrap{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:10px;z-index:9999;}
 .toast{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px 18px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideIn 0.3s ease;}
@@ -598,23 +602,116 @@ select.form-input{cursor:pointer;}
         </div>
       </div>
 
-      <div class="section-divider"><i class="fas fa-video"></i>পণ্যের ভিডিও</div>
-      <div class="form-group">
-        <label class="form-label">YouTube / ভিডিও URL</label>
-        <input type="text" id="pm-videoUrl" class="form-input" placeholder="https://www.youtube.com/watch?v=... বা https://youtu.be/...">
-        <p class="form-hint">YouTube, Vimeo বা সরাসরি MP4 লিংক দিন। খালি রাখলে ভিডিও দেখাবে না।</p>
+      <!-- ══════════════════════════════════════════
+           VIDEO SECTION — পণ্যের ভিডিও
+      ══════════════════════════════════════════ -->
+      <div class="section-divider"><i class="fab fa-youtube" style="color:#FF0000"></i>পণ্যের ভিডিও</div>
+
+      <!-- Tab switcher: Link vs Upload -->
+      <div id="videoTabBar" style="display:flex;gap:0;border:1.5px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:16px;">
+        <button type="button" id="videoTabLink" onclick="switchVideoTab('link')"
+          style="flex:1;padding:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:6px;background:var(--green-dim);color:var(--green);">
+          <i class="fas fa-link"></i>লিংক দিন
+        </button>
+        <button type="button" id="videoTabUpload" onclick="switchVideoTab('upload')"
+          style="flex:1;padding:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:6px;background:var(--surface2);color:var(--text2);">
+          <i class="fas fa-upload"></i>ফাইল আপলোড
+        </button>
       </div>
-      <div class="form-group">
-        <label class="form-label">ভিডিও শিরোনাম (ঐচ্ছিক)</label>
-        <input type="text" id="pm-videoTitle" class="form-input" placeholder="যেমন: গ্যাস্ট্রো কেয়ার ব্যহারের নিয়ম">
-      </div>
-      <div id="pm-videoPreview" style="display:none;margin-top:10px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);background:var(--surface2);">
-        <div style="padding:10px 12px;font-size:12px;color:var(--text3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;"><i class="fas fa-eye" style="color:var(--green)"></i>ভিডিও প্রিভিউ</div>
-        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
-          <iframe id="pm-videoFrame" src="" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>
+
+      <!-- TAB 1: Link input -->
+      <div id="videoLinkTab">
+        <!-- Quick paste buttons -->
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:var(--text3);align-self:center;margin-right:2px;">দ্রুত:</span>
+          <button type="button" class="btn btn-outline btn-sm" onclick="pasteFromClipboard()"
+            style="font-size:11px;padding:5px 10px;">
+            <i class="fas fa-paste"></i>ক্লিপবোর্ড থেকে পেস্ট
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="clearVideoUrl()"
+            style="font-size:11px;padding:5px 10px;color:var(--red);border-color:rgba(248,81,73,0.3);">
+            <i class="fas fa-times"></i>মুছুন
+          </button>
+        </div>
+
+        <div class="form-group" style="margin-bottom:10px">
+          <label class="form-label"><i class="fab fa-youtube" style="color:#FF0000"></i> &nbsp;YouTube / ভিডিও লিংক</label>
+          <div style="position:relative;">
+            <input type="text" id="pm-videoUrl" class="form-input"
+              placeholder="https://www.youtube.com/watch?v=... বা https://youtu.be/..."
+              oninput="onVideoUrlInput(this.value)"
+              style="padding-right:90px;">
+            <button type="button" onclick="previewVideo()"
+              style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:linear-gradient(135deg,#FF0000,#cc0000);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
+              <i class="fas fa-eye"></i>দেখুন
+            </button>
+          </div>
+          <p class="form-hint"><i class="fab fa-youtube" style="color:#FF0000"></i> YouTube, <i class="fab fa-vimeo" style="color:#1ab7ea"></i> Vimeo বা সরাসরি MP4 লিংক দিন। খালি রাখলে ভিডিও দেখাবে না।</p>
+        </div>
+
+        <!-- Supported formats info -->
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          <span style="background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.25);color:#ff6b6b;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;"><i class="fab fa-youtube"></i>youtube.com/watch?v=</span>
+          <span style="background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.25);color:#ff6b6b;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;"><i class="fab fa-youtube"></i>youtu.be/</span>
+          <span style="background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.25);color:#ff6b6b;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;"><i class="fab fa-youtube"></i>YouTube Shorts</span>
+          <span style="background:var(--blue-dim);border:1px solid rgba(79,142,247,0.25);color:var(--blue);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;"><i class="fab fa-vimeo"></i>Vimeo</span>
         </div>
       </div>
-      <button type="button" class="btn btn-outline btn-sm" onclick="previewVideo()" style="margin-top:8px;"><i class="fas fa-play"></i>প্রিভিউ দেখুন</button>
+
+      <!-- TAB 2: File upload (mobile-friendly) -->
+      <div id="videoUploadTab" style="display:none;">
+        <div style="background:var(--amber-dim);border:1px solid rgba(245,166,35,0.3);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;">
+          <i class="fas fa-info-circle" style="color:var(--amber);margin-top:1px;flex-shrink:0;"></i>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;">
+            ভিডিও ফাইল আপলোড করতে সার্ভারে পর্যাপ্ত স্টোরেজ থাকতে হবে। সহজ পদ্ধতি হলো <strong style="color:var(--amber)">YouTube এ আপলোড করে লিংক</strong> দেওয়া — এটি সব ডিভাইসে সবচেয়ে ভালো কাজ করে।
+          </div>
+        </div>
+        <div class="img-upload-area" id="videoUploadArea" onclick="$('videoFileInput').click()">
+          <input type="file" id="videoFileInput" accept="video/mp4,video/webm,video/ogg" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;" onchange="handleVideoFileSelect(this)">
+          <i class="fas fa-film" style="font-size:32px;color:var(--text3);margin-bottom:8px;"></i>
+          <p>ভিডিও ফাইল ড্র্যাগ করুন বা ক্লিক করুন</p>
+          <span>MP4, WebM — সর্বোচ্চ 50MB</span>
+        </div>
+        <div id="videoUploadProgress" style="display:none;margin-top:10px;">
+          <div style="background:var(--surface2);border-radius:20px;height:8px;overflow:hidden;">
+            <div id="videoProgressBar" style="height:100%;background:linear-gradient(90deg,#00d26a,#00a854);width:0%;transition:width 0.3s ease;border-radius:20px;"></div>
+          </div>
+          <div id="videoProgressText" style="font-size:12px;color:var(--text2);margin-top:6px;text-align:center;">আপলোড হচ্ছে...</div>
+        </div>
+      </div>
+
+      <!-- Video title -->
+      <div class="form-group" style="margin-top:4px;">
+        <label class="form-label">ভিডিও শিরোনাম <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(ঐচ্ছিক)</span></label>
+        <input type="text" id="pm-videoTitle" class="form-input" placeholder="যেমন: গ্যাস্ট্রো কেয়ার ব্যবহারের নিয়ম ও উপকারিতা">
+      </div>
+
+      <!-- Live Preview Box -->
+      <div id="pm-videoPreview" style="display:none;margin-top:4px;border-radius:var(--radius);overflow:hidden;border:1.5px solid rgba(0,210,106,0.3);background:var(--surface2);box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <!-- Preview header -->
+        <div style="padding:10px 16px;background:linear-gradient(135deg,rgba(0,210,106,0.15),rgba(0,210,106,0.05));border-bottom:1px solid rgba(0,210,106,0.2);display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--green);font-weight:600;">
+            <i class="fas fa-check-circle"></i>ভিডিও প্রিভিউ — পণ্য পেজে এভাবে দেখাবে
+          </div>
+          <button type="button" onclick="closeVideoPreview()"
+            style="background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.25);color:var(--red);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <!-- 16:9 iframe embed -->
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#000;">
+          <iframe id="pm-videoFrame" src="" frameborder="0"
+            allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;fullscreen"
+            allowfullscreen
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;">
+          </iframe>
+        </div>
+        <!-- Preview footer with video ID info -->
+        <div id="pm-videoInfo" style="padding:10px 16px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <i class="fab fa-youtube" style="color:#FF0000"></i>
+          <span id="pm-videoInfoText">—</span>
+        </div>
+      </div>
 
       <div class="section-divider"><i class="fas fa-sliders-h"></i>প্রদর্শন সেটিংস</div>
       <div class="form-row">
@@ -1001,11 +1098,15 @@ async function openProductModal(productId) {
     if (Array.isArray(p.usage)) p.usage.forEach(v=>addTagValue('usageTags',v));
     $('pm-videoUrl').value = p.videoUrl||''; $('pm-videoTitle').value = p.videoTitle||'';
     $('pm-videoPreview').style.display='none'; $('pm-videoFrame').src='';
+    switchVideoTab('link');
+    if (p.videoUrl) { setTimeout(() => previewVideo(), 400); }
   } else {
     $('pm-id').readOnly = false;
     ['pm-id','pm-name','pm-subtitle','pm-badge','pm-desc','pm-p1','pm-o1','pm-p2','pm-o2','pm-p5','pm-o5'].forEach(id=>$(id).value='');
     $('pm-badgeClass').value=''; $('pm-order').value=0; $('pm-active').value='true'; $('pm-imgs').value='[]';
-    $('pm-videoUrl').value=''; $('pm-videoTitle').value=''; $('pm-videoPreview').style.display='none'; $('pm-videoFrame').src='';
+    $('pm-videoUrl').value=''; $('pm-videoTitle').value='';
+    $('pm-videoPreview').style.display='none'; $('pm-videoFrame').src='';
+    switchVideoTab('link');
     openModal('productModal');
   }
 }
@@ -1073,19 +1174,124 @@ function getYoutubeEmbedUrl(url) {
   ];
   for (const p of patterns) {
     const m = url.match(p);
-    if (m) return 'https://www.youtube.com/embed/' + m[1] + '?rel=0';
+    if (m) return 'https://www.youtube.com/embed/' + m[1] + '?rel=0&modestbranding=1&playsinline=1';
   }
   const vm = url.match(/vimeo\.com\/(\d+)/);
   if (vm) return 'https://player.vimeo.com/video/' + vm[1];
   return url;
 }
 
+function getYoutubeVideoId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
+  ];
+  for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
+  return null;
+}
+
+function switchVideoTab(tab) {
+  const isLink = tab === 'link';
+  $('videoLinkTab').style.display    = isLink ? 'block' : 'none';
+  $('videoUploadTab').style.display  = isLink ? 'none'  : 'block';
+  $('videoTabLink').style.background   = isLink ? 'var(--green-dim)' : 'var(--surface2)';
+  $('videoTabLink').style.color        = isLink ? 'var(--green)'     : 'var(--text2)';
+  $('videoTabUpload').style.background = isLink ? 'var(--surface2)'  : 'var(--blue-dim)';
+  $('videoTabUpload').style.color      = isLink ? 'var(--text2)'     : 'var(--blue)';
+}
+
+function onVideoUrlInput(val) {
+  // Auto-preview when a valid YouTube URL is pasted
+  const vid = getYoutubeVideoId(val.trim());
+  if (vid) {
+    setTimeout(() => previewVideo(), 400);
+  } else if (!val.trim()) {
+    closeVideoPreview();
+  }
+}
+
 function previewVideo() {
   const url = $('pm-videoUrl').value.trim();
-  if (!url) { toast('দয়া করে প্রথমে URL দিন', 'error'); return; }
+  if (!url) { toast('দয়া করে প্রথমে ভিডিও লিংক দিন', 'error'); return; }
   const embed = getYoutubeEmbedUrl(url);
+  const vid   = getYoutubeVideoId(url);
   $('pm-videoFrame').src = embed;
   $('pm-videoPreview').style.display = 'block';
+  if (vid) {
+    $('pm-videoInfoText').textContent = 'Video ID: ' + vid + ' — youtube.com/watch?v=' + vid;
+  } else if (url.includes('vimeo')) {
+    $('pm-videoInfoText').textContent = 'Vimeo ভিডিও';
+  } else {
+    $('pm-videoInfoText').textContent = url;
+  }
+  // Smooth scroll to preview
+  setTimeout(() => $('pm-videoPreview').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+}
+
+function closeVideoPreview() {
+  $('pm-videoPreview').style.display = 'none';
+  $('pm-videoFrame').src = '';
+}
+
+function clearVideoUrl() {
+  $('pm-videoUrl').value = '';
+  closeVideoPreview();
+  toast('ভিডিও লিংক মুছে ফেলা হয়েছে', 'info');
+}
+
+async function pasteFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text && (text.includes('youtube') || text.includes('youtu.be') || text.includes('vimeo') || text.startsWith('http'))) {
+      $('pm-videoUrl').value = text.trim();
+      toast('ক্লিপবোর্ড থেকে পেস্ট হয়েছে');
+      onVideoUrlInput(text.trim());
+    } else {
+      toast('ক্লিপবোর্ডে কোনো ভিডিও লিংক পাওয়া যায়নি', 'error');
+    }
+  } catch(e) {
+    // Fallback: focus the input so user can paste manually
+    $('pm-videoUrl').focus();
+    toast('Ctrl+V / ⌘V চেপে পেস্ট করুন', 'info');
+  }
+}
+
+async function handleVideoFileSelect(input) {
+  if (!input.files.length) return;
+  const file = input.files[0];
+  if (file.size > 50 * 1024 * 1024) { toast('ফাইলের আকার সর্বোচ্চ 50MB হতে পারবে', 'error'); return; }
+  $('videoUploadProgress').style.display = 'block';
+  $('videoProgressBar').style.width = '0%';
+  $('videoProgressText').textContent = 'আপলোড হচ্ছে...';
+  const fd = new FormData();
+  fd.append('video', file);
+  try {
+    const xhr = new XMLHttpRequest();
+    xhr.upload.addEventListener('progress', e => {
+      if (e.lengthComputable) {
+        const pct = Math.round(e.loaded / e.total * 100);
+        $('videoProgressBar').style.width = pct + '%';
+        $('videoProgressText').textContent = `আপলোড হচ্ছে... ${pct}%`;
+      }
+    });
+    xhr.addEventListener('load', () => {
+      try {
+        const d = JSON.parse(xhr.responseText);
+        if (d.success && d.url) {
+          $('pm-videoUrl').value = d.url;
+          switchVideoTab('link');
+          previewVideo();
+          toast('✅ ভিডিও আপলোড হয়েছে');
+        } else { toast(d.message || 'আপলোড ব্যর্থ হয়েছে', 'error'); }
+      } catch(e) { toast('আপলোড রেসপন্স পার্স ব্যর্থ', 'error'); }
+      $('videoUploadProgress').style.display = 'none';
+    });
+    xhr.addEventListener('error', () => { toast('আপলোড ব্যর্থ হয়েছে', 'error'); $('videoUploadProgress').style.display = 'none'; });
+    xhr.open('POST', API + '/admin/upload-video');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + TOKEN);
+    xhr.send(fd);
+  } catch(e) { toast('আপলোড শুরু করা যায়নি: ' + e.message, 'error'); $('videoUploadProgress').style.display = 'none'; }
+  input.value = '';
 }
 
 async function saveProduct(btn) {
