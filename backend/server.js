@@ -125,9 +125,8 @@ const ProductSchema = new mongoose.Schema({
   baseOld:     Number,
   baseDiscount:Number,
   prices: {
-    '2kg':   { price: Number, old: Number, dis: Number },
-    '1kg':   { price: Number, old: Number, dis: Number },
-    '500gm': { price: Number, old: Number, dis: Number },
+    type: mongoose.Schema.Types.Mixed,
+    default: {},
   },
   desc:        String,
   benefits:    [String],
@@ -324,7 +323,32 @@ app.put('/api/admin/products/:id', authMiddleware, async (req, res) => {
       { new: true, runValidators: false }
     );
     if (!product) return res.status(404).json({ success: false, message: 'পণ্য পাওয়া যায়নি' });
+    // markModified for Mixed type prices
+    if (req.body.prices !== undefined) {
+      product.markModified('prices');
+      await product.save();
+    }
     res.json({ success: true, product });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// ✅ Update product prices/pack sizes only (Admin)
+app.put('/api/admin/products/:id/prices', authMiddleware, async (req, res) => {
+  try {
+    const { prices, basePrice, baseOld, baseDiscount } = req.body;
+    const product = await Product.findOne({ id: req.params.id });
+    if (!product) return res.status(404).json({ success: false, message: 'পণ্য পাওয়া যায়নি' });
+
+    if (prices !== undefined) {
+      product.prices = prices;
+      product.markModified('prices');
+    }
+    if (basePrice !== undefined) product.basePrice = basePrice;
+    if (baseOld !== undefined) product.baseOld = baseOld;
+    if (baseDiscount !== undefined) product.baseDiscount = baseDiscount;
+    product.updatedAt = new Date();
+    await product.save();
+    res.json({ success: true, product, message: 'দাম আপডেট করা হয়েছে' });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 

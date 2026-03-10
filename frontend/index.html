@@ -1858,7 +1858,9 @@ async function showProductDetail(id) {
 
     document.getElementById('detailBreadcrumb').textContent = p.name;
     activeWeight = '1kg';
-    currentProductPrice = p.prices?.['1kg']?.price || p.basePrice;
+    const firstKey = p.prices && Object.keys(p.prices).length ? Object.keys(p.prices)[0] : '1kg';
+    activeWeight = firstKey;
+    currentProductPrice = p.prices?.[firstKey]?.price || p.basePrice;
 
     // ── Dynamic SEO Meta Update ──────────────────────────
     document.title = `${p.name} - ${p.subtitle||'প্রাকৃতিক ভেষজ পণ্য'} | গ্লোবাল অর্গানিক ফুডস্`;
@@ -1966,12 +1968,12 @@ async function showProductDetail(id) {
                 <div class="detail-price-box">
                     <div class="price-left">
                         <div class="price-label">বর্তমান মূল্য</div>
-                        <div class="detail-price">৳<span id="dprice">${p.prices?.['1kg']?.price||p.basePrice}</span></div>
-                        <div class="detail-price-old">৳<span id="dold">${p.prices?.['1kg']?.old||p.baseOld}</span></div>
+                        <div class="detail-price">৳<span id="dprice">${p.prices?.[firstKey]?.price||p.basePrice}</span></div>
+                        <div class="detail-price-old">৳<span id="dold">${p.prices?.[firstKey]?.old||p.baseOld}</span></div>
                     </div>
                     <div class="price-right">
                         <span class="detail-discount">
-                            <span id="ddis">${p.prices?.['1kg']?.dis||p.baseDiscount}</span>%
+                            <span id="ddis">${p.prices?.[firstKey]?.dis||p.baseDiscount}</span>%
                             <small>সাশ্রয়</small>
                         </span>
                     </div>
@@ -1980,9 +1982,7 @@ async function showProductDetail(id) {
                 <!-- Weight -->
                 <div class="option-section-title"><i class="fas fa-weight-hanging"></i> প্যাক সাইজ নির্বাচন করুন</div>
                 <div class="weight-btns">
-                    <button class="weight-btn" onclick="selectWeight(this,'2kg','${id}')">২ কেজি <span class="wt-badge">-${p.prices?.['2kg']?.dis||18}%</span></button>
-                    <button class="weight-btn active" onclick="selectWeight(this,'1kg','${id}')">১ কেজি <span class="wt-badge">-${p.prices?.['1kg']?.dis||15}%</span></button>
-                    <button class="weight-btn" onclick="selectWeight(this,'500gm','${id}')">৫০০ গ্রাম <span class="wt-badge">-${p.prices?.['500gm']?.dis||12}%</span></button>
+                    ${buildWeightButtons(p, id)}
                 </div>
 
                 <!-- Quantity + CTA -->
@@ -1999,6 +1999,13 @@ async function showProductDetail(id) {
                     <a href="tel:${phoneNum}" class="btn-call" title="কল করুন">
                         <i class="fas fa-phone-alt"></i>
                     </a>
+                </div>
+
+                <!-- Admin: Edit Prices Button -->
+                <div id="adminEditPriceBtn" style="display:none;margin-top:10px;">
+                    <button onclick="showAdminPriceEditor('${id}')" style="width:100%;background:#f0fdf4;border:2px solid #059669;color:#059669;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                        <i class="fas fa-tags"></i> প্যাক সাইজ ও দাম এডিট করুন (Admin)
+                    </button>
                 </div>
 
                 <!-- WhatsApp -->
@@ -2173,6 +2180,38 @@ async function showProductDetail(id) {
             </div>
         </div>
 
+        <!-- Admin Price Editor (only visible when logged in as admin) -->
+        <div id="adminPriceEditor" style="display:none; margin-top:32px; background:#f0fdf4; border:2px solid #059669; border-radius:12px; padding:24px;">
+            <h3 style="color:#0a3d2e;font-size:17px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-tags"></i> প্যাক সাইজ ও দাম এডিট করুন
+                <span style="font-size:12px;font-weight:500;color:#64748b;margin-left:auto;" id="adminPriceProductName"></span>
+            </h3>
+            <div id="adminPriceRows" style="display:flex;flex-direction:column;gap:10px;"></div>
+            <button onclick="adminAddPriceRow()" style="margin-top:12px;background:#e8f5e9;border:1.5px dashed #059669;color:#059669;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;width:100%;">
+                <i class="fas fa-plus"></i> নতুন সাইজ যোগ করুন
+            </button>
+            <div style="margin-top:16px;padding-top:14px;border-top:1px solid #d1fae5;">
+                <div style="font-size:13px;font-weight:700;color:#0a3d2e;margin-bottom:8px;">বেস দাম (ডিফল্ট)</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                    <div><label style="font-size:11px;color:#64748b;font-weight:600;">বিক্রয় মূল্য</label>
+                    <input type="number" id="adminBasePrice" placeholder="৳" style="width:100%;padding:8px;border:1.5px solid #d1fae5;border-radius:8px;font-size:14px;margin-top:3px;box-sizing:border-box;"></div>
+                    <div><label style="font-size:11px;color:#64748b;font-weight:600;">পুরনো দাম</label>
+                    <input type="number" id="adminBaseOld" placeholder="৳" style="width:100%;padding:8px;border:1.5px solid #d1fae5;border-radius:8px;font-size:14px;margin-top:3px;box-sizing:border-box;"></div>
+                    <div><label style="font-size:11px;color:#64748b;font-weight:600;">ছাড় (%)</label>
+                    <input type="number" id="adminBaseDiscount" placeholder="%" style="width:100%;padding:8px;border:1.5px solid #d1fae5;border-radius:8px;font-size:14px;margin-top:3px;box-sizing:border-box;"></div>
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:16px;">
+                <button onclick="adminSavePrices('${id}')" style="flex:1;background:linear-gradient(135deg,#0a3d2e,#059669);color:white;border:none;padding:13px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">
+                    <i class="fas fa-save"></i> সেভ করুন
+                </button>
+                <button onclick="document.getElementById('adminPriceEditor').style.display='none'" style="background:#f1f5f9;border:none;padding:13px 18px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;color:#64748b;">
+                    বাতিল
+                </button>
+            </div>
+            <div id="adminPriceMsg" style="margin-top:10px;font-size:13px;display:none;"></div>
+        </div>
+
         <!-- Related Products -->
         ${relatedHtml ? `
         <div class="related-section">
@@ -2183,12 +2222,34 @@ async function showProductDetail(id) {
             <div class="related-grid">${relatedHtml}</div>
         </div>` : ''}
     `;
+    // Show admin price editor button if logged in as admin
+    checkAdminAndShowPriceBtn(id);
 }
 
 function changeDetailImg(el, src) {
     document.getElementById('detailMainImg').src = src;
     document.querySelectorAll('.detail-thumb').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
+}
+
+// ── Weight Label Helper ───────────────────────────────
+const WEIGHT_LABELS = {
+    '2kg':'২ কেজি', '1kg':'১ কেজি', '500gm':'৫০০ গ্রাম',
+    '250gm':'২৫০ গ্রাম', '100gm':'১০০ গ্রাম', '50gm':'৫০ গ্রাম',
+    '5kg':'৫ কেজি', '3kg':'৩ কেজি',
+};
+function weightLabel(key) {
+    if (WEIGHT_LABELS[key]) return WEIGHT_LABELS[key];
+    // auto-format: 1000g → ১ কেজি style (fallback to key)
+    return key.replace('kg',' কেজি').replace('gm',' গ্রাম').replace('g',' গ্রাম');
+}
+function buildWeightButtons(p, id) {
+    const entries = p.prices ? Object.entries(p.prices) : [];
+    if (!entries.length) return `<button class="weight-btn active" onclick="selectWeight(this,'base','${id}')">স্ট্যান্ডার্ড <span class="wt-badge">-${p.baseDiscount||0}%</span></button>`;
+    const firstKey = entries[0][0];
+    return entries.map(([key, val], i) =>
+        `<button class="weight-btn${i===0?' active':''}" onclick="selectWeight(this,'${key}','${id}')">${weightLabel(key)} <span class="wt-badge">-${val?.dis||0}%</span></button>`
+    ).join('');
 }
 
 function selectWeight(el, wt, productId) {
@@ -2230,6 +2291,129 @@ function switchTab(btn, tabId) {
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(tabId).classList.add('active');
+}
+
+// ── Admin Price Editor ───────────────────────────────────
+let _adminPriceProductId = null;
+
+function showAdminPriceEditor(productId) {
+    const p = allProducts.find(x => x.id === productId);
+    if (!p) return;
+    _adminPriceProductId = productId;
+
+    const editor = document.getElementById('adminPriceEditor');
+    if (!editor) return;
+    editor.style.display = 'block';
+    editor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('adminPriceProductName').textContent = p.name;
+    document.getElementById('adminBasePrice').value = p.basePrice || '';
+    document.getElementById('adminBaseOld').value = p.baseOld || '';
+    document.getElementById('adminBaseDiscount').value = p.baseDiscount || '';
+
+    const rows = document.getElementById('adminPriceRows');
+    rows.innerHTML = '';
+    const prices = p.prices || {};
+    const entries = Object.entries(prices);
+    if (entries.length === 0) {
+        // Default rows
+        adminAddPriceRowWith('2kg', {});
+        adminAddPriceRowWith('1kg', {});
+        adminAddPriceRowWith('500gm', {});
+    } else {
+        entries.forEach(([key, val]) => adminAddPriceRowWith(key, val || {}));
+    }
+    document.getElementById('adminPriceMsg').style.display = 'none';
+}
+
+function adminAddPriceRow() {
+    adminAddPriceRowWith('', {});
+}
+
+function adminAddPriceRowWith(key, val) {
+    const rows = document.getElementById('adminPriceRows');
+    const div = document.createElement('div');
+    div.style.cssText = 'display:grid;grid-template-columns:110px 1fr 1fr 1fr 32px;gap:6px;align-items:end;background:white;padding:10px;border-radius:10px;border:1px solid #d1fae5;';
+    div.innerHTML = `
+        <div>
+            <label style="font-size:10px;color:#64748b;font-weight:600;display:block;margin-bottom:3px;">সাইজ</label>
+            <input type="text" placeholder="যেমন: 250gm" value="${key}" style="width:100%;padding:8px 6px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;box-sizing:border-box;" class="ap-key">
+        </div>
+        <div>
+            <label style="font-size:10px;color:#64748b;font-weight:600;display:block;margin-bottom:3px;">বিক্রয় মূল্য (৳)</label>
+            <input type="number" placeholder="মূল্য" value="${val.price||''}" style="width:100%;padding:8px 6px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;box-sizing:border-box;" class="ap-price">
+        </div>
+        <div>
+            <label style="font-size:10px;color:#64748b;font-weight:600;display:block;margin-bottom:3px;">পুরনো দাম (৳)</label>
+            <input type="number" placeholder="আগের দাম" value="${val.old||''}" style="width:100%;padding:8px 6px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;box-sizing:border-box;" class="ap-old">
+        </div>
+        <div>
+            <label style="font-size:10px;color:#64748b;font-weight:600;display:block;margin-bottom:3px;">ছাড় (%)</label>
+            <input type="number" placeholder="%" value="${val.dis||''}" style="width:100%;padding:8px 6px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:13px;box-sizing:border-box;" class="ap-dis">
+        </div>
+        <button onclick="this.parentElement.remove()" style="background:#fee2e2;border:none;color:#ef4444;width:32px;height:32px;border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;margin-bottom:0;align-self:end;">✕</button>
+    `;
+    rows.appendChild(div);
+}
+
+async function adminSavePrices(productId) {
+    const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+    if (!token) { alert('অ্যাডমিন লগইন প্রয়োজন'); return; }
+
+    const rows = document.querySelectorAll('#adminPriceRows > div');
+    const prices = {};
+    let valid = true;
+    rows.forEach(row => {
+        const key = row.querySelector('.ap-key').value.trim();
+        const price = parseFloat(row.querySelector('.ap-price').value) || 0;
+        const old = parseFloat(row.querySelector('.ap-old').value) || 0;
+        const dis = parseFloat(row.querySelector('.ap-dis').value) || 0;
+        if (key) prices[key] = { price, old, dis };
+        else valid = false;
+    });
+
+    const basePrice = parseFloat(document.getElementById('adminBasePrice').value) || 0;
+    const baseOld = parseFloat(document.getElementById('adminBaseOld').value) || 0;
+    const baseDiscount = parseFloat(document.getElementById('adminBaseDiscount').value) || 0;
+
+    const msg = document.getElementById('adminPriceMsg');
+    msg.style.display = 'block';
+    msg.style.color = '#059669';
+    msg.textContent = '⏳ সেভ হচ্ছে...';
+
+    try {
+        const r = await fetch(API_BASE + '/admin/products/' + productId + '/prices', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ prices, basePrice, baseOld, baseDiscount })
+        });
+        const d = await r.json();
+        if (d.success) {
+            msg.style.color = '#059669';
+            msg.textContent = '✅ সফলভাবে আপডেট হয়েছে!';
+            // Update local product data
+            const idx = allProducts.findIndex(x => x.id === productId);
+            if (idx >= 0) { allProducts[idx].prices = prices; allProducts[idx].basePrice = basePrice; allProducts[idx].baseOld = baseOld; allProducts[idx].baseDiscount = baseDiscount; }
+            // Refresh weight buttons
+            const wtBtns = document.querySelector('.weight-btns');
+            if (wtBtns) wtBtns.innerHTML = buildWeightButtons({ prices, basePrice, baseDiscount }, productId);
+            setTimeout(() => { msg.style.display='none'; }, 3000);
+        } else {
+            msg.style.color = '#ef4444';
+            msg.textContent = '❌ ' + (d.message || 'ত্রুটি হয়েছে');
+        }
+    } catch (e) {
+        msg.style.color = '#ef4444';
+        msg.textContent = '❌ নেটওয়ার্ক সমস্যা: ' + e.message;
+    }
+}
+
+// Show admin price editor button if admin token exists
+function checkAdminAndShowPriceBtn(productId) {
+    const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+    if (token) {
+        const btn = document.getElementById('adminEditPriceBtn');
+        if (btn) { btn.style.display = 'inline-flex'; }
+    }
 }
 
 async function submitOrder(productId) {
