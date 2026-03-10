@@ -583,106 +583,233 @@ src="https://www.facebook.com/tr?id=2062099531032646&ev=PageView&noscript=1"
         }
         .img-trust-pill i { color: var(--emerald); font-size: 13px; }
 
-        /* ── PRODUCT VIDEO SECTION ── */
+        /* ══════════════════════════════════════════
+           PRODUCT VIDEO SECTION — Fully Responsive
+        ══════════════════════════════════════════ */
         .product-video-section {
-            margin: 32px 0;
+            margin: 36px 0;
             background: white;
             border-radius: var(--radius);
             box-shadow: var(--shadow-md);
             overflow: hidden;
             border: 1px solid rgba(10,61,46,0.08);
         }
+
+        /* Header bar */
         .video-section-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 20px 24px 16px;
-            border-bottom: 1px solid rgba(10,61,46,0.07);
+            gap: 14px;
+            padding: 18px 28px;
+            background: linear-gradient(135deg, var(--forest) 0%, #0d5c40 100%);
         }
         .video-section-icon {
-            width: 40px; height: 40px;
-            background: linear-gradient(135deg, var(--forest), var(--emerald));
-            border-radius: 10px;
+            width: 44px; height: 44px;
+            background: rgba(255,255,255,0.15);
+            border: 1.5px solid rgba(255,255,255,0.3);
+            border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 16px;
+            color: white; font-size: 18px;
             flex-shrink: 0;
+            backdrop-filter: blur(8px);
         }
         .video-section-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
-            color: var(--forest);
+            color: #fff;
+            line-height: 1.2;
         }
         .video-section-sub {
             font-size: 12px;
-            color: var(--slate);
-            margin-top: 2px;
+            color: rgba(255,255,255,0.65);
+            margin-top: 3px;
         }
-        .video-container {
-            position: relative;
+        .video-yt-badge {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,0,0,0.85);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+
+        /* Video body padding */
+        .video-body {
             padding: 20px 24px 24px;
+            background: #0f0f0f;
         }
-        .video-iframe-wrap {
+
+        /* ── Responsive 16:9 Wrapper ── */
+        .video-responsive-wrap {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
-            height: 0;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            border-radius: 10px;
             overflow: hidden;
-            border-radius: 12px;
             background: #000;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 32px rgba(0,0,0,0.5);
         }
-        .video-iframe-wrap iframe {
+        .video-responsive-wrap iframe {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             border: none;
-            border-radius: 12px;
         }
-        .video-placeholder {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #0a3d2e, #0d5c40);
+
+        /* ── Custom Thumbnail Overlay (before play) ── */
+        .video-thumb-overlay {
+            position: absolute;
+            inset: 0;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.3s ease;
+            z-index: 2;
         }
-        .video-placeholder-inner {
+        .video-thumb-overlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.18) 0%,
+                rgba(0,0,0,0.52) 60%,
+                rgba(0,0,0,0.72) 100%
+            );
+        }
+        .video-thumb-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* YouTube-style play button */
+        .yt-play-circle {
+            position: relative;
+            z-index: 3;
+            width: 80px; height: 80px;
+            background: #FF0000;
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 32px rgba(255,0,0,0.55);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .video-thumb-overlay:hover .yt-play-circle {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(255,0,0,0.7);
+        }
+        .yt-play-circle i {
+            font-size: 32px;
+            color: white;
+            margin-left: 4px; /* optical center for play icon */
+        }
+        .yt-overlay-label {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+        }
+        .yt-overlay-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+        .yt-overlay-hint {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 4px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+        }
+
+        /* No-video placeholder */
+        .video-no-url {
             position: absolute;
             inset: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 16px;
-            color: white;
+            gap: 12px;
+            background: linear-gradient(135deg, #111 0%, #1a2332 100%);
+            border-radius: 10px;
         }
-        .video-play-btn {
-            width: 72px; height: 72px;
-            background: rgba(255,255,255,0.18);
-            border: 2.5px solid rgba(255,255,255,0.5);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px;
-            transition: var(--transition);
-            backdrop-filter: blur(8px);
+        .video-no-url i {
+            font-size: 52px;
+            color: rgba(255,255,255,0.15);
         }
-        .video-placeholder:hover .video-play-btn {
-            background: rgba(255,255,255,0.28);
-            transform: scale(1.08);
+        .video-no-url-text {
+            font-size: 14px;
+            color: rgba(255,255,255,0.4);
         }
-        .video-placeholder-text {
-            font-size: 15px;
+
+        /* Bottom info bar */
+        .video-info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 24px;
+            background: white;
+            border-top: 1px solid rgba(10,61,46,0.07);
+            flex-wrap: wrap;
+        }
+        .video-info-name {
+            font-size: 14px;
             font-weight: 600;
-            opacity: 0.9;
+            color: var(--forest);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .video-placeholder-sub {
-            font-size: 12px;
-            opacity: 0.65;
-            margin-top: -10px;
+        .video-info-name i { color: var(--emerald); }
+        .video-info-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
-        @media (max-width: 600px) {
-            .video-section-header { padding: 16px 18px 12px; }
-            .video-container { padding: 14px 16px 18px; }
+        .video-info-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--light);
+            border: 1px solid rgba(5,150,105,0.2);
+            color: var(--emerald);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .video-section-header { padding: 14px 18px; }
+            .video-yt-badge { display: none; }
+            .video-body { padding: 12px 12px 14px; }
+            .video-info-bar { padding: 12px 16px; }
+            .yt-play-circle { width: 64px; height: 64px; border-radius: 18px; }
+            .yt-play-circle i { font-size: 26px; }
+            .yt-overlay-title { font-size: 14px; }
+        }
+        @media (max-width: 480px) {
+            .video-section-title { font-size: 15px; }
+            .video-body { padding: 10px 10px 12px; }
+            .video-responsive-wrap { border-radius: 8px; }
+            .yt-play-circle { width: 56px; height: 56px; border-radius: 14px; }
+            .yt-play-circle i { font-size: 22px; }
+            .yt-overlay-title { font-size: 13px; }
+            .yt-overlay-hint { display: none; }
+            .video-info-bar { gap: 8px; }
+            .video-info-name { font-size: 12px; }
         }
 
         /* ── RIGHT: INFO PANEL ── */
@@ -1900,51 +2027,82 @@ async function showProductDetail(id) {
         <!-- Product Video Section -->
         ${(() => {
             const videoUrl = p.videoUrl || '';
-            let embedHtml = '';
+            let innerHtml = '';
+
             if (videoUrl) {
                 // Extract YouTube video ID
                 const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
                 if (ytMatch) {
                     const vidId = ytMatch[1];
-                    embedHtml = `
-                    <div class="video-iframe-wrap">
-                        <iframe
-                            src="https://www.youtube.com/embed/${vidId}?rel=0&modestbranding=1"
-                            title="${p.name} - পণ্য ভিডিও"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen
-                            loading="lazy"
-                        ></iframe>
+                    const thumbUrl = `https://img.youtube.com/vi/${vidId}/maxresdefault.jpg`;
+                    const embedSrc = `https://www.youtube.com/embed/${vidId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+                    innerHtml = `
+                    <div class="video-responsive-wrap" id="vid-wrap-${vidId}">
+                        <!-- Thumbnail overlay — click করলে পেজেই play হবে -->
+                        <div class="video-thumb-overlay"
+                             id="vid-overlay-${vidId}"
+                             style="background-image:url('${thumbUrl}')"
+                             onclick="(function(){
+                                 var wrap = document.getElementById('vid-wrap-${vidId}');
+                                 var ov   = document.getElementById('vid-overlay-${vidId}');
+                                 var fr   = document.createElement('iframe');
+                                 fr.src   = '${embedSrc}';
+                                 fr.title = '${p.name} - পণ্য ভিডিও';
+                                 fr.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
+                                 fr.allowFullscreen = true;
+                                 fr.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;';
+                                 wrap.appendChild(fr);
+                                 ov.classList.add('hidden');
+                             })()">
+                            <div class="yt-play-circle"><i class="fab fa-youtube"></i></div>
+                            <div class="yt-overlay-label">
+                                <div class="yt-overlay-title">${p.name}</div>
+                                <div class="yt-overlay-hint">▶ ক্লিক করুন — এখানেই ভিডিও চলবে</div>
+                            </div>
+                        </div>
                     </div>`;
                 } else {
-                    // Generic video URL
-                    embedHtml = `
-                    <div class="video-iframe-wrap">
-                        <iframe src="${videoUrl}" title="${p.name} - পণ্য ভিডিও" allowfullscreen loading="lazy"></iframe>
+                    // Generic embed (non-YouTube)
+                    innerHtml = `
+                    <div class="video-responsive-wrap">
+                        <iframe src="${videoUrl}"
+                            title="${p.name} - পণ্য ভিডিও"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                            allowfullscreen>
+                        </iframe>
                     </div>`;
                 }
             } else {
-                // Placeholder with YouTube search link
-                const searchQuery = encodeURIComponent(p.name + ' organic herbal product');
-                embedHtml = `
-                <a href="https://www.youtube.com/results?search_query=${searchQuery}" target="_blank" class="video-placeholder">
-                    <div class="video-placeholder-inner">
-                        <div class="video-play-btn"><i class="fab fa-youtube"></i></div>
-                        <div class="video-placeholder-text">${p.name} — পণ্য ভিডিও</div>
-                        <div class="video-placeholder-sub">YouTube এ দেখতে ক্লিক করুন</div>
+                innerHtml = `
+                <div class="video-responsive-wrap">
+                    <div class="video-no-url">
+                        <i class="fas fa-video-slash"></i>
+                        <div class="video-no-url-text">এই পণ্যের জন্য এখনো ভিডিও যোগ করা হয়নি</div>
                     </div>
-                </a>`;
+                </div>`;
             }
+
             return `
         <div class="product-video-section">
+            <!-- Header -->
             <div class="video-section-header">
-                <div class="video-section-icon"><i class="fas fa-play"></i></div>
+                <div class="video-section-icon"><i class="fab fa-youtube"></i></div>
                 <div>
                     <div class="video-section-title">পণ্য পরিচিতি ভিডিও</div>
-                    <div class="video-section-sub">${p.name} সম্পর্কে বিস্তারিত জানুন</div>
+                    <div class="video-section-sub">${p.name} সম্পর্কে বিস্তারিত দেখুন</div>
+                </div>
+                <div class="video-yt-badge"><i class="fab fa-youtube"></i> YouTube</div>
+            </div>
+            <!-- Dark video body -->
+            <div class="video-body">${innerHtml}</div>
+            <!-- Bottom info strip -->
+            <div class="video-info-bar">
+                <div class="video-info-name"><i class="fas fa-play-circle"></i> ${p.name} — অফিশিয়াল ভিডিও</div>
+                <div class="video-info-pills">
+                    <span class="video-info-pill"><i class="fas fa-mobile-alt"></i> সব ডিভাইসে চলে</span>
+                    <span class="video-info-pill"><i class="fas fa-expand"></i> ফুলস্ক্রিন সাপোর্ট</span>
                 </div>
             </div>
-            <div class="video-container">${embedHtml}</div>
         </div>`;
         })()}
 
