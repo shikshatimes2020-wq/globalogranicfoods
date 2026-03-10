@@ -598,6 +598,24 @@ select.form-input{cursor:pointer;}
         </div>
       </div>
 
+      <div class="section-divider"><i class="fas fa-video"></i>পণ্যের ভিডিও</div>
+      <div class="form-group">
+        <label class="form-label">YouTube / ভিডিও URL</label>
+        <input type="text" id="pm-videoUrl" class="form-input" placeholder="https://www.youtube.com/watch?v=... বা https://youtu.be/...">
+        <p class="form-hint">YouTube, Vimeo বা সরাসরি MP4 লিংক দিন। খালি রাখলে ভিডিও দেখাবে না।</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">ভিডিও শিরোনাম (ঐচ্ছিক)</label>
+        <input type="text" id="pm-videoTitle" class="form-input" placeholder="যেমন: গ্যাস্ট্রো কেয়ার ব্যহারের নিয়ম">
+      </div>
+      <div id="pm-videoPreview" style="display:none;margin-top:10px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);background:var(--surface2);">
+        <div style="padding:10px 12px;font-size:12px;color:var(--text3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;"><i class="fas fa-eye" style="color:var(--green)"></i>ভিডিও প্রিভিউ</div>
+        <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
+          <iframe id="pm-videoFrame" src="" frameborder="0" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"></iframe>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="previewVideo()" style="margin-top:8px;"><i class="fas fa-play"></i>প্রিভিউ দেখুন</button>
+
       <div class="section-divider"><i class="fas fa-sliders-h"></i>প্রদর্শন সেটিংস</div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">ক্রম (ছোট সংখ্যা আগে)</label><input type="number" id="pm-order" class="form-input" value="0"></div>
@@ -935,7 +953,7 @@ async function loadProducts() {
   if (!d.success) { $('productsTableWrap').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>লোড ব্যর্থ</p></div>`; return; }
   if (!d.products.length) { $('productsTableWrap').innerHTML = `<div class="empty-state"><i class="fas fa-box-open"></i><p>কোনো পণ্য নেই</p></div>`; return; }
   $('productsTableWrap').innerHTML = `<table><thead><tr><th>ছবি</th><th>পণ্য</th><th>মূল্য (১কেজি)</th><th>ব্যাজ</th><th>স্ট্যাটাস</th><th>ক্রম</th><th>অ্যাকশন</th></tr></thead><tbody>${d.products.map(p=>`<tr>
-    <td><img class="product-thumb" src="${p.img||p.imgs?.[0]||''}" onerror="this.src=''" alt="${p.name}"></td>
+    <td><img class="product-thumb" src="${p.img||p.imgs?.[0]||''}" onerror="this.src=''" alt="${p.name}">${p.videoUrl?'<span title="ভিডিও আছে" style="margin-left:4px;background:rgba(248,81,73,0.15);color:#f85149;border-radius:4px;padding:1px 5px;font-size:10px;"><i class="fas fa-video"></i></span>':''}</td>
     <td><div style="font-weight:700">${p.name}</div><div style="font-size:12px;color:var(--text2)">${p.id}</div>${p.subtitle?`<div style="font-size:11px;color:var(--text3)">${p.subtitle}</div>`:''}</td>
     <td><div style="font-weight:700;color:var(--green)">৳${p.prices?.['1kg']?.price||p.basePrice||0}</div>${p.prices?.['1kg']?.old?`<div style="font-size:11px;color:var(--text3);text-decoration:line-through">৳${p.prices['1kg'].old}</div>`:''}</td>
     <td>${p.badge?`<span class="status" style="background:var(--amber-dim);color:var(--amber)">${p.badge}</span>`:'—'}</td>
@@ -981,10 +999,13 @@ async function openProductModal(productId) {
     if (Array.isArray(p.benefits)) p.benefits.forEach(v=>addTagValue('benefitsTags',v));
     if (Array.isArray(p.ingredients)) p.ingredients.forEach(v=>addTagValue('ingredientsTags',v));
     if (Array.isArray(p.usage)) p.usage.forEach(v=>addTagValue('usageTags',v));
+    $('pm-videoUrl').value = p.videoUrl||''; $('pm-videoTitle').value = p.videoTitle||'';
+    $('pm-videoPreview').style.display='none'; $('pm-videoFrame').src='';
   } else {
     $('pm-id').readOnly = false;
     ['pm-id','pm-name','pm-subtitle','pm-badge','pm-desc','pm-p1','pm-o1','pm-p2','pm-o2','pm-p5','pm-o5'].forEach(id=>$(id).value='');
     $('pm-badgeClass').value=''; $('pm-order').value=0; $('pm-active').value='true'; $('pm-imgs').value='[]';
+    $('pm-videoUrl').value=''; $('pm-videoTitle').value=''; $('pm-videoPreview').style.display='none'; $('pm-videoFrame').src='';
     openModal('productModal');
   }
 }
@@ -1044,6 +1065,29 @@ function getTagValues(wrapperId) {
   return [...wrap.querySelectorAll('.tag')].map(t => t.getAttribute('data-val')||t.querySelector('.tag-text')?.textContent?.trim()||'').filter(v=>v);
 }
 
+function getYoutubeEmbedUrl(url) {
+  if (!url) return '';
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return 'https://www.youtube.com/embed/' + m[1] + '?rel=0';
+  }
+  const vm = url.match(/vimeo\.com\/(\d+)/);
+  if (vm) return 'https://player.vimeo.com/video/' + vm[1];
+  return url;
+}
+
+function previewVideo() {
+  const url = $('pm-videoUrl').value.trim();
+  if (!url) { toast('দয়া করে প্রথমে URL দিন', 'error'); return; }
+  const embed = getYoutubeEmbedUrl(url);
+  $('pm-videoFrame').src = embed;
+  $('pm-videoPreview').style.display = 'block';
+}
+
 async function saveProduct(btn) {
   const id = $('pm-id').value.trim();
   const name = $('pm-name').value.trim();
@@ -1061,6 +1105,7 @@ async function saveProduct(btn) {
     desc:$('pm-desc').value||'',
     benefits:getTagValues('benefitsTags'), ingredients:getTagValues('ingredientsTags'), usage:getTagValues('usageTags'),
     order:parseInt($('pm-order').value)||0, isActive:$('pm-active').value==='true',
+    videoUrl:$('pm-videoUrl').value.trim()||'', videoTitle:$('pm-videoTitle').value.trim()||'',
   };
   btnLoad(btn, true);
   const method = editingProductId?'PUT':'POST';

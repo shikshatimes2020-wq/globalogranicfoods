@@ -102,6 +102,8 @@ const ProductSchema = new mongoose.Schema({
   benefits:    [String],
   ingredients: [String],
   usage:       [String],
+  videoUrl:    { type: String, default: '' },
+  videoTitle:  { type: String, default: '' },
   isActive:    { type: Boolean, default: true },
   order:       { type: Number, default: 0 },
   createdAt:   { type: Date, default: Date.now },
