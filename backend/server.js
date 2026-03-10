@@ -232,6 +232,7 @@ async function seedDefaults() {
       { key: 'deliveryOutside', value: 130 },
       { key: 'freeDelivery', value: true },
       { key: 'returnDays', value: 7 },
+      { key: 'packSizes', value: ['2kg', '1kg', '500gm'] },
     ]);
     console.log('✅ Default settings seeded');
   }
@@ -477,6 +478,29 @@ app.get('/api/settings', async (req, res) => {
     const obj = {};
     settings.forEach(s => obj[s.key] = s.value);
     res.json({ success: true, settings: obj });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// ✅ Get pack sizes
+app.get('/api/pack-sizes', async (req, res) => {
+  try {
+    let packSizes = await SiteSettings.findOne({ key: 'packSizes' });
+    if (!packSizes) {
+      packSizes = await SiteSettings.create({ key: 'packSizes', value: ['2kg', '1kg', '500gm'] });
+    }
+    res.json({ success: true, packSizes: packSizes.value });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// ✅ Update pack sizes (Admin only)
+app.put('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
+  try {
+    const { packSizes } = req.body;
+    if (!Array.isArray(packSizes) || packSizes.length === 0) {
+      return res.status(400).json({ success: false, message: 'প্যাক সাইজ লিস্ট বৈধ হতে হবে' });
+    }
+    await SiteSettings.findOneAndUpdate({ key: 'packSizes' }, { value: packSizes, updatedAt: new Date() }, { upsert: true });
+    res.json({ success: true, message: 'প্যাক সাইজ আপডেট করা হয়েছে', packSizes });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 

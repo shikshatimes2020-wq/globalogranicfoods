@@ -104,6 +104,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 .btn-outline:hover:not(:disabled){border-color:var(--green);color:var(--green);}
 .btn-red{background:var(--red-dim);border:1px solid rgba(248,81,73,0.25);color:var(--red);}
 .btn-red:hover:not(:disabled){background:rgba(248,81,73,0.2);}
+.btn-danger{background:var(--red);border:none;color:#fff;}
+.btn-danger:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 0 15px rgba(248,81,73,0.4);}
 .btn-amber{background:var(--amber-dim);border:1px solid rgba(245,166,35,0.25);color:var(--amber);}
 .btn-sm{padding:6px 12px;font-size:12px;}
 .btn-icon{width:32px;height:32px;padding:0;justify-content:center;}
@@ -419,6 +421,16 @@ select.form-input{cursor:pointer;}
           <div class="card-body">
             <div class="form-group"><label class="form-label">ঢাকার ভিতরে ডেলিভারি চার্জ (৳)</label><input type="number" id="set-deliveryInside" class="form-input" placeholder="80"></div>
             <div class="form-group"><label class="form-label">ঢাকার বাহিরে ডেলিভারি চার্জ (৳)</label><input type="number" id="set-deliveryOutside" class="form-input" placeholder="130"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title"><i class="fas fa-box"></i>প্যাক সাইজ সেটিংস</div></div>
+          <div class="card-body">
+            <div class="form-group"><label class="form-label">উপলব্ধ প্যাক সাইজ</label>
+              <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">আপনার পণ্যে কি কি প্যাক সাইজ পাওয়া যাবে তা যোগ করুন। প্রতিটি সাইজ এন্টার দিয়ে আলাদা করুন।</p>
+              <div id="packSizesList" style="display:flex;flex-direction:column;gap:8px;"></div>
+              <button type="button" class="btn btn-outline" style="margin-top:10px;width:100%;" onclick="addPackSizeInput()"><i class="fas fa-plus"></i>নতুন সাইজ যোগ করুন</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1378,11 +1390,61 @@ async function loadSettings() {
   const s = d.settings;
   const map = { siteName:'set-siteName', announcement:'set-announcement', deliveryInside:'set-deliveryInside', deliveryOutside:'set-deliveryOutside', freeDelivery:'set-freeDelivery' };
   Object.entries(map).forEach(([key,elId]) => { const el=$(elId); if(el&&s[key]!==undefined) el.value=s[key]; });
+  
+  // Load pack sizes
+  loadPackSizes(s.packSizes || ['2kg', '1kg', '500gm']);
+}
+
+function loadPackSizes(sizes) {
+  const list = $('packSizesList');
+  list.innerHTML = '';
+  sizes.forEach((size, idx) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex;gap:8px;align-items:center;';
+    div.innerHTML = `
+      <input type="text" class="form-input pack-size-input" value="${size}" placeholder="যেমন: 2kg, 1kg ইত্যাদি" style="flex:1;">
+      <button type="button" class="btn btn-danger btn-sm" onclick="removePackSizeInput(this)" style="padding:8px 12px;"><i class="fas fa-trash"></i></button>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function addPackSizeInput() {
+  const list = $('packSizesList');
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;gap:8px;align-items:center;';
+  div.innerHTML = `
+    <input type="text" class="form-input pack-size-input" placeholder="যেমন: 2kg, 1kg ইত্যাদি" style="flex:1;">
+    <button type="button" class="btn btn-danger btn-sm" onclick="removePackSizeInput(this)" style="padding:8px 12px;"><i class="fas fa-trash"></i></button>
+  `;
+  list.appendChild(div);
+}
+
+function removePackSizeInput(btn) {
+  btn.closest('div').remove();
 }
 
 async function saveSettings(btn) {
   btnLoad(btn, true);
-  const updates = { siteName:$('set-siteName').value, announcement:$('set-announcement').value, deliveryInside:parseInt($('set-deliveryInside').value)||0, deliveryOutside:parseInt($('set-deliveryOutside').value)||0, freeDelivery:$('set-freeDelivery').value==='true' };
+  
+  // Get pack sizes
+  const packSizeInputs = document.querySelectorAll('.pack-size-input');
+  const packSizes = Array.from(packSizeInputs).map(el => el.value.trim()).filter(v => v);
+  
+  if (packSizes.length === 0) {
+    toast('কমপক্ষে একটি প্যাক সাইজ যোগ করুন','error');
+    btnLoad(btn, false);
+    return;
+  }
+  
+  const updates = { 
+    siteName:$('set-siteName').value, 
+    announcement:$('set-announcement').value, 
+    deliveryInside:parseInt($('set-deliveryInside').value)||0, 
+    deliveryOutside:parseInt($('set-deliveryOutside').value)||0, 
+    freeDelivery:$('set-freeDelivery').value==='true',
+    packSizes: packSizes
+  };
   const d = await api('/admin/settings', {method:'PUT', body:JSON.stringify(updates)});
   btnLoad(btn, false);
   if (d.success) toast('✅ সেটিংস সেভ হয়েছে'); else toast(d.message,'error');
