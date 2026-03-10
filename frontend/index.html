@@ -583,6 +583,108 @@ src="https://www.facebook.com/tr?id=2062099531032646&ev=PageView&noscript=1"
         }
         .img-trust-pill i { color: var(--emerald); font-size: 13px; }
 
+        /* ── PRODUCT VIDEO SECTION ── */
+        .product-video-section {
+            margin: 32px 0;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid rgba(10,61,46,0.08);
+        }
+        .video-section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid rgba(10,61,46,0.07);
+        }
+        .video-section-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--forest), var(--emerald));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 16px;
+            flex-shrink: 0;
+        }
+        .video-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--forest);
+        }
+        .video-section-sub {
+            font-size: 12px;
+            color: var(--slate);
+            margin-top: 2px;
+        }
+        .video-container {
+            position: relative;
+            padding: 20px 24px 24px;
+        }
+        .video-iframe-wrap {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .video-iframe-wrap iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+        .video-placeholder {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0a3d2e, #0d5c40);
+            cursor: pointer;
+        }
+        .video-placeholder-inner {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            color: white;
+        }
+        .video-play-btn {
+            width: 72px; height: 72px;
+            background: rgba(255,255,255,0.18);
+            border: 2.5px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px;
+            transition: var(--transition);
+            backdrop-filter: blur(8px);
+        }
+        .video-placeholder:hover .video-play-btn {
+            background: rgba(255,255,255,0.28);
+            transform: scale(1.08);
+        }
+        .video-placeholder-text {
+            font-size: 15px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        .video-placeholder-sub {
+            font-size: 12px;
+            opacity: 0.65;
+            margin-top: -10px;
+        }
+        @media (max-width: 600px) {
+            .video-section-header { padding: 16px 18px 12px; }
+            .video-container { padding: 14px 16px 18px; }
+        }
+
         /* ── RIGHT: INFO PANEL ── */
         .detail-info-panel {}
 
@@ -1794,6 +1896,57 @@ async function showProductDetail(id) {
                 </div>
             </div>
         </div>
+
+        <!-- Product Video Section -->
+        ${(() => {
+            const videoUrl = p.videoUrl || '';
+            let embedHtml = '';
+            if (videoUrl) {
+                // Extract YouTube video ID
+                const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                if (ytMatch) {
+                    const vidId = ytMatch[1];
+                    embedHtml = `
+                    <div class="video-iframe-wrap">
+                        <iframe
+                            src="https://www.youtube.com/embed/${vidId}?rel=0&modestbranding=1"
+                            title="${p.name} - পণ্য ভিডিও"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            loading="lazy"
+                        ></iframe>
+                    </div>`;
+                } else {
+                    // Generic video URL
+                    embedHtml = `
+                    <div class="video-iframe-wrap">
+                        <iframe src="${videoUrl}" title="${p.name} - পণ্য ভিডিও" allowfullscreen loading="lazy"></iframe>
+                    </div>`;
+                }
+            } else {
+                // Placeholder with YouTube search link
+                const searchQuery = encodeURIComponent(p.name + ' organic herbal product');
+                embedHtml = `
+                <a href="https://www.youtube.com/results?search_query=${searchQuery}" target="_blank" class="video-placeholder">
+                    <div class="video-placeholder-inner">
+                        <div class="video-play-btn"><i class="fab fa-youtube"></i></div>
+                        <div class="video-placeholder-text">${p.name} — পণ্য ভিডিও</div>
+                        <div class="video-placeholder-sub">YouTube এ দেখতে ক্লিক করুন</div>
+                    </div>
+                </a>`;
+            }
+            return `
+        <div class="product-video-section">
+            <div class="video-section-header">
+                <div class="video-section-icon"><i class="fas fa-play"></i></div>
+                <div>
+                    <div class="video-section-title">পণ্য পরিচিতি ভিডিও</div>
+                    <div class="video-section-sub">${p.name} সম্পর্কে বিস্তারিত জানুন</div>
+                </div>
+            </div>
+            <div class="video-container">${embedHtml}</div>
+        </div>`;
+        })()}
 
         <!-- Info Tabs -->
         <div class="info-tabs">

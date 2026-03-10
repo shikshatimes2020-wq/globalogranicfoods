@@ -54,6 +54,17 @@ const storage = new CloudinaryStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
+// Video upload storage (Cloudinary, resource_type: video)
+const videoStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => ({
+    folder: 'globalorganicfoods/videos',
+    resource_type: 'video',
+    allowed_formats: ['mp4','mov','avi','mkv','webm'],
+  }),
+});
+const uploadVideo = multer({ storage: videoStorage, limits: { fileSize: 100 * 1024 * 1024 } });
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
   : ['http://localhost:3000','http://localhost:5500','http://127.0.0.1:5500'];
@@ -102,8 +113,8 @@ const ProductSchema = new mongoose.Schema({
   benefits:    [String],
   ingredients: [String],
   usage:       [String],
-  videoUrl:    { type: String, default: '' },
-  videoTitle:  { type: String, default: '' },
+  video:       { type: String, default: '' },   // YouTube/Vimeo URL or Cloudinary video URL
+  videoType:   { type: String, enum: ['youtube','vimeo','cloudinary','direct',''], default: '' },
   isActive:    { type: Boolean, default: true },
   order:       { type: Number, default: 0 },
   createdAt:   { type: Date, default: Date.now },
@@ -306,6 +317,15 @@ app.post('/api/admin/upload', authMiddleware, upload.array('images', 10), async 
   try {
     const urls = req.files.map(f => f.path);
     res.json({ success: true, urls });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// Video upload endpoint — uploads to Cloudinary as video resource
+app.post('/api/admin/upload-video', authMiddleware, uploadVideo.single('video'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ success: false, message: 'কোনো ভিডিও ফাইল পাওয়া যায়নি' });
+    const url = req.file.path;
+    res.json({ success: true, url, publicId: req.file.filename });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
