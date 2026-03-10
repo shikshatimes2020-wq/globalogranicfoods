@@ -667,11 +667,14 @@ select.form-input{cursor:pointer;}
             সরাসরি ফাইল আপলোড করতে সার্ভারে ভিডিও আপলোড সাপোর্ট থাকতে হবে।
           </div>
         </div>
-        <div class="img-upload-area" id="videoUploadArea" onclick="$('videoFileInput').click()">
-          <input type="file" id="videoFileInput" accept="video/mp4,video/webm,video/ogg" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;" onchange="handleVideoFileSelect(this)">
-          <i class="fas fa-film" style="font-size:32px;color:var(--text3);margin-bottom:8px;"></i>
+        <div class="img-upload-area" id="videoUploadArea">
+          <!-- No onclick on wrapper — only the input triggers file picker to avoid double-fire -->
+          <input type="file" id="videoFileInput"
+            accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo,video/x-matroska,.mp4,.webm,.ogg,.mov,.avi,.mkv,.m4v"
+            style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+          <i class="fas fa-film" style="font-size:32px;color:var(--text3);margin-bottom:8px;display:block;"></i>
           <p>ভিডিও ফাইল ড্র্যাগ করুন বা ক্লিক করুন</p>
-          <span>MP4, WebM — সর্বোচ্চ 50MB</span>
+          <span>MP4, MOV, AVI, MKV, WebM — সর্বোচ্চ ২০০ MB</span>
         </div>
         <div id="videoUploadProgress" style="display:none;margin-top:10px;">
           <div style="background:var(--surface2);border-radius:20px;height:8px;overflow:hidden;">
@@ -1257,80 +1260,80 @@ async function pasteFromClipboard() {
   }
 }
 
-async function handleVideoFileSelect(input) {
-  if (!input.files.length) return;
-  const file = input.files[0];
+function handleVideoFileSelect(file) {
+  if (!file) return;
 
-  // Validate file type
-  const allowed = ['video/mp4','video/webm','video/ogg','video/quicktime','video/x-msvideo'];
-  if (!allowed.includes(file.type) && !file.name.match(/\.(mp4|webm|ogg|mov|avi)$/i)) {
-    toast('শুধু MP4, WebM, OGG ফরম্যাট সাপোর্ট করে', 'error'); return;
+  // Size check — 200 MB
+  if (file.size > 200 * 1024 * 1024) {
+    toast('ফাইলের আকার সর্বোচ্চ ২০০ MB হতে পারবে', 'error'); return;
   }
-  // Size check
-  if (file.size > 50 * 1024 * 1024) { toast('ফাইলের আকার সর্বোচ্চ 50MB হতে পারবে', 'error'); return; }
+  // Type check
+  const okType = /^video\//.test(file.type) || /\.(mp4|mov|avi|mkv|webm|ogg|m4v|3gp)$/i.test(file.name);
+  if (!okType) { toast('শুধু MP4, MOV, AVI, MKV, WebM ফরম্যাট সাপোর্ট করে', 'error'); return; }
 
-  // Show progress UI
+  // Show progress
   $('videoUploadProgress').style.display = 'block';
   $('videoProgressBar').style.width = '5%';
-  $('videoProgressText').textContent = 'আপলোড শুরু হচ্ছে...';
-  input.value = '';
+  const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+  $('videoProgressText').textContent = 'আপলোড শুরু হচ্ছে... (' + sizeMB + ' MB)';
+  $('videoUploadArea').querySelector('p').textContent = file.name;
 
-  // Use XHR for real upload progress
   const fd = new FormData();
-  fd.append('images', file);   // same field name as working image upload
+  fd.append('video', file);   // matches /api/admin/upload-video field
 
   const xhr = new XMLHttpRequest();
 
   xhr.upload.addEventListener('progress', e => {
     if (e.lengthComputable) {
-      const pct = Math.min(Math.round(e.loaded / e.total * 100), 98);
+      const pct  = Math.min(Math.round(e.loaded / e.total * 100), 98);
+      const sent = (e.loaded / 1024 / 1024).toFixed(1);
+      const tot  = (e.total  / 1024 / 1024).toFixed(1);
       $('videoProgressBar').style.width = pct + '%';
-      $('videoProgressText').textContent = `আপলোড হচ্ছে... ${pct}%`;
+      $('videoProgressText').textContent = 'আপলোড হচ্ছে... ' + pct + '% (' + sent + ' / ' + tot + ' MB)';
     }
   });
 
   xhr.addEventListener('load', () => {
     $('videoProgressBar').style.width = '100%';
-    $('videoProgressText').textContent = 'প্রক্রিয়া করা হচ্ছে...';
-
+    $('videoProgressText').textContent = 'Cloudinary প্রক্রিয়া করছে...';
     let d;
     try {
       d = JSON.parse(xhr.responseText);
-    } catch (parseErr) {
-      // Response was not JSON — show raw status for debugging
-      const status = xhr.status;
-      const preview = xhr.responseText.slice(0, 120).replace(/</g,'&lt;');
-      toast(`সার্ভার রেসপন্স (${status}): JSON নয় — আপলোড সাপোর্ট নাও থাকতে পারে`, 'error');
-      console.error('Video upload raw response:', xhr.responseText);
-      $('videoUploadProgress').style.display = 'none';
-      return;
+    } catch (_) {
+      console.error('[upload-video] non-JSON response (' + xhr.status + '):', xhr.responseText.slice(0, 300));
+      toast('সার্ভার ত্রুটি (HTTP ' + xhr.status + ') — কনসোল দেখুন', 'error');
+      resetVideoUploadUI(); return;
     }
-
-    if (d.success && (d.urls?.length || d.url)) {
-      const url = d.urls?.[0] || d.url;
+    if (d.success && (d.url || (d.urls && d.urls[0]))) {
+      const url = d.url || d.urls[0];
       $('pm-videoUrl').value = url;
       switchVideoTab('link');
-      setTimeout(() => previewVideo(), 200);
-      toast('✅ ভিডিও আপলোড সফল হয়েছে');
+      setTimeout(() => previewVideo(), 300);
+      toast('✅ ভিডিও সফলভাবে আপলোড হয়েছে!');
     } else {
-      toast(d.message || 'সার্ভার আপলোড গ্রহণ করেনি', 'error');
+      toast(d.message || 'আপলোড ব্যর্থ হয়েছে', 'error');
     }
-    $('videoUploadProgress').style.display = 'none';
+    resetVideoUploadUI();
   });
 
-  xhr.addEventListener('error', () => {
-    toast('নেটওয়ার্ক সমস্যা — আপলোড ব্যর্থ হয়েছে', 'error');
-    $('videoUploadProgress').style.display = 'none';
-  });
+  xhr.addEventListener('error',  () => { toast('নেটওয়ার্ক সমস্যা — আপলোড ব্যর্থ', 'error'); resetVideoUploadUI(); });
+  xhr.addEventListener('abort',  () => { toast('আপলোড বাতিল',  'info');  resetVideoUploadUI(); });
+  xhr.addEventListener('timeout',() => { toast('সময় শেষ — আপলোড ব্যর্থ। বড় ফাইলের জন্য YouTube লিংক ব্যবহার করুন', 'error'); resetVideoUploadUI(); });
 
-  xhr.addEventListener('abort', () => {
-    toast('আপলোড বাতিল করা হয়েছে', 'info');
-    $('videoUploadProgress').style.display = 'none';
-  });
-
-  xhr.open('POST', API + '/admin/upload');
+  xhr.timeout = 5 * 60 * 1000;   // 5 minutes
+  xhr.open('POST', API + '/admin/upload-video');
   xhr.setRequestHeader('Authorization', 'Bearer ' + TOKEN);
   xhr.send(fd);
+}
+
+function resetVideoUploadUI() {
+  $('videoUploadProgress').style.display = 'none';
+  $('videoProgressBar').style.width = '0%';
+  const area = $('videoUploadArea');
+  if (area) {
+    const p = area.querySelector('p');
+    if (p) p.textContent = 'ভিডিও ফাইল ড্র্যাগ করুন বা ক্লিক করুন';
+  }
 }
 
 async function saveProduct(btn) {
@@ -1688,6 +1691,37 @@ document.addEventListener('keydown', e => {
 });
 
 checkToken();
+
+
+// ── Video file input — single event listener prevents double-fire ──────────
+(function() {
+  function attachVideoInput() {
+    const inp = document.getElementById('videoFileInput');
+    if (!inp) return;
+    // Remove any duplicate listeners by cloning
+    const fresh = inp.cloneNode(true);
+    inp.parentNode.replaceChild(fresh, inp);
+    fresh.addEventListener('change', function(e) {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      handleVideoFileSelect(f);
+      // Clear value AFTER reading the file object — prevents double-fire on same file
+      setTimeout(() => { try { fresh.value = ''; } catch(_) {} }, 500);
+    }, { once: false });
+  }
+  // Attach when DOM is ready; re-attach whenever modal opens
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachVideoInput);
+  } else {
+    attachVideoInput();
+  }
+  // Re-attach after modal open (MutationObserver on modal overlay)
+  const obs = new MutationObserver(() => attachVideoInput());
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('productModal');
+    if (modal) obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+  });
+})();
 </script>
 </body>
 </html>

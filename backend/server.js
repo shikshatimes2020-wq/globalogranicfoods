@@ -54,16 +54,27 @@ const storage = new CloudinaryStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-// Video upload storage (Cloudinary, resource_type: video)
+// ── Video upload storage (Cloudinary, resource_type: video) ──────────────────
 const videoStorage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => ({
     folder: 'globalorganicfoods/videos',
     resource_type: 'video',
-    allowed_formats: ['mp4','mov','avi','mkv','webm'],
+    allowed_formats: ['mp4','mov','avi','mkv','webm','ogg','m4v','3gp'],
+    chunk_size: 6000000,   // 6 MB chunks — required for large uploads (>100 MB)
+    eager_async: true,     // don't block response on transcoding
   }),
 });
-const uploadVideo = multer({ storage: videoStorage, limits: { fileSize: 100 * 1024 * 1024 } });
+const uploadVideo = multer({
+  storage: videoStorage,
+  limits: { fileSize: 200 * 1024 * 1024 },   // 200 MB max
+  fileFilter: (req, file, cb) => {
+    const ok = /\.(mp4|mov|avi|mkv|webm|ogg|m4v|3gp)$/i.test(file.originalname)
+               || /^video\//.test(file.mimetype);
+    if (ok) cb(null, true);
+    else cb(new Error('শুধু MP4, MOV, AVI, MKV, WebM ফরম্যাট সাপোর্ট করে'), false);
+  },
+});
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
@@ -85,6 +96,15 @@ app.use(cors({
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Increase timeout for large video uploads
+app.use((req, res, next) => {
+  if (req.path === '/api/admin/upload-video') {
+    req.setTimeout(5 * 60 * 1000);   // 5 min timeout for video uploads
+    res.setTimeout(5 * 60 * 1000);
+  }
+  next();
+});
 
 const AdminSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -114,6 +134,7 @@ const ProductSchema = new mongoose.Schema({
   ingredients: [String],
   usage:       [String],
   video:       { type: String, default: '' },   // YouTube/Vimeo URL or Cloudinary video URL
+  videoUrl:    { type: String, default: '' },   // alias used by admin panel
   videoType:   { type: String, enum: ['youtube','vimeo','cloudinary','direct',''], default: '' },
   isActive:    { type: Boolean, default: true },
   order:       { type: Number, default: 0 },
@@ -320,13 +341,33 @@ app.post('/api/admin/upload', authMiddleware, upload.array('images', 10), async 
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// Video upload endpoint — uploads to Cloudinary as video resource
-app.post('/api/admin/upload-video', authMiddleware, uploadVideo.single('video'), async (req, res) => {
+// ── Video upload endpoint ────────────────────────────────────────────────────
+// Accepts field names: 'video' (from upload tab) OR 'file' (generic clients)
+// Returns: { success, url, urls: [url], publicId }  — compatible with both admin panels
+app.post('/api/admin/upload-video', authMiddleware, (req, res, next) => {
+  // Use .any() so either field name works, then validate manually
+  uploadVideo.any()(req, res, (err) => {
+    if (err) {
+      // Multer / Cloudinary error — return JSON so frontend can parse it
+      console.error('[upload-video] multer error:', err.message);
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ success: false, message: 'কোনো ভিডিও ফাইল পাওয়া যায়নি' });
-    const url = req.file.path;
-    res.json({ success: true, url, publicId: req.file.filename });
-  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+    const file = req.files && req.files[0];
+    if (!file) {
+      return res.status(400).json({ success: false, message: 'কোনো ভিডিও ফাইল পাওয়া যায়নি। ফিল্ড নাম "video" বা "file" হতে হবে।' });
+    }
+    const url = file.path;            // Cloudinary secure URL
+    const publicId = file.filename;   // Cloudinary public_id
+    console.log('[upload-video] success:', publicId, url.slice(0, 60));
+    res.json({ success: true, url, urls: [url], publicId });
+  } catch (e) {
+    console.error('[upload-video] error:', e.message);
+    res.status(500).json({ success: false, message: e.message });
+  }
 });
 
 app.delete('/api/admin/image', authMiddleware, async (req, res) => {
