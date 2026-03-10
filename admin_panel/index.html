@@ -661,9 +661,10 @@ select.form-input{cursor:pointer;}
       <!-- TAB 2: File upload (mobile-friendly) -->
       <div id="videoUploadTab" style="display:none;">
         <div style="background:var(--amber-dim);border:1px solid rgba(245,166,35,0.3);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;">
-          <i class="fas fa-info-circle" style="color:var(--amber);margin-top:1px;flex-shrink:0;"></i>
+          <i class="fas fa-lightbulb" style="color:var(--amber);margin-top:1px;flex-shrink:0;"></i>
           <div style="font-size:12px;color:var(--text2);line-height:1.6;">
-            ভিডিও ফাইল আপলোড করতে সার্ভারে পর্যাপ্ত স্টোরেজ থাকতে হবে। সহজ পদ্ধতি হলো <strong style="color:var(--amber)">YouTube এ আপলোড করে লিংক</strong> দেওয়া — এটি সব ডিভাইসে সবচেয়ে ভালো কাজ করে।
+            <strong style="color:var(--amber)">সুপারিশ:</strong> YouTube এ ভিডিও আপলোড করে <strong style="color:var(--text)">লিংক দিন</strong> — এটি সব ডিভাইসে সেরা কাজ করে এবং সার্ভার স্টোরেজও বাঁচায়।
+            সরাসরি ফাইল আপলোড করতে সার্ভারে ভিডিও আপলোড সাপোর্ট থাকতে হবে।
           </div>
         </div>
         <div class="img-upload-area" id="videoUploadArea" onclick="$('videoFileInput').click()">
@@ -1259,39 +1260,77 @@ async function pasteFromClipboard() {
 async function handleVideoFileSelect(input) {
   if (!input.files.length) return;
   const file = input.files[0];
+
+  // Validate file type
+  const allowed = ['video/mp4','video/webm','video/ogg','video/quicktime','video/x-msvideo'];
+  if (!allowed.includes(file.type) && !file.name.match(/\.(mp4|webm|ogg|mov|avi)$/i)) {
+    toast('শুধু MP4, WebM, OGG ফরম্যাট সাপোর্ট করে', 'error'); return;
+  }
+  // Size check
   if (file.size > 50 * 1024 * 1024) { toast('ফাইলের আকার সর্বোচ্চ 50MB হতে পারবে', 'error'); return; }
+
+  // Show progress UI
   $('videoUploadProgress').style.display = 'block';
-  $('videoProgressBar').style.width = '0%';
-  $('videoProgressText').textContent = 'আপলোড হচ্ছে...';
-  const fd = new FormData();
-  fd.append('video', file);
-  try {
-    const xhr = new XMLHttpRequest();
-    xhr.upload.addEventListener('progress', e => {
-      if (e.lengthComputable) {
-        const pct = Math.round(e.loaded / e.total * 100);
-        $('videoProgressBar').style.width = pct + '%';
-        $('videoProgressText').textContent = `আপলোড হচ্ছে... ${pct}%`;
-      }
-    });
-    xhr.addEventListener('load', () => {
-      try {
-        const d = JSON.parse(xhr.responseText);
-        if (d.success && d.url) {
-          $('pm-videoUrl').value = d.url;
-          switchVideoTab('link');
-          previewVideo();
-          toast('✅ ভিডিও আপলোড হয়েছে');
-        } else { toast(d.message || 'আপলোড ব্যর্থ হয়েছে', 'error'); }
-      } catch(e) { toast('আপলোড রেসপন্স পার্স ব্যর্থ', 'error'); }
-      $('videoUploadProgress').style.display = 'none';
-    });
-    xhr.addEventListener('error', () => { toast('আপলোড ব্যর্থ হয়েছে', 'error'); $('videoUploadProgress').style.display = 'none'; });
-    xhr.open('POST', API + '/admin/upload-video');
-    xhr.setRequestHeader('Authorization', 'Bearer ' + TOKEN);
-    xhr.send(fd);
-  } catch(e) { toast('আপলোড শুরু করা যায়নি: ' + e.message, 'error'); $('videoUploadProgress').style.display = 'none'; }
+  $('videoProgressBar').style.width = '5%';
+  $('videoProgressText').textContent = 'আপলোড শুরু হচ্ছে...';
   input.value = '';
+
+  // Use XHR for real upload progress
+  const fd = new FormData();
+  fd.append('images', file);   // same field name as working image upload
+
+  const xhr = new XMLHttpRequest();
+
+  xhr.upload.addEventListener('progress', e => {
+    if (e.lengthComputable) {
+      const pct = Math.min(Math.round(e.loaded / e.total * 100), 98);
+      $('videoProgressBar').style.width = pct + '%';
+      $('videoProgressText').textContent = `আপলোড হচ্ছে... ${pct}%`;
+    }
+  });
+
+  xhr.addEventListener('load', () => {
+    $('videoProgressBar').style.width = '100%';
+    $('videoProgressText').textContent = 'প্রক্রিয়া করা হচ্ছে...';
+
+    let d;
+    try {
+      d = JSON.parse(xhr.responseText);
+    } catch (parseErr) {
+      // Response was not JSON — show raw status for debugging
+      const status = xhr.status;
+      const preview = xhr.responseText.slice(0, 120).replace(/</g,'&lt;');
+      toast(`সার্ভার রেসপন্স (${status}): JSON নয় — আপলোড সাপোর্ট নাও থাকতে পারে`, 'error');
+      console.error('Video upload raw response:', xhr.responseText);
+      $('videoUploadProgress').style.display = 'none';
+      return;
+    }
+
+    if (d.success && (d.urls?.length || d.url)) {
+      const url = d.urls?.[0] || d.url;
+      $('pm-videoUrl').value = url;
+      switchVideoTab('link');
+      setTimeout(() => previewVideo(), 200);
+      toast('✅ ভিডিও আপলোড সফল হয়েছে');
+    } else {
+      toast(d.message || 'সার্ভার আপলোড গ্রহণ করেনি', 'error');
+    }
+    $('videoUploadProgress').style.display = 'none';
+  });
+
+  xhr.addEventListener('error', () => {
+    toast('নেটওয়ার্ক সমস্যা — আপলোড ব্যর্থ হয়েছে', 'error');
+    $('videoUploadProgress').style.display = 'none';
+  });
+
+  xhr.addEventListener('abort', () => {
+    toast('আপলোড বাতিল করা হয়েছে', 'info');
+    $('videoUploadProgress').style.display = 'none';
+  });
+
+  xhr.open('POST', API + '/admin/upload');
+  xhr.setRequestHeader('Authorization', 'Bearer ' + TOKEN);
+  xhr.send(fd);
 }
 
 async function saveProduct(btn) {
