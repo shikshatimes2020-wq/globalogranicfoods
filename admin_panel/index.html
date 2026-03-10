@@ -594,9 +594,36 @@ select.form-input{cursor:pointer;}
         <input type="hidden" id="pm-imgs">
       </div>
 
-      <div class="section-divider"><i class="fas fa-tags"></i>মূল্য নির্ধারণ</div>
-      <div id="priceFieldsContainer">
-        <div style="text-align:center;padding:12px;color:var(--text3);font-size:13px"><i class="fas fa-spinner fa-spin"></i> প্যাক সাইজ লোড হচ্ছে...</div>
+      <div class="section-divider"><i class="fas fa-tags"></i>প্যাক সাইজ ও মূল্য নির্ধারণ</div>
+
+      <!-- Info bar -->
+      <div style="background:var(--blue-dim);border:1px solid rgba(79,142,247,0.25);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:14px;display:flex;gap:10px;align-items:flex-start;">
+        <i class="fas fa-info-circle" style="color:var(--blue);margin-top:1px;flex-shrink:0;"></i>
+        <span style="font-size:12px;color:var(--text2);line-height:1.6;">এই পণ্যের জন্য <strong style="color:var(--text)">আলাদা প্যাক সাইজ ও দাম</strong> নির্ধারণ করুন। গ্লোবাল সাইজ থেকে বেছে নিন অথবা নতুন কাস্টম সাইজ যোগ করুন।</span>
+      </div>
+
+      <!-- Pack size rows container -->
+      <div id="priceFieldsContainer" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="text-align:center;padding:12px;color:var(--text3);font-size:13px"><i class="fas fa-spinner fa-spin"></i> লোড হচ্ছে...</div>
+      </div>
+
+      <!-- Action buttons row -->
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;" id="packSizeActionsRow">
+        <button type="button" onclick="showGlobalSizesPicker()" class="btn btn-outline btn-sm" style="flex:1;min-width:140px;">
+          <i class="fas fa-globe"></i>গ্লোবাল সাইজ থেকে যোগ করুন
+        </button>
+        <button type="button" onclick="addCustomPriceRow()" class="btn btn-outline btn-sm" style="flex:1;min-width:140px;color:var(--green);border-color:rgba(0,210,106,0.4);">
+          <i class="fas fa-plus"></i>কাস্টম সাইজ যোগ করুন
+        </button>
+      </div>
+
+      <!-- Global sizes picker (hidden by default) -->
+      <div id="globalSizesPicker" style="display:none;margin-top:10px;background:var(--surface2);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.8px;">গ্লোবাল প্যাক সাইজ নির্বাচন করুন</div>
+        <div id="globalSizesCheckboxes" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+        <button type="button" onclick="$('globalSizesPicker').style.display='none'" class="btn btn-outline btn-sm" style="margin-top:10px;width:100%;">
+          <i class="fas fa-check"></i>সম্পন্ন
+        </button>
       </div>
 
       <div class="section-divider"><i class="fas fa-align-left"></i>বিবরণ ও বিস্তারিত</div>
@@ -1154,8 +1181,8 @@ async function openProductModal(productId) {
     $('pm-badge').value = p.badge||''; $('pm-badgeClass').value = p.badgeClass||'';
     $('pm-desc').value = p.desc||''; $('pm-order').value = p.order||0;
     $('pm-active').value = p.isActive?'true':'false';
-    // Fill dynamic price fields with existing product prices
-    await renderPriceFields(p.prices || {}, p.basePrice, p.baseOld);
+    // Fill dynamic price rows with existing product prices
+    await renderPriceFields(p.prices || {});
     productImgUrls = Array.isArray(p.imgs)&&p.imgs.length?[...p.imgs]:(p.img?[p.img]:[]);
     $('pm-imgs').value = JSON.stringify(productImgUrls);
     renderImgPreviews();
@@ -1398,71 +1425,213 @@ function resetVideoUploadUI() {
   }
 }
 
-// ── Dynamic Price Fields from Pack Sizes ─────────────────
-let _cachedPackSizes = null;
+// ==================== PER-PRODUCT PACK SIZE MANAGER ====================
+let _globalPackSizes = null;  // cache for global sizes
+let _productPriceRows = [];   // current rows in the editor [{size, label, price, old, isCustom}]
 
-async function getPackSizes() {
-  if (_cachedPackSizes) return _cachedPackSizes;
+// Load global pack sizes (with cache)
+async function fetchGlobalPackSizes() {
+  if (_globalPackSizes) return _globalPackSizes;
   const d = await api('/admin/pack-sizes');
-  if (d.success && d.sizes && d.sizes.length) {
-    _cachedPackSizes = d.sizes.filter(s => s.isActive !== false);
-  } else {
-    // fallback defaults
-    _cachedPackSizes = [
-      { size:'1kg',   label:'১ কেজি',   _id:'fallback-1' },
-      { size:'2kg',   label:'২ কেজি',   _id:'fallback-2' },
-      { size:'500gm', label:'৫০০ গ্রাম', _id:'fallback-3' },
-    ];
-  }
-  return _cachedPackSizes;
+  _globalPackSizes = (d.success && d.sizes) ? d.sizes : [];
+  return _globalPackSizes;
 }
 
-async function renderPriceFields(existingPrices = {}, basePrice = '', baseOld = '') {
+// Initialize price rows from a product's existing prices
+async function initPriceRows(existingPrices = {}) {
+  const globals = await fetchGlobalPackSizes();
+  _productPriceRows = [];
+
+  if (existingPrices && Object.keys(existingPrices).length > 0) {
+    // Product already has prices — load those
+    Object.entries(existingPrices).forEach(([size, val]) => {
+      const globalMatch = globals.find(g => g.size === size);
+      _productPriceRows.push({
+        size,
+        label: globalMatch ? globalMatch.label : size,
+        price: val?.price || 0,
+        old: val?.old || 0,
+        isCustom: !globalMatch,
+      });
+    });
+  } else {
+    // New product — load active global sizes as defaults
+    globals.filter(g => g.isActive !== false).forEach(g => {
+      _productPriceRows.push({ size: g.size, label: g.label, price: 0, old: 0, isCustom: false });
+    });
+  }
+  renderPriceRows();
+}
+
+// Render all price rows into the container
+function renderPriceRows() {
   const container = $('priceFieldsContainer');
   if (!container) return;
-  container.innerHTML = `<div style="text-align:center;padding:12px;color:var(--text3);font-size:13px"><i class="fas fa-spinner fa-spin"></i> লোড হচ্ছে...</div>`;
-  const sizes = await getPackSizes();
-  // First size acts as base price
-  const firstSize = sizes[0];
-  let html = '';
-  sizes.forEach((ps, i) => {
-    const existing = existingPrices[ps.size] || {};
-    const pVal = existing.price || (i === 0 ? basePrice : '') || '';
-    const oVal = existing.old   || (i === 0 ? baseOld   : '') || '';
-    html += `
-      <div class="form-row" data-pack-size="${ps.size}">
-        <div class="form-group">
-          <label class="form-label">${ps.label} বিক্রয় মূল্য (৳)${i===0?' *':''}</label>
-          <input type="number" id="pm-price-${ps.size}" class="form-input pm-price-field" data-size="${ps.size}" placeholder="${i===0?'০':''}">
-        </div>
-        <div class="form-group">
-          <label class="form-label">${ps.label} আসল মূল্য (৳)</label>
-          <input type="number" id="pm-old-${ps.size}" class="form-input pm-old-field" data-size="${ps.size}">
-        </div>
-      </div>`;
-  });
-  container.innerHTML = html || '<p style="color:var(--text3);font-size:13px;padding:8px 0">কোনো প্যাক সাইজ পাওয়া যায়নি। প্যাক সাইজ পরিচালনা থেকে যোগ করুন।</p>';
-  // Fill values
-  sizes.forEach((ps, i) => {
-    const existing = existingPrices[ps.size] || {};
-    const pEl = $(`pm-price-${ps.size}`);
-    const oEl = $(`pm-old-${ps.size}`);
-    if (pEl) pEl.value = existing.price || (i === 0 ? basePrice : '') || '';
-    if (oEl) oEl.value = existing.old   || (i === 0 ? baseOld   : '') || '';
-  });
+
+  if (!_productPriceRows.length) {
+    container.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;border:2px dashed var(--border);border-radius:var(--radius-sm);">
+      <i class="fas fa-box-open" style="font-size:24px;margin-bottom:8px;display:block;"></i>
+      কোনো প্যাক সাইজ নেই। নিচের বোতাম থেকে যোগ করুন।
+    </div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <!-- Header row -->
+    <div style="display:grid;grid-template-columns:110px 1fr 1fr 1fr 36px;gap:6px;padding:0 4px;margin-bottom:2px;">
+      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;">সাইজ</div>
+      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;">বিক্রয় মূল্য (৳)</div>
+      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;">আসল মূল্য (৳)</div>
+      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;">ছাড় %</div>
+      <div></div>
+    </div>
+    ${_productPriceRows.map((row, i) => renderPriceRow(row, i)).join('')}
+  `;
 }
 
-function getPricesFromFields() {
+function renderPriceRow(row, i) {
+  const dis = (row.old > 0 && row.price < row.old) ? Math.round((row.old - row.price) / row.old * 100) : 0;
+  return `
+    <div class="price-row-item" data-index="${i}" style="display:grid;grid-template-columns:110px 1fr 1fr 1fr 36px;gap:6px;align-items:center;background:var(--surface2);padding:8px 10px;border-radius:var(--radius-sm);border:1.5px solid ${row.isCustom ? 'rgba(245,166,35,0.35)' : 'var(--border)'};position:relative;">
+      <!-- Size label / code -->
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        ${row.isCustom
+          ? `<input type="text" value="${row.size}" onchange="updatePriceRow(${i},'size',this.value)" style="width:100%;background:var(--surface3);border:1.5px solid rgba(245,166,35,0.4);border-radius:6px;padding:5px 7px;font-size:12px;color:var(--text);font-family:'JetBrains Mono',monospace;outline:none;" placeholder="eg: 250gm">`
+          : `<div style="font-weight:700;font-size:13px;color:var(--text);">${row.label}</div>
+             <div style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;">${row.size}</div>`
+        }
+        ${row.isCustom ? `<div style="font-size:9px;color:var(--amber);font-weight:600;margin-top:1px;"><i class="fas fa-star"></i> কাস্টম</div>` : ''}
+      </div>
+      <!-- Price -->
+      <input type="number" value="${row.price || ''}" placeholder="৳" min="0"
+        onchange="updatePriceRow(${i},'price',this.value)"
+        oninput="recalcDiscount(${i},this)"
+        style="width:100%;background:var(--surface3);border:1.5px solid var(--border);border-radius:6px;padding:7px 8px;font-size:13px;color:var(--green);font-weight:700;outline:none;transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+      <!-- Old price -->
+      <input type="number" value="${row.old || ''}" placeholder="৳" min="0"
+        onchange="updatePriceRow(${i},'old',this.value)"
+        oninput="recalcDiscount(${i},this)"
+        style="width:100%;background:var(--surface3);border:1.5px solid var(--border);border-radius:6px;padding:7px 8px;font-size:13px;color:var(--text2);outline:none;transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='var(--green)'" onblur="this.style.borderColor='var(--border)'">
+      <!-- Discount (auto-calc, read-only display) -->
+      <div id="dis-display-${i}" style="text-align:center;font-size:13px;font-weight:700;color:${dis > 0 ? 'var(--green)' : 'var(--text3)'};">
+        ${dis > 0 ? dis + '%' : '—'}
+      </div>
+      <!-- Remove btn -->
+      <button type="button" onclick="removePriceRow(${i})"
+        style="width:32px;height:32px;background:var(--red-dim);border:1px solid rgba(248,81,73,0.25);color:var(--red);border-radius:6px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:var(--tr);"
+        onmouseover="this.style.background='rgba(248,81,73,0.3)'" onmouseout="this.style.background='var(--red-dim)'"
+        title="সরিয়ে দিন">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>`;
+}
+
+function updatePriceRow(index, field, value) {
+  if (!_productPriceRows[index]) return;
+  if (field === 'price' || field === 'old') {
+    _productPriceRows[index][field] = parseFloat(value) || 0;
+  } else {
+    _productPriceRows[index][field] = value;
+  }
+}
+
+function recalcDiscount(index, inputEl) {
+  // Get sibling inputs from same row
+  const row = inputEl.closest('.price-row-item');
+  if (!row) return;
+  const inputs = row.querySelectorAll('input[type="number"]');
+  const p = parseFloat(inputs[0]?.value) || 0;
+  const o = parseFloat(inputs[1]?.value) || 0;
+  const dis = (o > 0 && p > 0 && p < o) ? Math.round((o - p) / o * 100) : 0;
+  const disEl = $(`dis-display-${index}`);
+  if (disEl) {
+    disEl.textContent = dis > 0 ? dis + '%' : '—';
+    disEl.style.color = dis > 0 ? 'var(--green)' : 'var(--text3)';
+  }
+  _productPriceRows[index].price = p;
+  _productPriceRows[index].old = o;
+}
+
+function removePriceRow(index) {
+  _productPriceRows.splice(index, 1);
+  renderPriceRows();
+  updateGlobalSizesCheckboxes();
+}
+
+function addCustomPriceRow() {
+  _productPriceRows.push({ size: '', label: '', price: 0, old: 0, isCustom: true });
+  renderPriceRows();
+  // Focus the new size input
+  setTimeout(() => {
+    const rows = document.querySelectorAll('.price-row-item');
+    const last = rows[rows.length - 1];
+    if (last) last.querySelector('input[type="text"]')?.focus();
+  }, 50);
+}
+
+async function showGlobalSizesPicker() {
+  const picker = $('globalSizesPicker');
+  if (!picker) return;
+  picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+  if (picker.style.display === 'block') {
+    await updateGlobalSizesCheckboxes();
+  }
+}
+
+async function updateGlobalSizesCheckboxes() {
+  const container = $('globalSizesCheckboxes');
+  if (!container) return;
+  const globals = await fetchGlobalPackSizes();
+  const activeGlobals = globals.filter(g => g.isActive !== false);
+  const alreadyAdded = new Set(_productPriceRows.filter(r => !r.isCustom).map(r => r.size));
+
+  container.innerHTML = activeGlobals.map(g => {
+    const added = alreadyAdded.has(g.size);
+    return `
+      <button type="button" onclick="toggleGlobalSize('${g.size}','${g.label}')"
+        style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:1.5px solid ${added ? 'var(--green)' : 'var(--border2)'};background:${added ? 'var(--green-dim)' : 'var(--surface3)'};color:${added ? 'var(--green)' : 'var(--text2)'};font-size:13px;font-weight:600;cursor:pointer;transition:var(--tr);">
+        <i class="fas fa-${added ? 'check-circle' : 'plus-circle'}"></i>
+        ${g.label} <span style="font-size:10px;font-family:monospace;opacity:0.7;">${g.size}</span>
+      </button>`;
+  }).join('') || '<span style="color:var(--text3);font-size:13px;">কোনো গ্লোবাল সাইজ নেই। প্যাক সাইজ পরিচালনা থেকে যোগ করুন।</span>';
+}
+
+function toggleGlobalSize(size, label) {
+  const existingIdx = _productPriceRows.findIndex(r => r.size === size && !r.isCustom);
+  if (existingIdx >= 0) {
+    // Remove it
+    _productPriceRows.splice(existingIdx, 1);
+  } else {
+    // Add it
+    _productPriceRows.push({ size, label, price: 0, old: 0, isCustom: false });
+  }
+  renderPriceRows();
+  updateGlobalSizesCheckboxes();
+}
+
+function getPricesFromRows() {
   const prices = {};
-  document.querySelectorAll('#priceFieldsContainer [data-pack-size]').forEach(row => {
-    const size = row.getAttribute('data-pack-size');
-    const p = parseFloat(document.getElementById(`pm-price-${size}`)?.value) || 0;
-    const o = parseFloat(document.getElementById(`pm-old-${size}`)?.value) || 0;
+  _productPriceRows.forEach(row => {
+    const size = (row.size || '').trim();
+    if (!size) return;
+    const p = parseFloat(row.price) || 0;
+    const o = parseFloat(row.old) || 0;
     const dis = (o > 0 && p < o) ? Math.round((o - p) / o * 100) : 0;
     prices[size] = { price: p, old: o, dis };
   });
   return prices;
 }
+
+// Legacy aliases used by renderPriceFields / getPackSizes elsewhere
+async function renderPriceFields(existingPrices = {}) { await initPriceRows(existingPrices); }
+function getPricesFromFields() { return getPricesFromRows(); }
+async function getPackSizes() {
+  const g = await fetchGlobalPackSizes();
+  return g.filter(s => s.isActive !== false);
+}
+let _cachedPackSizes = null; // kept for pack size save/delete cache clear
 
 async function saveProduct(btn) {
   const id = $('pm-id').value.trim();
@@ -1470,13 +1639,23 @@ async function saveProduct(btn) {
   if (!id||!name) { toast('পণ্য ID এবং নাম আবশ্যক','error'); return; }
   const imgs = JSON.parse($('pm-imgs').value||'[]');
 
-  // Collect prices from dynamic fields
-  const prices = getPricesFromFields();
-  const sizes = await getPackSizes();
-  const firstSize = sizes[0]?.size;
-  const basePrice = prices[firstSize]?.price || 0;
-  const baseOld   = prices[firstSize]?.old   || 0;
-  const baseDiscount = prices[firstSize]?.dis || 0;
+  // Sync any unsaved input values into _productPriceRows
+  document.querySelectorAll('.price-row-item').forEach(row => {
+    const idx = parseInt(row.dataset.index);
+    if (isNaN(idx) || !_productPriceRows[idx]) return;
+    const inputs = row.querySelectorAll('input');
+    if (_productPriceRows[idx].isCustom && inputs[0]) _productPriceRows[idx].size = inputs[0].value.trim();
+    const priceInput = row.querySelector('input[type="number"]:nth-of-type(1)');
+    const oldInput   = row.querySelector('input[type="number"]:nth-of-type(2)');
+    if (priceInput) _productPriceRows[idx].price = parseFloat(priceInput.value) || 0;
+    if (oldInput)   _productPriceRows[idx].old   = parseFloat(oldInput.value)   || 0;
+  });
+
+  const prices = getPricesFromRows();
+  const firstRow = _productPriceRows[0];
+  const basePrice    = firstRow ? (parseFloat(firstRow.price) || 0) : 0;
+  const baseOld      = firstRow ? (parseFloat(firstRow.old)   || 0) : 0;
+  const baseDiscount = (baseOld > 0 && basePrice < baseOld) ? Math.round((baseOld - basePrice) / baseOld * 100) : 0;
 
   const payload = {
     id, name, subtitle:$('pm-subtitle').value||'', badge:$('pm-badge').value||null,
@@ -1951,6 +2130,7 @@ async function savePackSize(btn) {
     toast(`✅ প্যাক সাইজ ${id?'আপডেট':'যুক্ত'} হয়েছে`);
     closeModal('packSizeModal');
     _cachedPackSizes = null; // clear cache so product modal reloads fresh
+    _globalPackSizes = null; // clear global cache too
     await loadPackSizes();
   } else {
     toast(d.message || 'ব্যর্থ হয়েছে', 'error');
@@ -1971,6 +2151,7 @@ async function deletePackSize() {
     toast('✅ প্যাক সাইজ মুছে ফেলা হয়েছে');
     closeModal('packSizeModal');
     _cachedPackSizes = null; // clear cache
+    _globalPackSizes = null;
     await loadPackSizes();
   } else {
     toast(d.message || 'ব্যর্থ হয়েছে', 'error');
