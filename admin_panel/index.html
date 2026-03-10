@@ -104,8 +104,6 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 .btn-outline:hover:not(:disabled){border-color:var(--green);color:var(--green);}
 .btn-red{background:var(--red-dim);border:1px solid rgba(248,81,73,0.25);color:var(--red);}
 .btn-red:hover:not(:disabled){background:rgba(248,81,73,0.2);}
-.btn-danger{background:var(--red);border:none;color:#fff;}
-.btn-danger:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 0 15px rgba(248,81,73,0.4);}
 .btn-amber{background:var(--amber-dim);border:1px solid rgba(245,166,35,0.25);color:var(--amber);}
 .btn-sm{padding:6px 12px;font-size:12px;}
 .btn-icon{width:32px;height:32px;padding:0;justify-content:center;}
@@ -286,6 +284,7 @@ select.form-input{cursor:pointer;}
       <button class="nav-btn" onclick="showPage('products')"><i class="fas fa-box-open"></i>পণ্যসমূহ</button>
       <div class="sb-section">সাইট কন্ট্রোল</div>
       <button class="nav-btn" onclick="showPage('slider')"><i class="fas fa-images"></i>হোম স্লাইডার</button>
+      <button class="nav-btn" onclick="showPage('packsizes')"><i class="fas fa-cube"></i>প্যাক সাইজ পরিচালনা</button>
       <button class="nav-btn" onclick="showPage('settings')"><i class="fas fa-cog"></i>সাধারণ সেটিংস</button>
       <button class="nav-btn" onclick="showPage('about')"><i class="fas fa-info-circle"></i>সম্পর্কে পেজ</button>
       <button class="nav-btn" onclick="showPage('contact')"><i class="fas fa-phone-alt"></i>যোগাযোগ পেজ</button>
@@ -399,6 +398,32 @@ select.form-input{cursor:pointer;}
       </div>
     </div>
 
+    <!-- PACK SIZES MANAGEMENT -->
+    <div id="page-packsizes" class="page">
+      <div class="page-header-row">
+        <div class="page-title">প্যাক সাইজ পরিচালনা <span>Pack Sizes</span></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline btn-sm" onclick="loadPackSizes()"><i class="fas fa-sync-alt"></i>রিফ্রেশ</button>
+          <button class="btn btn-green btn-sm" onclick="openPackSizeModal()"><i class="fas fa-plus"></i>নতুন সাইজ</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-body" style="padding:14px 20px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <i class="fas fa-info-circle" style="color:var(--blue)"></i>
+            <span style="font-size:13px;color:var(--text2)">সব পণ্যের জন্য পাওয়া যাবে এমন প্যাক সাইজগুলি এখানে যুক্ত করুন। যেমন: ১ কেজি, ৫০০ গ্রাম ইত্যাদি।</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div id="packSizesContainer" style="display:flex;flex-direction:column;gap:10px">
+            <div class="loading"><i class="fas fa-spinner"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div id="page-settings" class="page">
       <div class="page-header-row"><div class="page-title">সাধারণ সেটিংস</div></div>
@@ -421,16 +446,6 @@ select.form-input{cursor:pointer;}
           <div class="card-body">
             <div class="form-group"><label class="form-label">ঢাকার ভিতরে ডেলিভারি চার্জ (৳)</label><input type="number" id="set-deliveryInside" class="form-input" placeholder="80"></div>
             <div class="form-group"><label class="form-label">ঢাকার বাহিরে ডেলিভারি চার্জ (৳)</label><input type="number" id="set-deliveryOutside" class="form-input" placeholder="130"></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title"><i class="fas fa-box"></i>প্যাক সাইজ সেটিংস</div></div>
-          <div class="card-body">
-            <div class="form-group"><label class="form-label">উপলব্ধ প্যাক সাইজ</label>
-              <p style="font-size:12px;color:var(--text2);margin-bottom:12px;">আপনার পণ্যে কি কি প্যাক সাইজ পাওয়া যাবে তা যোগ করুন। প্রতিটি সাইজ এন্টার দিয়ে আলাদা করুন।</p>
-              <div id="packSizesList" style="display:flex;flex-direction:column;gap:8px;"></div>
-              <button type="button" class="btn btn-outline" style="margin-top:10px;width:100%;" onclick="addPackSizeInput()"><i class="fas fa-plus"></i>নতুন সাইজ যোগ করুন</button>
-            </div>
           </div>
         </div>
       </div>
@@ -853,6 +868,50 @@ select.form-input{cursor:pointer;}
       <button class="btn btn-outline" onclick="closeModal('slideModal')">বাতিল</button>
       <button class="btn btn-red btn-sm" id="deleteSlideBtn" onclick="deleteCurrentSlide()" style="display:none"><i class="fas fa-trash"></i>মুছুন</button>
       <button class="btn btn-green" id="saveSlideBtn" onclick="saveSlide(this)"><i class="fas fa-save"></i><span class="btn-text">সেভ করুন</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- PACK SIZE MODAL -->
+<div class="modal-overlay" id="packSizeModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-head">
+      <div class="modal-title" id="packSizeModalTitle"><i class="fas fa-cube"></i>নতুন প্যাক সাইজ</div>
+      <button class="modal-close" onclick="closeModal('packSizeModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ps-id">
+      
+      <div class="form-group">
+        <label class="form-label">সাইজ কোড <span style="color:var(--red)">*</span></label>
+        <input type="text" id="ps-size" class="form-input" placeholder="যেমন: 1kg, 500gm, 2kg" style="font-family:monospace">
+        <p class="form-hint">এটি হবে ডাটাবেসে সংরক্ষণকৃত মান (পরিবর্তন করা যাবে না পরে)</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">প্রদর্শন লেবেল <span style="color:var(--red)">*</span></label>
+        <input type="text" id="ps-label" class="form-input" placeholder="যেমন: ১ কেজি, ৫০০ গ্রাম">
+        <p class="form-hint">ফ্রন্টেন্ডে এটি দেখাবে</p>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">ক্রম</label>
+          <input type="number" id="ps-order" class="form-input" value="0" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">স্ট্যাটাস</label>
+          <select id="ps-active" class="form-input">
+            <option value="true">✅ সক্রিয়</option>
+            <option value="false">❌ নিষ্ক্রিয়</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('packSizeModal')">বাতিল</button>
+      <button class="btn btn-red btn-sm" id="deletePackSizeBtn" onclick="deletePackSize()" style="display:none"><i class="fas fa-trash"></i>মুছুন</button>
+      <button class="btn btn-green" id="savePackSizeBtn" onclick="savePackSize(this)"><i class="fas fa-save"></i><span class="btn-text">সেভ করুন</span></button>
     </div>
   </div>
 </div>
@@ -1390,61 +1449,11 @@ async function loadSettings() {
   const s = d.settings;
   const map = { siteName:'set-siteName', announcement:'set-announcement', deliveryInside:'set-deliveryInside', deliveryOutside:'set-deliveryOutside', freeDelivery:'set-freeDelivery' };
   Object.entries(map).forEach(([key,elId]) => { const el=$(elId); if(el&&s[key]!==undefined) el.value=s[key]; });
-  
-  // Load pack sizes
-  loadPackSizes(s.packSizes || ['2kg', '1kg', '500gm']);
-}
-
-function loadPackSizes(sizes) {
-  const list = $('packSizesList');
-  list.innerHTML = '';
-  sizes.forEach((size, idx) => {
-    const div = document.createElement('div');
-    div.style.cssText = 'display:flex;gap:8px;align-items:center;';
-    div.innerHTML = `
-      <input type="text" class="form-input pack-size-input" value="${size}" placeholder="যেমন: 2kg, 1kg ইত্যাদি" style="flex:1;">
-      <button type="button" class="btn btn-danger btn-sm" onclick="removePackSizeInput(this)" style="padding:8px 12px;"><i class="fas fa-trash"></i></button>
-    `;
-    list.appendChild(div);
-  });
-}
-
-function addPackSizeInput() {
-  const list = $('packSizesList');
-  const div = document.createElement('div');
-  div.style.cssText = 'display:flex;gap:8px;align-items:center;';
-  div.innerHTML = `
-    <input type="text" class="form-input pack-size-input" placeholder="যেমন: 2kg, 1kg ইত্যাদি" style="flex:1;">
-    <button type="button" class="btn btn-danger btn-sm" onclick="removePackSizeInput(this)" style="padding:8px 12px;"><i class="fas fa-trash"></i></button>
-  `;
-  list.appendChild(div);
-}
-
-function removePackSizeInput(btn) {
-  btn.closest('div').remove();
 }
 
 async function saveSettings(btn) {
   btnLoad(btn, true);
-  
-  // Get pack sizes
-  const packSizeInputs = document.querySelectorAll('.pack-size-input');
-  const packSizes = Array.from(packSizeInputs).map(el => el.value.trim()).filter(v => v);
-  
-  if (packSizes.length === 0) {
-    toast('কমপক্ষে একটি প্যাক সাইজ যোগ করুন','error');
-    btnLoad(btn, false);
-    return;
-  }
-  
-  const updates = { 
-    siteName:$('set-siteName').value, 
-    announcement:$('set-announcement').value, 
-    deliveryInside:parseInt($('set-deliveryInside').value)||0, 
-    deliveryOutside:parseInt($('set-deliveryOutside').value)||0, 
-    freeDelivery:$('set-freeDelivery').value==='true',
-    packSizes: packSizes
-  };
+  const updates = { siteName:$('set-siteName').value, announcement:$('set-announcement').value, deliveryInside:parseInt($('set-deliveryInside').value)||0, deliveryOutside:parseInt($('set-deliveryOutside').value)||0, freeDelivery:$('set-freeDelivery').value==='true' };
   const d = await api('/admin/settings', {method:'PUT', body:JSON.stringify(updates)});
   btnLoad(btn, false);
   if (d.success) toast('✅ সেটিংস সেভ হয়েছে'); else toast(d.message,'error');
@@ -1784,6 +1793,142 @@ checkToken();
     if (modal) obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
   });
 })();
+
+// ==================== PACK SIZES MANAGEMENT ====================
+let packSizesData = [];
+
+async function loadPackSizes() {
+  $('packSizesContainer').innerHTML = `<div class="loading"><i class="fas fa-spinner"></i></div>`;
+  const d = await api('/admin/pack-sizes');
+  if (!d.success) {
+    $('packSizesContainer').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>${d.message||'লোড ব্যর্থ হয়েছে'}</p></div>`;
+    return;
+  }
+  packSizesData = d.sizes || [];
+  renderPackSizes();
+}
+
+function renderPackSizes() {
+  if (!packSizesData.length) {
+    $('packSizesContainer').innerHTML = `<div class="empty-state"><i class="fas fa-cube"></i><p>কোনো প্যাক সাইজ নেই</p></div>`;
+    return;
+  }
+  const sorted = [...packSizesData].sort((a, b) => (a.order || 0) - (b.order || 0));
+  $('packSizesContainer').innerHTML = sorted.map(ps => `
+    <div style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;${ps.isActive===false?'opacity:0.6':''}">
+      <div style="flex:1">
+        <div style="font-weight:600;color:var(--text);margin-bottom:4px"><i class="fas fa-cube" style="color:var(--green);margin-right:8px"></i>${ps.label}</div>
+        <div style="font-size:12px;color:var(--text3);font-family:monospace">কোড: ${ps.size}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">ক্রম: ${ps.order||0} • স্ট্যাটাস: ${ps.isActive!==false?'সক্রিয়':'নিষ্ক্রিয়'}</div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-outline btn-sm" onclick="editPackSize('${ps._id}')" style="white-space:nowrap"><i class="fas fa-edit"></i>সম্পাদনা</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openPackSizeModal(id) {
+  const isNew = !id;
+  $('packSizeModalTitle').innerHTML = `<i class="fas fa-cube"></i>${isNew?'নতুন প্যাক সাইজ':'প্যাক সাইজ সম্পাদনা'}`;
+  $('deletePackSizeBtn').style.display = isNew?'none':'flex';
+  
+  if (isNew) {
+    $('ps-id').value = '';
+    $('ps-size').value = '';
+    $('ps-label').value = '';
+    $('ps-order').value = '0';
+    $('ps-active').value = 'true';
+    $('ps-size').disabled = false;
+  } else {
+    const ps = packSizesData.find(p => p._id === id);
+    if (!ps) return;
+    $('ps-id').value = ps._id;
+    $('ps-size').value = ps.size;
+    $('ps-label').value = ps.label;
+    $('ps-order').value = ps.order || 0;
+    $('ps-active').value = ps.isActive !== false ? 'true' : 'false';
+    $('ps-size').disabled = true; // size কোড পরিবর্তনযোগ্য নয়
+  }
+  openModal('packSizeModal');
+}
+
+function editPackSize(id) {
+  openPackSizeModal(id);
+}
+
+async function savePackSize(btn) {
+  const id = $('ps-id').value;
+  const size = $('ps-size').value.trim();
+  const label = $('ps-label').value.trim();
+  const order = parseInt($('ps-order').value) || 0;
+  const isActive = $('ps-active').value === 'true';
+  
+  if (!size || !label) {
+    toast('সাইজ কোড এবং লেবেল উভয়ই আবশ্যক', 'error');
+    return;
+  }
+  
+  btnLoad(btn, true);
+  let d;
+  if (id) {
+    // Update
+    d = await api(`/admin/pack-sizes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ label, order, isActive })
+    });
+  } else {
+    // Create
+    d = await api('/admin/pack-sizes', {
+      method: 'POST',
+      body: JSON.stringify({ size, label, order, isActive })
+    });
+  }
+  btnLoad(btn, false);
+  if (d.success) {
+    toast(`✅ প্যাক সাইজ ${id?'আপডেট':'যুক্ত'} হয়েছে`);
+    closeModal('packSizeModal');
+    await loadPackSizes();
+  } else {
+    toast(d.message || 'ব্যর্থ হয়েছে', 'error');
+  }
+}
+
+async function deletePackSize() {
+  const id = $('ps-id').value;
+  if (!id) return;
+  if (!confirm('এই প্যাক সাইজ মুছে ফেলবেন?')) return;
+  
+  const btn = $('deletePackSizeBtn');
+  btnLoad(btn, true);
+  const d = await api(`/admin/pack-sizes/${id}`, { method: 'DELETE' });
+  btnLoad(btn, false);
+  
+  if (d.success) {
+    toast('✅ প্যাক সাইজ মুছে ফেলা হয়েছে');
+    closeModal('packSizeModal');
+    await loadPackSizes();
+  } else {
+    toast(d.message || 'ব্যর্থ হয়েছে', 'error');
+  }
+}
+
+// On page load
+function showPageImpl(pageName) {
+  if (pageName === 'packsizes') {
+    loadPackSizes();
+  }
+}
+
+// Override showPage function to add pack sizes handling
+const originalShowPage = window.showPage;
+if (originalShowPage) {
+  window.showPage = function(pageName) {
+    originalShowPage(pageName);
+    showPageImpl(pageName);
+  };
+}
+
 </script>
 </body>
 </html>

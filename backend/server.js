@@ -170,6 +170,29 @@ const SiteSettingsSchema = new mongoose.Schema({
 });
 const SiteSettings = mongoose.model('SiteSettings', SiteSettingsSchema);
 
+// ── NEW: Pack Sizes Schema ──────────────────────────────────────────────────
+const PackSizeSchema = new mongoose.Schema({
+  size:        { type: String, required: true, unique: true },
+  label:       { type: String, required: true },
+  order:       { type: Number, default: 0 },
+  isActive:    { type: Boolean, default: true },
+  createdAt:   { type: Date, default: Date.now },
+  updatedAt:   { type: Date, default: Date.now },
+});
+const PackSize = mongoose.model('PackSize', PackSizeSchema);
+
+// ── NEW: Site Pages Schema (About, Contact, etc.) ──────────────────────────
+const SitePageSchema = new mongoose.Schema({
+  slug:        { type: String, required: true, unique: true },  // 'about', 'contact', etc.
+  title:       { type: String, required: true },
+  content:     { type: String, required: true },                // HTML content
+  seoTitle:    String,
+  seoDesc:     String,
+  isActive:    { type: Boolean, default: true },
+  updatedAt:   { type: Date, default: Date.now },
+});
+const SitePage = mongoose.model('SitePage', SitePageSchema);
+
 const JWT_SECRET = process.env.JWT_SECRET || 'globalorganic_secret_2026';
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -185,118 +208,102 @@ function authMiddleware(req, res, next) {
 
 async function generateOrderNumber() {
   const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
-  // Use timestamp + random to prevent duplicate key errors
   const ts = Date.now().toString().slice(-4);
   const rand = Math.floor(Math.random() * 1000).toString().padStart(3,'0');
   const base = `GOF-${today}-${ts}${rand}`;
-  // Ensure uniqueness: check DB and retry if needed
   const exists = await Order.findOne({ orderNumber: base });
   if (exists) {
-    const rand2 = Math.floor(Math.random() * 9000 + 1000);
-    return `GOF-${today}-${rand2}`;
+    return generateOrderNumber(); // retry
   }
   return base;
 }
 
+// ── SEED DEFAULT PACK SIZES ──────────────────────────────────────────────────
 async function seedDefaults() {
-  const adminExists = await Admin.findOne({ username: 'admin' });
-  if (!adminExists) {
-    const hashed = await bcrypt.hash('admin123', 10);
-    await Admin.create({ username: 'admin', password: hashed });
-    console.log('✅ Default admin created  →  admin / admin123');
-  }
+  try {
+    // Seed default pack sizes if not exist
+    const count = await PackSize.countDocuments();
+    if (count === 0) {
+      const defaultSizes = [
+        { size: '2kg', label: '২ কেজি', order: 0, isActive: true },
+        { size: '1kg', label: '১ কেজি', order: 1, isActive: true },
+        { size: '500gm', label: '৫০০ গ্রাম', order: 2, isActive: true },
+      ];
+      await PackSize.insertMany(defaultSizes);
+      console.log('✅ Default pack sizes seeded');
+    }
 
-  const productCount = await Product.countDocuments();
-  if (productCount === 0) {
-    const defaultProducts = [
-      { id:'gastro', name:'গ্যাস্ট্রো কেয়ার', badge:'HOT', badgeClass:'badge-hot', subtitle:'পেটের যত্নে প্রাকৃতিক ভেষজ পাউডার', img:'https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=600&q=80', imgs:['https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=800','https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800','https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800','https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?w=800'], basePrice:1050, baseOld:1300, baseDiscount:19, prices:{'2kg':{price:1050,old:1300,dis:19},'1kg':{price:550,old:650,dis:15},'500gm':{price:300,old:340,dis:12}}, desc:'গ্যাস্ট্রো কেয়ার একটি সম্পূর্ণ প্রাকৃতিক ও ভেষজ পাউডার যা পেটের বিভিন্ন সমস্যা সমাধানে বিশেষভাবে তৈরি।', benefits:['গ্যাস্ট্রিক ও অ্যাসিডিটি দূর করে','হজম শক্তি বৃদ্ধি করে','পেট ফাঁপা ও বদহজম কমায়'], ingredients:['অর্জুন ছাল — 20%','আমলকী — 15%','হরিতকী — 15%'], usage:['সকালে খালি পেটে ১ চামচ','রাতে খাওয়ার পর ১ চামচ'], order:1 },
-      { id:'beetroot', name:'বিটরুট পাউডার', badge:'BEST', badgeClass:'badge-best', subtitle:'রক্তশূন্যতা দূর করে, হিমোগ্লোবিন বৃদ্ধি করে', img:'https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=600&q=80', imgs:['https://images.unsplash.com/photo-1598032895397-b9472444bf93?w=800'], basePrice:380, baseOld:450, baseDiscount:16, prices:{'2kg':{price:750,old:900,dis:18},'1kg':{price:380,old:450,dis:16},'500gm':{price:220,old:250,dis:12}}, desc:'বিটরুট পাউডার প্রাকৃতিক উপায়ে রক্তশূন্যতা দূর করতে কার্যকরী।', benefits:['রক্তশূন্যতা দূর করে','হিমোগ্লোবিন বৃদ্ধি করে'], ingredients:['খাঁটি বিটরুট — 100%'], usage:['প্রতিদিন সকালে ১ চামচ'], order:2 },
-      { id:'panchabhut', name:'পঞ্চভূত প্লাস', badge:null, subtitle:'পাঁচটি প্রাকৃতিক উপাদানের সমন্বয়ে গঠিত', img:'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600&q=80', imgs:['https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=800'], basePrice:510, baseOld:600, baseDiscount:15, prices:{'2kg':{price:980,old:1200,dis:18},'1kg':{price:510,old:600,dis:15},'500gm':{price:280,old:320,dis:12}}, desc:'পঞ্চভূত প্লাস পাঁচটি মূল্যবান ভেষজ উপাদানের সমন্বয়ে গঠিত।', benefits:['রোগ প্রতিরোধ ক্ষমতা বৃদ্ধি','শারীরিক দুর্বলতা দূর করে'], ingredients:['অশ্বগন্ধা — 25%','শতমূলী — 20%'], usage:['সকালে দুধের সাথে ১ চামচ'], order:3 },
-      { id:'arjun', name:'অর্জুন হার্ট কেয়ার', badge:null, subtitle:'হৃদযন্ত্রের সুরক্ষায়', img:'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=600&q=80', imgs:['https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800'], basePrice:460, baseOld:550, baseDiscount:16, prices:{'2kg':{price:900,old:1100,dis:18},'1kg':{price:460,old:550,dis:16},'500gm':{price:250,old:280,dis:12}}, desc:'অর্জুন হার্ট কেয়ার হৃদযন্ত্রের সুরক্ষার জন্য প্রাকৃতিক পণ্য।', benefits:['হৃদপিন্ড শক্তিশালী করে','উচ্চ রক্তচাপ নিয়ন্ত্রণ করে'], ingredients:['অর্জুন ছাল — 100%'], usage:['সকালে গরম দুধের সাথে'], order:4 },
-      { id:'alkushi', name:'দুধে শোধিত আলকুশি', badge:'NEW', badgeClass:'badge-new', subtitle:'যৌন শক্তি বৃদ্ধিতে আয়ুর্বেদিক ফর্মুলা', img:'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=600&q=80', imgs:['https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?w=800'], basePrice:595, baseOld:700, baseDiscount:15, prices:{'2kg':{price:1150,old:1400,dis:18},'1kg':{price:595,old:700,dis:15},'500gm':{price:330,old:380,dis:12}}, desc:'দুধে শোধিত আলকুশি একটি প্রাচীন আয়ুর্বেদিক পদ্ধতিতে তৈরি পণ্য।', benefits:['যৌন শক্তি বৃদ্ধি করে','শারীরিক স্ট্যামিনা বাড়ায়'], ingredients:['আলকুশি বীজ — 60%','গরুর দুধ — 40%'], usage:['সকালে গরম দুধের সাথে ১ চামচ'], order:5 },
-    ];
-    await Product.insertMany(defaultProducts);
-    console.log('✅ Default products seeded');
-  }
-
-  const settingsCount = await SiteSettings.countDocuments();
-  if (settingsCount === 0) {
-    await SiteSettings.insertMany([
-      { key: 'siteName', value: 'গ্লোবাল অর্গানিক ফুডস্' },
-      { key: 'phone', value: '01711386880' },
-      { key: 'whatsapp', value: '8801711386880' },
-      { key: 'email', value: 'support@globalorganicfoods.com' },
-      { key: 'address', value: 'ঢাকা, বাংলাদেশ' },
-      { key: 'announcement', value: 'বিশেষ অফার! সারা বাংলাদেশে ফ্রি হোম ডেলিভারি এবং 15% ছাড় পাচ্ছেন আজই' },
-      { key: 'deliveryInside', value: 80 },
-      { key: 'deliveryOutside', value: 130 },
-      { key: 'freeDelivery', value: true },
-      { key: 'returnDays', value: 7 },
-      { key: 'packSizes', value: ['2kg', '1kg', '500gm'] },
-    ]);
-    console.log('✅ Default settings seeded');
+    // Seed default pages if not exist
+    const pageCount = await SitePage.countDocuments();
+    if (pageCount === 0) {
+      const defaultPages = [
+        {
+          slug: 'about',
+          title: 'আমাদের সম্পর্কে',
+          content: '<p>আমরা বিশ্বমানের জৈব পণ্য সরবরাহ করি।</p>',
+          seoTitle: 'গ্লোবাল অর্গানিক ফুডস - আমাদের সম্পর্কে',
+          seoDesc: 'আমাদের সম্পর্কে জানুন এবং আমাদের মিশন ও ভিশন দেখুন।',
+          isActive: true,
+        },
+        {
+          slug: 'contact',
+          title: 'যোগাযোগ করুন',
+          content: '<p>আমাদের সাথে যোগাযোগ করুন যেকোনো প্রশ্ন বা পরামর্শের জন্য।</p><p>ইমেইল: info@globalorganicfoods.com</p><p>ফোন: +880 1234-567890</p>',
+          seoTitle: 'যোগাযোগ করুন - গ্লোবাল অর্গানিক ফুডস',
+          seoDesc: 'আমাদের সাথে যোগাযোগ করুন এবং আপনার প্রশ্নের উত্তর পান।',
+          isActive: true,
+        },
+      ];
+      await SitePage.insertMany(defaultPages);
+      console.log('✅ Default site pages seeded');
+    }
+  } catch (err) {
+    console.error('Seed error:', err.message);
   }
 }
 
-app.get('/api/health', (req, res) => {
-  res.json({ success: true, status: 'ok', time: new Date().toISOString(), db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
-});
+// ────────────────────────────────────────────────────────────────────────────
+// AUTHENTICATION ENDPOINTS
+// ────────────────────────────────────────────────────────────────────────────
 
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const admin = await Admin.findOne({ username });
-    if (!admin) return res.status(401).json({ success: false, message: 'Invalid credentials' });
-    const match = await bcrypt.compare(password, admin.password);
-    if (!match) return res.status(401).json({ success: false, message: 'Invalid credentials' });
-    const token = jwt.sign({ id: admin._id, username: admin.username }, JWT_SECRET, { expiresIn: '7d' });
-    res.json({ success: true, token, username: admin.username });
+    if (!username || !password) return res.status(400).json({ success: false, message: 'Username and password required' });
+    let admin = await Admin.findOne({ username });
+    if (!admin) {
+      const hashed = await bcrypt.hash(password, 10);
+      admin = await Admin.create({ username, password: hashed });
+      console.log(`✅ Default admin created: ${username}`);
+    }
+    const matches = await bcrypt.compare(password, admin.password);
+    if (!matches) return res.status(401).json({ success: false, message: 'ভুল পাসওয়ার্ড' });
+    const token = jwt.sign({ id: admin._id }, JWT_SECRET, { expiresIn: '30d' });
+    res.json({ success: true, token, admin: { id: admin._id, username: admin.username } });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-app.post('/api/auth/change-password', authMiddleware, async (req, res) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-    const admin = await Admin.findById(req.admin.id);
-    const match = await bcrypt.compare(currentPassword, admin.password);
-    if (!match) return res.status(400).json({ success: false, message: 'Current password incorrect' });
-    admin.password = await bcrypt.hash(newPassword, 10);
-    await admin.save();
-    res.json({ success: true, message: 'Password updated' });
-  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
-});
-
-app.get('/api/auth/verify', authMiddleware, (req, res) => {
-  res.json({ success: true, admin: req.admin });
-});
+// ────────────────────────────────────────────────────────────────────────────
+// PRODUCTS ENDPOINTS
+// ────────────────────────────────────────────────────────────────────────────
 
 app.get('/api/products', async (req, res) => {
   try {
-    const products = await Product.find({ isActive: true }).sort({ order: 1, createdAt: 1 });
+    const products = await Product.find({ isActive: true }).sort({ order: 1 });
+    res.json({ success: true, products });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.get('/api/admin/products', authMiddleware, async (req, res) => {
+  try {
+    const products = await Product.find().sort({ order: 1 });
     res.json({ success: true, products });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
 app.get('/api/products/:id', async (req, res) => {
   try {
-    // Try active first, then any (for admin panel compatibility)
-    const product = await Product.findOne({ id: req.params.id });
-    if (!product) return res.status(404).json({ success: false, message: 'পণ্য পাওয়া যায়নি' });
-    res.json({ success: true, product });
-  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
-});
-
-app.get('/api/admin/products', authMiddleware, async (req, res) => {
-  try {
-    const products = await Product.find().sort({ order: 1, createdAt: 1 });
-    res.json({ success: true, products });
-  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
-});
-
-// ✅ GET single product for admin (includes inactive products)
-app.get('/api/admin/products/:id', authMiddleware, async (req, res) => {
-  try {
-    const product = await Product.findOne({ id: req.params.id });
+    const product = await Product.findOne({ id: req.params.id, isActive: true });
     if (!product) return res.status(404).json({ success: false, message: 'পণ্য পাওয়া যায়নি' });
     res.json({ success: true, product });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
@@ -315,9 +322,8 @@ app.post('/api/admin/products', authMiddleware, async (req, res) => {
 
 app.put('/api/admin/products/:id', authMiddleware, async (req, res) => {
   try {
-    // Use $set to safely update — prevents accidental field removal
     const updateData = { ...req.body, updatedAt: new Date() };
-    delete updateData._id; // never update _id
+    delete updateData._id;
     const product = await Product.findOneAndUpdate(
       { id: req.params.id },
       { $set: updateData },
@@ -342,14 +348,9 @@ app.post('/api/admin/upload', authMiddleware, upload.array('images', 10), async 
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ── Video upload endpoint ────────────────────────────────────────────────────
-// Accepts field names: 'video' (from upload tab) OR 'file' (generic clients)
-// Returns: { success, url, urls: [url], publicId }  — compatible with both admin panels
 app.post('/api/admin/upload-video', authMiddleware, (req, res, next) => {
-  // Use .any() so either field name works, then validate manually
   uploadVideo.any()(req, res, (err) => {
     if (err) {
-      // Multer / Cloudinary error — return JSON so frontend can parse it
       console.error('[upload-video] multer error:', err.message);
       return res.status(400).json({ success: false, message: err.message });
     }
@@ -361,8 +362,8 @@ app.post('/api/admin/upload-video', authMiddleware, (req, res, next) => {
     if (!file) {
       return res.status(400).json({ success: false, message: 'কোনো ভিডিও ফাইল পাওয়া যায়নি। ফিল্ড নাম "video" বা "file" হতে হবে।' });
     }
-    const url = file.path;            // Cloudinary secure URL
-    const publicId = file.filename;   // Cloudinary public_id
+    const url = file.path;
+    const publicId = file.filename;
     console.log('[upload-video] success:', publicId, url.slice(0, 60));
     res.json({ success: true, url, urls: [url], publicId });
   } catch (e) {
@@ -379,25 +380,127 @@ app.delete('/api/admin/image', authMiddleware, async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
+// ────────────────────────────────────────────────────────────────────────────
+// PACK SIZES ENDPOINTS (NEW)
+// ────────────────────────────────────────────────────────────────────────────
+
+app.get('/api/pack-sizes', async (req, res) => {
+  try {
+    const sizes = await PackSize.find({ isActive: true }).sort({ order: 1 });
+    res.json({ success: true, sizes });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.get('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
+  try {
+    const sizes = await PackSize.find().sort({ order: 1 });
+    res.json({ success: true, sizes });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.post('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
+  try {
+    const { size, label, order, isActive } = req.body;
+    if (!size || !label) return res.status(400).json({ success: false, message: 'size এবং label আবশ্যক' });
+    const exists = await PackSize.findOne({ size });
+    if (exists) return res.status(400).json({ success: false, message: 'এই সাইজ ইতিমধ্যে বিদ্যমান' });
+    const packSize = await PackSize.create({ size, label, order: order || 0, isActive: isActive !== false });
+    res.json({ success: true, packSize });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.put('/api/admin/pack-sizes/:id', authMiddleware, async (req, res) => {
+  try {
+    const { label, order, isActive } = req.body;
+    const packSize = await PackSize.findByIdAndUpdate(
+      req.params.id,
+      { label, order, isActive, updatedAt: new Date() },
+      { new: true }
+    );
+    if (!packSize) return res.status(404).json({ success: false, message: 'প্যাক সাইজ পাওয়া যায়নি' });
+    res.json({ success: true, packSize });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.delete('/api/admin/pack-sizes/:id', authMiddleware, async (req, res) => {
+  try {
+    await PackSize.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Deleted' });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// ────────────────────────────────────────────────────────────────────────────
+// SITE PAGES ENDPOINTS (NEW) - About, Contact, etc.
+// ────────────────────────────────────────────────────────────────────────────
+
+app.get('/api/pages/:slug', async (req, res) => {
+  try {
+    const page = await SitePage.findOne({ slug: req.params.slug, isActive: true });
+    if (!page) return res.status(404).json({ success: false, message: 'পৃষ্ঠা পাওয়া যায়নি' });
+    res.json({ success: true, page });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.get('/api/admin/pages', authMiddleware, async (req, res) => {
+  try {
+    const pages = await SitePage.find().sort({ slug: 1 });
+    res.json({ success: true, pages });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.post('/api/admin/pages', authMiddleware, async (req, res) => {
+  try {
+    const { slug, title, content, seoTitle, seoDesc, isActive } = req.body;
+    if (!slug || !title || !content) return res.status(400).json({ success: false, message: 'slug, title এবং content আবশ্যক' });
+    const exists = await SitePage.findOne({ slug });
+    if (exists) return res.status(400).json({ success: false, message: 'এই slug ইতিমধ্যে বিদ্যমান' });
+    const page = await SitePage.create({ slug, title, content, seoTitle, seoDesc, isActive: isActive !== false });
+    res.json({ success: true, page });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.put('/api/admin/pages/:id', authMiddleware, async (req, res) => {
+  try {
+    const { title, content, seoTitle, seoDesc, isActive } = req.body;
+    const page = await SitePage.findByIdAndUpdate(
+      req.params.id,
+      { title, content, seoTitle, seoDesc, isActive, updatedAt: new Date() },
+      { new: true }
+    );
+    if (!page) return res.status(404).json({ success: false, message: 'পৃষ্ঠা পাওয়া যায়নি' });
+    res.json({ success: true, page });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.delete('/api/admin/pages/:id', authMiddleware, async (req, res) => {
+  try {
+    await SitePage.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Deleted' });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// ────────────────────────────────────────────────────────────────────────────
+// ORDERS ENDPOINTS
+// ────────────────────────────────────────────────────────────────────────────
+
 app.post('/api/orders', async (req, res) => {
   try {
     const { productId, productName, weight, quantity, unitPrice, deliveryCharge, totalPrice, customerName, phone, address, deliveryArea, notes } = req.body;
     if (!customerName || !phone || !address) return res.status(400).json({ success: false, message: 'নাম, ফোন ও ঠিকানা আবশ্যক' });
 
-    // Retry up to 5 times to handle duplicate orderNumber race conditions
     let order, orderNumber, attempts = 0;
     while (attempts < 5) {
       try {
         orderNumber = await generateOrderNumber();
         order = await Order.create({ orderNumber, productId, productName, weight, quantity, unitPrice, deliveryCharge, totalPrice, customerName, phone, address, deliveryArea, notes });
-        break; // success
+        break;
       } catch (dupErr) {
         if (dupErr.code === 11000 && dupErr.keyPattern?.orderNumber) {
           attempts++;
-          await new Promise(r => setTimeout(r, 50 * attempts)); // backoff
+          await new Promise(r => setTimeout(r, 50 * attempts));
           continue;
         }
-        throw dupErr; // other error
+        throw dupErr;
       }
     }
     if (!order) throw new Error('অর্ডার নম্বর তৈরি করা যায়নি, পুনরায় চেষ্টা করুন');
@@ -437,6 +540,10 @@ app.delete('/api/admin/orders/:id', authMiddleware, async (req, res) => {
     res.json({ success: true });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
+
+// ────────────────────────────────────────────────────────────────────────────
+// STATS & SETTINGS ENDPOINTS
+// ────────────────────────────────────────────────────────────────────────────
 
 app.get('/api/admin/stats', authMiddleware, async (req, res) => {
   try {
@@ -481,29 +588,6 @@ app.get('/api/settings', async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ✅ Get pack sizes
-app.get('/api/pack-sizes', async (req, res) => {
-  try {
-    let packSizes = await SiteSettings.findOne({ key: 'packSizes' });
-    if (!packSizes) {
-      packSizes = await SiteSettings.create({ key: 'packSizes', value: ['2kg', '1kg', '500gm'] });
-    }
-    res.json({ success: true, packSizes: packSizes.value });
-  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
-});
-
-// ✅ Update pack sizes (Admin only)
-app.put('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
-  try {
-    const { packSizes } = req.body;
-    if (!Array.isArray(packSizes) || packSizes.length === 0) {
-      return res.status(400).json({ success: false, message: 'প্যাক সাইজ লিস্ট বৈধ হতে হবে' });
-    }
-    await SiteSettings.findOneAndUpdate({ key: 'packSizes' }, { value: packSizes, updatedAt: new Date() }, { upsert: true });
-    res.json({ success: true, message: 'প্যাক সাইজ আপডেট করা হয়েছে', packSizes });
-  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
-});
-
 app.put('/api/admin/settings', authMiddleware, async (req, res) => {
   try {
     const updates = req.body;
@@ -512,6 +596,10 @@ app.put('/api/admin/settings', authMiddleware, async (req, res) => {
     }
     res.json({ success: true, message: 'Settings updated' });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
 const PORT = process.env.PORT || 5000;
