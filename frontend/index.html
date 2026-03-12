@@ -1511,7 +1511,7 @@ src="https://www.facebook.com/tr?id=2062099531032646&ev=PageView&noscript=1"
         <div class="container">
             <div class="trust-items">
                 <div class="trust-item"><i class="fas fa-leaf" aria-hidden="true"></i> ১০০% প্রাকৃতিক উপাদান</div>
-                <div class="trust-item"><i class="fas fa-truck" aria-hidden="true"></i> সারা বাংলাদেশে ফ্রি শিপিং</div>
+                <div class="trust-item"><i class="fas fa-truck" aria-hidden="true"></i> <span id="trustDeliveryText">সারা বাংলাদেশে ফ্রি শিপিং</span></div>
                 <div class="trust-item"><i class="fas fa-hand-holding-usd" aria-hidden="true"></i> ক্যাশ অন ডেলিভারি</div>
                 <div class="trust-item"><i class="fas fa-headset" aria-hidden="true"></i> ২৪/৭ কাস্টমার সাপোর্ট</div>
             </div>
@@ -1736,6 +1736,35 @@ async function loadSettings() {
             buildSlider(activeSlides);
         }
     }
+
+    // ── ফ্রি ডেলিভারি সেটিং অনুযায়ী UI আপডেট ──
+    applyFreeDeliveryUI(s);
+}
+
+function applyFreeDeliveryUI(s) {
+    const fd = s.freeDelivery;
+    const minOrder = parseInt(s.freeDeliveryMinOrder) || 0;
+    const deliveryIn  = s.deliveryInside  || 80;
+    const deliveryOut = s.deliveryOutside || 130;
+
+    // Trust strip এ ডেলিভারি টেক্সট আপডেট
+    const trustDeliveryEl = document.getElementById('trustDeliveryText');
+    if (trustDeliveryEl) {
+        if (fd === true || fd === 'true') {
+            trustDeliveryEl.textContent = 'সারা বাংলাদেশে ফ্রি শিপিং';
+        } else if (fd === 'conditional' && minOrder > 0) {
+            trustDeliveryEl.textContent = '৳' + minOrder + ' এর উপরে ফ্রি শিপিং';
+        } else {
+            trustDeliveryEl.textContent = 'দ্রুত হোম ডেলিভারি';
+        }
+    }
+
+    // ফ্রি ডেলিভারি ব্যানার (product detail-এ)
+    window._freeDelivery = (fd === true || fd === 'true');
+    window._freeDeliveryConditional = (fd === 'conditional');
+    window._freeDeliveryMinOrder = minOrder;
+    window._deliveryIn  = deliveryIn;
+    window._deliveryOut = deliveryOut;
 }
 
 // ── Load Products ─────────────────────────────────────
@@ -2014,11 +2043,11 @@ async function showProductDetail(id) {
                 </button>
 
                 <!-- Delivery info -->
-                <div class="delivery-info-box">
+                <div class="delivery-info-box" id="deliveryInfoBox">
                     <div class="delivery-icon"><i class="fas fa-truck"></i></div>
-                    <div class="delivery-text">
-                        <strong>ঢাকায় ৳${deliveryIn} • ঢাকার বাইরে ৳${deliveryOut}</strong>
-                        <span>সারা বাংলাদেশে ডেলিভারি • ক্যাশ অন ডেলিভারি</span>
+                    <div class="delivery-text" id="deliveryInfoText">
+                        <strong>${window._freeDelivery ? '🎉 সারা বাংলাদেশে ফ্রি ডেলিভারি!' : (window._freeDeliveryConditional && window._freeDeliveryMinOrder > 0 ? '৳'+window._freeDeliveryMinOrder+' এর উপরে ফ্রি ডেলিভারি' : 'ঢাকায় ৳${deliveryIn} • ঢাকার বাইরে ৳${deliveryOut}')}</strong>
+                        <span>${window._freeDelivery ? 'ক্যাশ অন ডেলিভারি • কোনো শিপিং চার্জ নেই' : 'সারা বাংলাদেশে ডেলিভারি • ক্যাশ অন ডেলিভারি'}</span>
                     </div>
                 </div>
 
@@ -2155,8 +2184,10 @@ async function showProductDetail(id) {
                             <label class="form-label"><i class="fas fa-truck"></i> ডেলিভারি এলাকা <span style="color:#ef4444">*</span></label>
                             <select id="oDelivery" class="form-input" onchange="this.classList.remove('error'); updateTotal()">
                                 <option value="" disabled selected>— এলাকা নির্বাচন করুন —</option>
-                                <option value="${deliveryIn}">ঢাকার ভিতরে (${deliveryIn} টাকা)</option>
-                                <option value="${deliveryOut}">ঢাকার বাহিরে (${deliveryOut} টাকা)</option>
+                                ${window._freeDelivery
+                                    ? `<option value="0" selected>ঢাকার ভিতরে 🎉 ফ্রি ডেলিভারি</option><option value="0">ঢাকার বাহিরে 🎉 ফ্রি ডেলিভারি</option>`
+                                    : `<option value="${deliveryIn}">ঢাকার ভিতরে (${deliveryIn} টাকা)</option><option value="${deliveryOut}">ঢাকার বাহিরে (${deliveryOut} টাকা)</option>`
+                                }
                             </select>
                         </div>
                         <div class="form-group" style="justify-content:flex-end">
@@ -2279,10 +2310,23 @@ function updateTotal() {
     const qty = parseInt(document.getElementById('qtyInput')?.value) || 1;
     const tot = document.getElementById('oTotal');
     if (!tot) return;
+    const subTotal = currentProductPrice * qty;
+
+    // ফ্রি ডেলিভারি চেক
+    if (window._freeDelivery) {
+        tot.innerHTML = '<span style="color:#059669;font-weight:700">' + subTotal + ' টাকা</span> <span style="font-size:12px;background:#d1fae5;color:#059669;padding:2px 8px;border-radius:4px;font-weight:700">🚚 ফ্রি ডেলিভারি</span>';
+        return;
+    }
+    if (window._freeDeliveryConditional && window._freeDeliveryMinOrder > 0 && subTotal >= window._freeDeliveryMinOrder) {
+        tot.innerHTML = '<span style="color:#059669;font-weight:700">' + subTotal + ' টাকা</span> <span style="font-size:12px;background:#d1fae5;color:#059669;padding:2px 8px;border-radius:4px;font-weight:700">🚚 ফ্রি ডেলিভারি</span>';
+        return;
+    }
+
     if (del && del.value) {
-        tot.textContent = (currentProductPrice * qty + parseInt(del.value)) + ' টাকা';
+        const charge = parseInt(del.value);
+        tot.textContent = (subTotal + charge) + ' টাকা';
     } else {
-        tot.textContent = (currentProductPrice * qty) + ' টাকা + ডেলিভারি';
+        tot.textContent = subTotal + ' টাকা + ডেলিভারি';
     }
 }
 
@@ -2431,8 +2475,13 @@ async function submitOrder(productId) {
 
     const p = allProducts.find(x => x.id === productId) || {};
     const qty = parseInt(document.getElementById('qtyInput').value) || 1;
-    const deliveryCharge = parseInt(delivery.value);
-    const deliveryArea = delivery.options[delivery.selectedIndex].text;
+    // ফ্রি ডেলিভারি চেক করা
+    const subTotal = currentProductPrice * (parseInt(document.getElementById('qtyInput').value) || 1);
+    let deliveryCharge = parseInt(delivery.value) || 0;
+    if (window._freeDelivery || (window._freeDeliveryConditional && subTotal >= (window._freeDeliveryMinOrder || 0))) {
+        deliveryCharge = 0;
+    }
+    const deliveryArea = delivery.options[delivery.selectedIndex].text.replace(' (ফ্রি ডেলিভারি 🎉)', '');
     const btn = document.getElementById('submitOrderBtn');
     btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> পাঠানো হচ্ছে...';
 
@@ -2449,7 +2498,9 @@ async function submitOrder(productId) {
         });
         const d = await r.json();
         if (d.success) {
-            showPopup(true, `${p.name} অর্ডার সফলভাবে গ্রহণ করা হয়েছে!\n\nঅর্ডার নম্বর: ${d.orderNumber}\nপরিমাণ: ${qty} প্যাক (${activeWeight})\nমূল্য: ৳${currentProductPrice * qty + deliveryCharge}\n\nআমাদের প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবেন।`);
+            const finalTotal = currentProductPrice * qty + deliveryCharge;
+            const deliveryNote = deliveryCharge === 0 ? ' (ফ্রি ডেলিভারি)' : ' (ডেলিভারি: ৳' + deliveryCharge + ')';
+            showPopup(true, `${p.name} অর্ডার সফলভাবে গ্রহণ করা হয়েছে!\n\nঅর্ডার নম্বর: ${d.orderNumber}\nপরিমাণ: ${qty} প্যাক (${activeWeight})\nমূল্য: ৳${finalTotal}${deliveryNote}\n\nআমাদের প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবেন।`);
             document.getElementById('oName').value = '';
             document.getElementById('oPhone').value = '';
             document.getElementById('oAddress').value = '';
