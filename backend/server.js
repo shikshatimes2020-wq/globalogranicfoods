@@ -169,6 +169,16 @@ const SiteSettingsSchema = new mongoose.Schema({
 });
 const SiteSettings = mongoose.model('SiteSettings', SiteSettingsSchema);
 
+const PackSizeSchema = new mongoose.Schema({
+  size:     { type: String, required: true, unique: true },
+  label:    { type: String, required: true },
+  order:    { type: Number, default: 0 },
+  isActive: { type: Boolean, default: true },
+  createdAt:{ type: Date, default: Date.now },
+  updatedAt:{ type: Date, default: Date.now },
+});
+const PackSize = mongoose.model('PackSize', PackSizeSchema);
+
 const JWT_SECRET = process.env.JWT_SECRET || 'globalorganic_secret_2026';
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -231,9 +241,19 @@ async function seedDefaults() {
       { key: 'deliveryOutside', value: 130 },
       { key: 'freeDelivery', value: true },
       { key: 'returnDays', value: 7 },
-      { key: 'packSizes', value: ['2kg', '1kg', '500gm'] },
+      { key: 'freeDeliveryMinOrder', value: 0 },
     ]);
     console.log('✅ Default settings seeded');
+  }
+
+  const packSizeCount = await PackSize.countDocuments();
+  if (packSizeCount === 0) {
+    await PackSize.insertMany([
+      { size: '2kg',   label: '২ কেজি',    order: 0, isActive: true },
+      { size: '1kg',   label: '১ কেজি',    order: 1, isActive: true },
+      { size: '500gm', label: '৫০০ গ্রাম',  order: 2, isActive: true },
+    ]);
+    console.log('✅ Default pack sizes seeded');
   }
 }
 
@@ -407,13 +427,21 @@ app.post('/api/orders', async (req, res) => {
   try {
     const { productId, productName, weight, quantity, unitPrice, deliveryCharge, totalPrice, customerName, phone, address, deliveryArea, notes } = req.body;
     if (!customerName || !phone || !address) return res.status(400).json({ success: false, message: 'নাম, ফোন ও ঠিকানা আবশ্যক' });
+    // Resolve free delivery from settings
+    const freeDeliverySetting = await SiteSettings.findOne({ key: 'freeDelivery' });
+    const freeDeliveryMinOrderSetting = await SiteSettings.findOne({ key: 'freeDeliveryMinOrder' });
+    const isFreeDelivery = freeDeliverySetting?.value === true;
+    const minOrder = parseInt(freeDeliveryMinOrderSetting?.value) || 0;
+    const subTotal = (unitPrice || 0) * (quantity || 1);
+    const resolvedDeliveryCharge = isFreeDelivery && (minOrder === 0 || subTotal >= minOrder) ? 0 : (deliveryCharge || 0);
 
     // Retry up to 5 times to handle duplicate orderNumber race conditions
     let order, orderNumber, attempts = 0;
     while (attempts < 5) {
       try {
         orderNumber = await generateOrderNumber();
-        order = await Order.create({ orderNumber, productId, productName, weight, quantity, unitPrice, deliveryCharge, totalPrice, customerName, phone, address, deliveryArea, notes });
+        const finalDelivery = resolvedDeliveryCharge; const finalTotal = subTotal + finalDelivery;
+        order = await Order.create({ orderNumber, productId, productName, weight, quantity, unitPrice, deliveryCharge: finalDelivery, totalPrice: finalTotal, customerName, phone, address, deliveryArea, notes });
         break; // success
       } catch (dupErr) {
         if (dupErr.code === 11000 && dupErr.keyPattern?.orderNumber) {
@@ -506,25 +534,57 @@ app.get('/api/settings', async (req, res) => {
 });
 
 // ✅ Get pack sizes
+// ── Pack Sizes CRUD (structured collection) ──────────────────────────────────
 app.get('/api/pack-sizes', async (req, res) => {
   try {
-    let packSizes = await SiteSettings.findOne({ key: 'packSizes' });
-    if (!packSizes) {
-      packSizes = await SiteSettings.create({ key: 'packSizes', value: ['2kg', '1kg', '500gm'] });
-    }
-    res.json({ success: true, packSizes: packSizes.value });
+    const sizes = await PackSize.find().sort({ order: 1 });
+    res.json({ success: true, sizes, packSizes: sizes.filter(s => s.isActive !== false).map(s => s.size) });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ✅ Update pack sizes (Admin only)
+app.get('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
+  try {
+    const sizes = await PackSize.find().sort({ order: 1 });
+    res.json({ success: true, sizes });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.post('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
+  try {
+    const { size, label, order, isActive } = req.body;
+    if (!size || !label) return res.status(400).json({ success: false, message: 'size এবং label আবশ্যক' });
+    const existing = await PackSize.findOne({ size });
+    if (existing) return res.status(400).json({ success: false, message: 'এই সাইজ কোড আগে থেকেই আছে' });
+    const ps = await PackSize.create({ size, label, order: order || 0, isActive: isActive !== false });
+    res.json({ success: true, message: 'প্যাক সাইজ যুক্ত হয়েছে', packSize: ps });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.put('/api/admin/pack-sizes/:id', authMiddleware, async (req, res) => {
+  try {
+    const { label, order, isActive } = req.body;
+    const ps = await PackSize.findByIdAndUpdate(req.params.id, { label, order, isActive, updatedAt: new Date() }, { new: true });
+    if (!ps) return res.status(404).json({ success: false, message: 'পাওয়া যায়নি' });
+    res.json({ success: true, message: 'আপডেট হয়েছে', packSize: ps });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+app.delete('/api/admin/pack-sizes/:id', authMiddleware, async (req, res) => {
+  try {
+    const ps = await PackSize.findByIdAndDelete(req.params.id);
+    if (!ps) return res.status(404).json({ success: false, message: 'পাওয়া যায়নি' });
+    res.json({ success: true, message: 'মুছে ফেলা হয়েছে' });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// Legacy simple pack-sizes update (backward compat)
 app.put('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
   try {
     const { packSizes } = req.body;
     if (!Array.isArray(packSizes) || packSizes.length === 0) {
       return res.status(400).json({ success: false, message: 'প্যাক সাইজ লিস্ট বৈধ হতে হবে' });
     }
-    await SiteSettings.findOneAndUpdate({ key: 'packSizes' }, { value: packSizes, updatedAt: new Date() }, { upsert: true });
-    res.json({ success: true, message: 'প্যাক সাইজ আপডেট করা হয়েছে', packSizes });
+    res.json({ success: true, message: 'আপডেট হয়েছে', packSizes });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
