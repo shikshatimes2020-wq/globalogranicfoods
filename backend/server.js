@@ -520,26 +520,79 @@ app.get('/api/settings', async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ✅ Get pack sizes
+// ── Pack Sizes — structured CRUD (stored in SiteSettings as array of objects) ──
+
+// Helper: get sizes array from DB
+async function getPackSizesArray() {
+  const doc = await SiteSettings.findOne({ key: 'packSizesV2' });
+  if (doc && Array.isArray(doc.value) && doc.value.length) return doc.value;
+  // fallback: convert old simple array
+  const old = await SiteSettings.findOne({ key: 'packSizes' });
+  const oldArr = (old?.value || ['2kg', '1kg', '500gm']);
+  const converted = oldArr.map((s, i) => ({
+    _id: s, size: s,
+    label: s === '2kg' ? '২ কেজি' : s === '1kg' ? '১ কেজি' : s === '500gm' ? '৫০০ গ্রাম' : s,
+    order: i, isActive: true
+  }));
+  await SiteSettings.findOneAndUpdate({ key: 'packSizesV2' }, { value: converted, updatedAt: new Date() }, { upsert: true });
+  return converted;
+}
+
+// GET /api/pack-sizes — public (frontend order form)
 app.get('/api/pack-sizes', async (req, res) => {
   try {
-    let packSizes = await SiteSettings.findOne({ key: 'packSizes' });
-    if (!packSizes) {
-      packSizes = await SiteSettings.create({ key: 'packSizes', value: ['2kg', '1kg', '500gm'] });
-    }
-    res.json({ success: true, packSizes: packSizes.value });
+    const sizes = await getPackSizesArray();
+    const active = sizes.filter(s => s.isActive !== false);
+    res.json({ success: true, sizes: active, packSizes: active.map(s => s.size) });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 
-// ✅ Update pack sizes (Admin only)
-app.put('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
+// GET /api/admin/pack-sizes — admin (with inactive)
+app.get('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
   try {
-    const { packSizes } = req.body;
-    if (!Array.isArray(packSizes) || packSizes.length === 0) {
-      return res.status(400).json({ success: false, message: 'প্যাক সাইজ লিস্ট বৈধ হতে হবে' });
-    }
-    await SiteSettings.findOneAndUpdate({ key: 'packSizes' }, { value: packSizes, updatedAt: new Date() }, { upsert: true });
-    res.json({ success: true, message: 'প্যাক সাইজ আপডেট করা হয়েছে', packSizes });
+    const sizes = await getPackSizesArray();
+    res.json({ success: true, sizes });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// POST /api/admin/pack-sizes — add new size
+app.post('/api/admin/pack-sizes', authMiddleware, async (req, res) => {
+  try {
+    const { size, label, order, isActive } = req.body;
+    if (!size || !label) return res.status(400).json({ success: false, message: 'size এবং label আবশ্যক' });
+    const sizes = await getPackSizesArray();
+    if (sizes.find(s => s.size === size)) return res.status(400).json({ success: false, message: 'এই সাইজ কোড আগে থেকেই আছে' });
+    const newPs = { _id: size, size, label, order: order ?? sizes.length, isActive: isActive !== false };
+    sizes.push(newPs);
+    await SiteSettings.findOneAndUpdate({ key: 'packSizesV2' }, { value: sizes, updatedAt: new Date() }, { upsert: true });
+    res.json({ success: true, message: 'প্যাক সাইজ যুক্ত হয়েছে', packSize: newPs });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// PUT /api/admin/pack-sizes/:id — update existing
+app.put('/api/admin/pack-sizes/:id', authMiddleware, async (req, res) => {
+  try {
+    const sizes = await getPackSizesArray();
+    const idx = sizes.findIndex(s => s.size === req.params.id || s._id === req.params.id);
+    if (idx < 0) return res.status(404).json({ success: false, message: 'পাওয়া যায়নি' });
+    const { label, order, isActive } = req.body;
+    if (label !== undefined) sizes[idx].label = label;
+    if (order !== undefined) sizes[idx].order = order;
+    if (isActive !== undefined) sizes[idx].isActive = isActive;
+    await SiteSettings.findOneAndUpdate({ key: 'packSizesV2' }, { value: sizes, updatedAt: new Date() }, { upsert: true });
+    res.json({ success: true, message: 'আপডেট হয়েছে', packSize: sizes[idx] });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// DELETE /api/admin/pack-sizes/:id — remove
+app.delete('/api/admin/pack-sizes/:id', authMiddleware, async (req, res) => {
+  try {
+    let sizes = await getPackSizesArray();
+    const before = sizes.length;
+    sizes = sizes.filter(s => s.size !== req.params.id && s._id !== req.params.id);
+    if (sizes.length === before) return res.status(404).json({ success: false, message: 'পাওয়া যায়নি' });
+    await SiteSettings.findOneAndUpdate({ key: 'packSizesV2' }, { value: sizes, updatedAt: new Date() }, { upsert: true });
+    res.json({ success: true, message: 'মুছে ফেলা হয়েছে' });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 

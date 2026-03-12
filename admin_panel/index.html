@@ -1047,7 +1047,7 @@ function showPage(id) {
   document.querySelectorAll('.nav-btn').forEach(b => {
     if (b.getAttribute('onclick') === `showPage('${id}')`) b.classList.add('active');
   });
-  const titles = { dashboard:'ড্যাশবোর্ড', orders:'অর্ডারসমূহ', products:'পণ্যসমূহ', slider:'হোম স্লাইডার', settings:'সাধারণ সেটিংস', about:'সম্পর্কে পেজ', contact:'যোগাযোগ পেজ', changepass:'পাসওয়ার্ড পরিবর্তন' };
+  const titles = { dashboard:'ড্যাশবোর্ড', orders:'অর্ডারসমূহ', products:'পণ্যসমূহ', slider:'হোম স্লাইডার', packsizes:'প্যাক সাইজ পরিচালনা', settings:'সাধারণ সেটিংস', about:'সম্পর্কে পেজ', contact:'যোগাযোগ পেজ', changepass:'পাসওয়ার্ড পরিবর্তন' };
   $('topbarTitle').textContent = titles[id] || id;
   if (id === 'dashboard') loadDashboard();
   if (id === 'orders') { ordersPage = 1; loadOrders(); }
@@ -1056,6 +1056,7 @@ function showPage(id) {
   if (id === 'settings') loadSettings();
   if (id === 'about') loadAbout();
   if (id === 'contact') loadContact();
+  if (id === 'packsizes') loadPackSizes();
   $('sidebar').classList.remove('mobile-open');
 }
 
@@ -1441,8 +1442,18 @@ let _productPriceRows = [];   // current rows in the editor [{size, label, price
 // Load global pack sizes (with cache)
 async function fetchGlobalPackSizes() {
   if (_globalPackSizes) return _globalPackSizes;
+  // Admin context — /admin/pack-sizes returns all (including inactive)
   const d = await api('/admin/pack-sizes');
-  _globalPackSizes = (d.success && d.sizes) ? d.sizes : [];
+  if (d.success && d.sizes && d.sizes.length) {
+    _globalPackSizes = d.sizes;
+  } else {
+    // fallback to hardcoded defaults
+    _globalPackSizes = [
+      { size:'2kg', label:'২ কেজি', isActive:true },
+      { size:'1kg', label:'১ কেজি', isActive:true },
+      { size:'500gm', label:'৫০০ গ্রাম', isActive:true },
+    ];
+  }
   return _globalPackSizes;
 }
 
@@ -2185,20 +2196,7 @@ async function deletePackSize() {
 }
 
 // On page load
-function showPageImpl(pageName) {
-  if (pageName === 'packsizes') {
-    loadPackSizes();
-  }
-}
-
-// Override showPage function to add pack sizes handling
-const originalShowPage = window.showPage;
-if (originalShowPage) {
-  window.showPage = function(pageName) {
-    originalShowPage(pageName);
-    showPageImpl(pageName);
-  };
-}
+// showPageImpl removed — loadPackSizes now called directly in showPage()
 
 </script>
 </body>
