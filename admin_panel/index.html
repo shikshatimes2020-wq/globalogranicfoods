@@ -433,13 +433,7 @@ select.form-input{cursor:pointer;}
           <div class="card-body">
             <div class="form-group"><label class="form-label">সাইটের নাম</label><input type="text" id="set-siteName" class="form-input" placeholder="গ্লোবাল অর্গানিক ফুডস্"></div>
             <div class="form-group"><label class="form-label">অ্যানাউন্সমেন্ট বার টেক্সট</label><textarea id="set-announcement" class="form-input" rows="3" placeholder="বিশেষ অফার বা নোটিশ..."></textarea></div>
-            <div class="form-group"><label class="form-label">ফ্রি ডেলিভারি চালু আছে?</label>
-              <select id="set-freeDelivery" class="form-input" onchange="toggleFreeDeliveryHint(this.value)">
-                <option value="true">✅ হ্যাঁ — ফ্রি ডেলিভারি চালু</option>
-                <option value="false">❌ না — চার্জ প্রযোজ্য হবে</option>
-              </select>
-              <p class="form-hint" id="freeDeliveryHint" style="color:var(--green)">ফ্রি ডেলিভারি চালু আছে। নিচে সর্বনিম্ন অর্ডার সেট করুন।</p>
-            </div>
+
           </div>
         </div>
         <div class="card">
@@ -447,7 +441,19 @@ select.form-input{cursor:pointer;}
           <div class="card-body">
             <div class="form-group"><label class="form-label">ঢাকার ভিতরে ডেলিভারি চার্জ (৳)</label><input type="number" id="set-deliveryInside" class="form-input" placeholder="80"></div>
             <div class="form-group"><label class="form-label">ঢাকার বাহিরে ডেলিভারি চার্জ (৳)</label><input type="number" id="set-deliveryOutside" class="form-input" placeholder="130"></div>
-            <div class="form-group"><label class="form-label">ফ্রি ডেলিভারি — সর্বনিম্ন অর্ডার (৳)</label><input type="number" id="set-freeDeliveryMinOrder" class="form-input" placeholder="0 (সবসময় ফ্রি)"><p class="form-hint">০ দিলে সব অর্ডারে ফ্রি ডেলিভারি দেওয়া হবে।</p></div>
+            <hr class="divider">
+            <div class="form-group"><label class="form-label">ফ্রি ডেলিভারি সিস্টেম</label>
+              <select id="set-freeDelivery" class="form-input" onchange="updateFreeDeliveryUI()">
+                <option value="true">✅ চালু — সব অর্ডারে ফ্রি ডেলিভারি</option>
+                <option value="conditional">🎯 শর্তসাপেক্ষ — নির্দিষ্ট পরিমাণের উপরে ফ্রি</option>
+                <option value="false">❌ বন্ধ — সব অর্ডারে চার্জ প্রযোজ্য</option>
+              </select>
+            </div>
+            <div class="form-group" id="freeDeliveryMinOrderGroup" style="display:none">
+              <label class="form-label">ফ্রি ডেলিভারির জন্য সর্বনিম্ন অর্ডার (৳)</label>
+              <input type="number" id="set-freeDeliveryMinOrder" class="form-input" placeholder="500">
+              <p class="form-hint">এই পরিমাণ বা তার বেশি অর্ডারে ফ্রি ডেলিভারি পাবে।</p>
+            </div>
             <div class="form-group"><label class="form-label">রিটার্ন পলিসি (দিন)</label><input type="number" id="set-returnDays" class="form-input" placeholder="7"></div>
           </div>
         </div>
@@ -1041,7 +1047,7 @@ function showPage(id) {
   document.querySelectorAll('.nav-btn').forEach(b => {
     if (b.getAttribute('onclick') === `showPage('${id}')`) b.classList.add('active');
   });
-  const titles = { dashboard:'ড্যাশবোর্ড', orders:'অর্ডারসমূহ', products:'পণ্যসমূহ', slider:'হোম স্লাইডার', packsizes:'প্যাক সাইজ পরিচালনা', settings:'সাধারণ সেটিংস', about:'সম্পর্কে পেজ', contact:'যোগাযোগ পেজ', changepass:'পাসওয়ার্ড পরিবর্তন' };
+  const titles = { dashboard:'ড্যাশবোর্ড', orders:'অর্ডারসমূহ', products:'পণ্যসমূহ', slider:'হোম স্লাইডার', settings:'সাধারণ সেটিংস', about:'সম্পর্কে পেজ', contact:'যোগাযোগ পেজ', changepass:'পাসওয়ার্ড পরিবর্তন' };
   $('topbarTitle').textContent = titles[id] || id;
   if (id === 'dashboard') loadDashboard();
   if (id === 'orders') { ordersPage = 1; loadOrders(); }
@@ -1050,7 +1056,6 @@ function showPage(id) {
   if (id === 'settings') loadSettings();
   if (id === 'about') loadAbout();
   if (id === 'contact') loadContact();
-  if (id === 'packsizes') loadPackSizes();
   $('sidebar').classList.remove('mobile-open');
 }
 
@@ -1101,7 +1106,7 @@ async function loadOrders() {
     <td><div style="font-weight:600">${o.customerName}</div><div style="font-size:12px;color:var(--text2)">${o.phone}</div></td>
     <td><div>${o.productName||'—'}</div><div style="font-size:11px;color:var(--text2)">${o.weight||''}×${o.quantity||1}</div></td>
     <td style="font-weight:700;color:var(--green)">৳${o.totalPrice}</td>
-    <td style="font-size:12px">${o.deliveryArea||'—'}</td>
+    <td style="font-size:12px">${o.deliveryArea||'—'}<br><span style="font-size:11px;font-weight:700;color:${o.deliveryCharge==0?'var(--green)':('var(--text3)')}}">${o.deliveryCharge==0?'🚚 ফ্রি':'৳'+o.deliveryCharge}</span></td>
     <td><select onchange="updateOrderStatus('${o._id}',this.value)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:4px 8px;font-size:12px;">${['pending','confirmed','processing','shipped','delivered','cancelled'].map(s=>`<option value="${s}" ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
     <td style="font-size:12px;color:var(--text2)">${new Date(o.createdAt).toLocaleDateString('bn-BD')}</td>
     <td><div style="display:flex;gap:6px">
@@ -1132,7 +1137,7 @@ function viewOrder(o) {
     <div style="background:var(--surface2);border-radius:10px;padding:16px"><div style="font-size:12px;color:var(--text3);margin-bottom:4px">অর্ডার নম্বর</div><div style="font-family:'JetBrains Mono',monospace;color:var(--green);font-size:16px;font-weight:700">${o.orderNumber||'—'}</div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div style="background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:6px">গ্রাহকের তথ্য</div><div style="font-weight:700">${o.customerName}</div><div style="color:var(--green);margin-top:4px">${o.phone}</div><div style="font-size:13px;color:var(--text2);margin-top:4px">${o.address}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">${o.deliveryArea||''}</div></div>
-      <div style="background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:6px">পণ্যের তথ্য</div><div style="font-weight:700">${o.productName||'—'}</div><div style="color:var(--text2);margin-top:4px">${o.weight}×${o.quantity} পিস</div><div style="color:var(--green);font-size:18px;font-weight:700;margin-top:8px">৳${o.totalPrice}</div><div style="font-size:12px;color:var(--text3)">${o.deliveryCharge===0?'<span style="color:var(--green);font-weight:700">🚚 ফ্রি ডেলিভারি</span>':'ডেলিভারি: ৳'+o.deliveryCharge}</div></div>
+      <div style="background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:6px">পণ্যের তথ্য</div><div style="font-weight:700">${o.productName||'—'}</div><div style="color:var(--text2);margin-top:4px">${o.weight}×${o.quantity} পিস</div><div style="color:var(--green);font-size:18px;font-weight:700;margin-top:8px">৳${o.totalPrice}</div><div style="font-size:12px;color:var(--text3)">${o.deliveryCharge==0?'<span style="color:var(--green);font-weight:700"><i class="fas fa-truck"></i> ফ্রি ডেলিভারি</span>':"ডেলিভারি: ৳"+o.deliveryCharge}</div></div>
     </div>
     ${o.notes?`<div style="background:var(--amber-dim);border:1px solid rgba(245,166,35,0.25);border-radius:10px;padding:14px"><div style="font-size:11px;color:var(--amber);margin-bottom:4px">নোট</div><div>${o.notes}</div></div>`:''}
     <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:13px;color:var(--text2)">স্ট্যাটাস: ${statusHtml(o.status)}</div><div style="font-size:12px;color:var(--text3)">${new Date(o.createdAt).toLocaleString('bn-BD')}</div></div>
@@ -1688,35 +1693,34 @@ async function deleteProduct(id, name) {
 }
 
 // ==================== SETTINGS ====================
-function toggleFreeDeliveryHint(val) {
-  const hint = $('freeDeliveryHint');
-  const minOrderGroup = $('set-freeDeliveryMinOrder')?.closest('.form-group');
-  if (!hint) return;
-  if (val === 'true') {
-    hint.style.color = 'var(--green)';
-    hint.textContent = 'ফ্রি ডেলিভারি চালু আছে। নিচে সর্বনিম্ন অর্ডার সেট করুন।';
-    if (minOrderGroup) minOrderGroup.style.opacity = '1';
-  } else {
-    hint.style.color = 'var(--amber)';
-    hint.textContent = 'ফ্রি ডেলিভারি বন্ধ — ঢাকার ভেতরে/বাইরে চার্জ প্রযোজ্য হবে।';
-    if (minOrderGroup) minOrderGroup.style.opacity = '0.4';
-  }
+function updateFreeDeliveryUI() {
+  const val = $('set-freeDelivery')?.value;
+  const minGrp = $('freeDeliveryMinOrderGroup');
+  if (!minGrp) return;
+  minGrp.style.display = (val === 'conditional') ? 'block' : 'none';
 }
 
 async function loadSettings() {
   const d = await api('/settings');
   if (!d.success) return;
   const s = d.settings;
-  const map = { siteName:'set-siteName', announcement:'set-announcement', deliveryInside:'set-deliveryInside', deliveryOutside:'set-deliveryOutside', freeDelivery:'set-freeDelivery', freeDeliveryMinOrder:'set-freeDeliveryMinOrder', returnDays:'set-returnDays' };
+  const map = { siteName:'set-siteName', announcement:'set-announcement', deliveryInside:'set-deliveryInside', deliveryOutside:'set-deliveryOutside', freeDeliveryMinOrder:'set-freeDeliveryMinOrder', returnDays:'set-returnDays' };
   Object.entries(map).forEach(([key,elId]) => { const el=$(elId); if(el&&s[key]!==undefined) el.value=s[key]; });
-  // Update free delivery hint
+  // freeDelivery has 3 states
   const fd = $('set-freeDelivery');
-  if (fd) toggleFreeDeliveryHint(fd.value);
+  if (fd && s.freeDelivery !== undefined) {
+    if (s.freeDelivery === true || s.freeDelivery === 'true') fd.value = 'true';
+    else if (s.freeDelivery === 'conditional') fd.value = 'conditional';
+    else fd.value = 'false';
+    updateFreeDeliveryUI();
+  }
 }
 
 async function saveSettings(btn) {
   btnLoad(btn, true);
-  const updates = { siteName:$('set-siteName').value, announcement:$('set-announcement').value, deliveryInside:parseInt($('set-deliveryInside').value)||0, deliveryOutside:parseInt($('set-deliveryOutside').value)||0, freeDelivery:$('set-freeDelivery').value==='true', freeDeliveryMinOrder:parseInt($('set-freeDeliveryMinOrder').value)||0, returnDays:parseInt($('set-returnDays').value)||7 };
+  const fdVal = $('set-freeDelivery').value;
+  const isFree = fdVal === 'true' ? true : (fdVal === 'conditional' ? 'conditional' : false);
+  const updates = { siteName:$('set-siteName').value, announcement:$('set-announcement').value, deliveryInside:parseInt($('set-deliveryInside').value)||0, deliveryOutside:parseInt($('set-deliveryOutside').value)||0, freeDelivery:isFree, freeDeliveryMinOrder:parseInt($('set-freeDeliveryMinOrder')?.value)||0, returnDays:parseInt($('set-returnDays')?.value)||7 };
   const d = await api('/admin/settings', {method:'PUT', body:JSON.stringify(updates)});
   btnLoad(btn, false);
   if (d.success) toast('✅ সেটিংস সেভ হয়েছে'); else toast(d.message,'error');
@@ -2067,7 +2071,7 @@ async function loadPackSizes() {
     $('packSizesContainer').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>${d.message||'লোড ব্যর্থ হয়েছে'}</p></div>`;
     return;
   }
-  packSizesData = d.sizes || d.packSizes || [];
+  packSizesData = d.sizes || [];
   renderPackSizes();
 }
 
