@@ -19,7 +19,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 #loginScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
 .login-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 30px 80px rgba(0,0,0,0.5);}
 .login-logo{text-align:center;margin-bottom:32px;}
-.login-logo-icon{width:72px;height:72px;background:var(--green-dim);border:2px solid rgba(0,210,106,0.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--green);margin:0 auto 14px;}
+.login-logo-icon{width:72px;height:72px;background:var(--green-dim);border:2px solid rgba(0,210,106,0.3);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--green);margin:0 auto 14px;overflow:hidden;}
+.login-logo-icon img{width:100%;height:100%;object-fit:contain;padding:6px;}
 .login-logo h2{font-size:22px;font-weight:700;}
 .login-logo p{font-size:13px;color:var(--text2);margin-top:4px;}
 .login-form{display:flex;flex-direction:column;gap:16px;}
@@ -40,7 +41,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 .main-wrap.expanded{margin-left:0;}
 .sb-header{padding:20px 20px 16px;border-bottom:1px solid var(--border);}
 .sb-logo{display:flex;align-items:center;gap:12px;}
-.sb-logo-icon{width:40px;height:40px;background:var(--green-dim);border:1px solid rgba(0,210,106,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--green);flex-shrink:0;}
+.sb-logo-icon{width:40px;height:40px;background:var(--green-dim);border:1px solid rgba(0,210,106,0.25);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--green);flex-shrink:0;overflow:hidden;}
+.sb-logo-icon img{width:100%;height:100%;object-fit:contain;padding:4px;}
 .sb-logo-text{font-size:15px;font-weight:700;line-height:1.2;}
 .sb-logo-sub{font-size:10px;color:var(--text2);}
 .sb-nav{padding:12px 10px;display:flex;flex-direction:column;gap:2px;flex:1;}
@@ -254,7 +256,7 @@ select.form-input{cursor:pointer;}
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">
-      <div class="login-logo-icon"><i class="fas fa-seedling"></i></div>
+      <div class="login-logo-icon"><img src="images/global_logo.png" alt="গ্লোবাল অর্গানিক ফুডস্ লোগো" width="60" height="60" style="object-fit: contain;" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-seedling\'></i>'"></div>
       <h2>Admin Panel</h2>
       <p>গ্লোবাল অর্গানিক ফুডস্ ম্যানেজমেন্ট</p>
     </div>
@@ -272,7 +274,7 @@ select.form-input{cursor:pointer;}
   <aside class="sidebar" id="sidebar">
     <div class="sb-header">
       <div class="sb-logo">
-        <div class="sb-logo-icon"><i class="fas fa-seedling"></i></div>
+        <div class="sb-logo-icon"><img src="images/global_logo.png" alt="গ্লোবাল অর্গানিক ফুডস্ লোগো" width="32" height="32" style="object-fit: contain;" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-seedling\'></i>'"></div>
         <div><div class="sb-logo-text">GOF Admin</div><div class="sb-logo-sub">v2.1.0</div></div>
       </div>
     </div>
@@ -947,7 +949,7 @@ select.form-input{cursor:pointer;}
 
 <script>
 // ==================== CONFIG ====================
-const API = 'https://globalogranicfoods-ea8r.onrender.com/api';
+const API = 'https://globalogranicfoods-qzub.onrender.com/api';
 let TOKEN = localStorage.getItem('gof_token') || '';
 let ordersPage = 1, ordersDebTimer;
 let editingProductId = null;
@@ -2200,4 +2202,4 @@ async function deletePackSize() {
 
 </script>
 </body>
-</html>  
+</html>
